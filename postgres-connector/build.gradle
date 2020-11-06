@@ -1,0 +1,19 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright Contributors to the ODPi Egeria project.
+ */
+
+
+dependencies {
+    implementation 'org.odpi.egeria:data-manager-client'
+    implementation 'org.odpi.egeria:data-manager-api'
+    implementation 'org.odpi.egeria:database-integrator-api'
+    implementation 'org.odpi.egeria:open-connector-framework'
+    implementation 'org.slf4j:slf4j-api'
+}
+
+description = 'Postgres Connector'
+
+java {
+    withJavadocJar()
+}
