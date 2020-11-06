@@ -5,8 +5,14 @@ jobs:
   kind:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+      - name: setup Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.4.0
+    - uses: actions/checkout@v2
+      name: checkout code
     - uses: engineerd/setup-kind@v0.4.0
+      name: setup kind
       with:
           version: "v0.7.0"
     - name: Testing
@@ -15,3 +21,5 @@ jobs:
         kubectl get pods -n kube-system
         echo "current-context:" $(kubectl config current-context)
         echo "environment-kubeconfig:" ${KUBECONFIG}
+        cd charts
+        helm install test egeria-database-connector-test
