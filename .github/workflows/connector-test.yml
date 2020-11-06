@@ -20,4 +20,6 @@ jobs:
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
           cd charts
+          helm dep update egeria-database-connector-test
           helm install test egeria-database-connector-test
+          kubectl get pods
