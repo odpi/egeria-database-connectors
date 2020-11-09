@@ -102,3 +102,6 @@ THIRD_PARTY*.txt
 !gradle/**
 .gradle/
 build/
+
+# helm
+ **/charts/**/charts/**
