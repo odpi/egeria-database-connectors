@@ -15,14 +15,11 @@ jobs:
             version: "v0.7.0"
       - name: Testing
         run: |
-          echo "--\nk8s configuration after install\n--\n"
           kubectl cluster-info
           kubectl get pods -n kube-system
           echo "current-context:" $(kubectl config current-context)
           echo "environment-kubeconfig:" ${KUBECONFIG}
           cd charts
-          echo "--\nSetting up & installing the test helm chart\n--\n"
           helm dep update egeria-database-connector-test
           helm install --wait test egeria-database-connector-test
-          echo "--\nChecking all is running ok\n--\n"
           kubectl get pods
