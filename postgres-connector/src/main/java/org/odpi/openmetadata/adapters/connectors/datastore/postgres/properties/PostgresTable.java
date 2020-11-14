@@ -114,6 +114,6 @@ public class PostgresTable {
     }
 
     public String getQualifiedName ( ) {
-        return table_catalog + "." + table_schema + "." + table_name;
+        return table_catalog + "." + table_schema + "." + "." + table_type + "." + table_name;
     }
 }
