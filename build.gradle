@@ -25,6 +25,7 @@ buildscript {
  * Plugins for this parent module only - so just high level project related
  */
 
+
 plugins {
         //id "nebula.lint" version "16.9.0"
         //id "nebula-aggregate-javadocs"
@@ -32,6 +33,7 @@ plugins {
 
 /* run './gradlew aggregateJavadocs' at top level to build all docs & output to build/docs/javadoc */
 apply plugin: 'nebula-aggregate-javadocs'
+
 
 
 /*
@@ -62,6 +64,7 @@ allprojects {
 /*
  * Configuration for sub projects only
  */
+apply plugin: 'java-library'
 
 subprojects {
 
@@ -73,6 +76,7 @@ subprojects {
 
     // Dependency Management - to fix versions. Pick up maven build settings for now
     dependencies {
+        testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M4")
         constraints {
             implementation("org.slf4j:slf4j-api:1.7.30")
             implementation 'org.odpi.egeria:data-manager-client:2.5-SNAPSHOT'
@@ -81,11 +85,34 @@ subprojects {
             implementation 'org.odpi.egeria:open-connector-framework:2.5-SNAPSHOT'
             implementation 'org.slf4j:slf4j-api'
         }
+
+        testImplementation "org.junit.jupiter:junit-jupiter-params:5.0.0-M4"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.0.0-M4"
+
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.0.0-M4"
+
+        test {
+            useJUnitPlatform {
+                includeEngines 'junit-jupiter', 'junit-vintage'
+            }
+            filter {
+                //include all tests from package
+                includeTestsMatching "org.gradle.internal.*"
+
+                //include all unit tests
+                includeTestsMatching "*Test"
+            }
+        }
+
     }
 
     // sources required to publish a legitimate maven package for distribution
     java {
         withSourcesJar()
+    }
+
+    test {
+        useJUnitPlatform()
     }
 
     // publish maven package

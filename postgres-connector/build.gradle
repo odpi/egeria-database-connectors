@@ -5,6 +5,7 @@
 
 
 dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     implementation 'org.odpi.egeria:data-manager-client'
     implementation 'org.odpi.egeria:data-manager-api'
     implementation 'org.odpi.egeria:database-integrator-api'
