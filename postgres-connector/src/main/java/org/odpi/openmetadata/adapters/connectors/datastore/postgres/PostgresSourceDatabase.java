@@ -35,13 +35,13 @@ public class PostgresSourceDatabase {
      */
     public List<PostgresSchema> getDBSchemas( String databaseName ) throws SQLException
     {
-        String sqlSchemaNames = "SELECT * " +
+        String sql = "SELECT * " +
                                 "FROM information_schema.schemata " +
                                 "WHERE schema_name NOT LIKE 'pg_%' " +
                                 "AND schema_name <> 'information_schema'" +
                                 "AND catalog_name = '%s';";
 
-        sqlSchemaNames = String.format( sqlSchemaNames, databaseName );
+        sql = String.format( sql, databaseName );
 
         /* list of the attributes of the schemas */
         List<PostgresSchema> schemas = new ArrayList<>();
@@ -49,7 +49,7 @@ public class PostgresSourceDatabase {
         try (
                 Connection conn = DriverManager.getConnection(connectionProps.getURL());
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlSchemaNames);
+                ResultSet rs = stmt.executeQuery(sql);
         ) {
             while (rs.next()) {
                 PostgresSchema attributes = new PostgresSchema(

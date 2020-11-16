@@ -257,9 +257,10 @@ class PostgresTableTest {
 
         Map<String, String> props = table.getProperties();
         assertEquals( props.size(), 7);
-        Boolean b = props.entrySet().stream()
-                .allMatch(e -> e.getValue().equals(testProps.get(e.getKey())));
-        assertTrue( b);
+
+        assertTrue( props.entrySet().stream()
+                .allMatch(e -> e.getValue().equals(testProps.get(e.getKey()))) );
+
     }
 
     @Test
@@ -278,8 +279,12 @@ class PostgresTableTest {
                 "is_typed",
                 "commit_action");
 
-        String qName = new StringBuilder().append(table.getTable_catalog()).append(".").append(table.getTable_schema()).append(".").append(table.getTable_type()).append(".").append(table.getTable_name()).toString();
-        assertEquals( table.getQualifiedName(), "is_typed");
+        String qName = new StringBuilder().append(table.getTable_catalog()).append(".")
+                                            .append(table.getTable_schema()).append(".")
+                                            .append(table.getTable_type()).append(".")
+                                            .append(table.getTable_name()).toString();
+
+        assertEquals( table.getQualifiedName(), qName);
 
     }
 }

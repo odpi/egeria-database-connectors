@@ -93,13 +93,10 @@ subprojects {
 
         test {
             useJUnitPlatform {
-                includeEngines 'junit-jupiter', 'junit-vintage'
+                includeEngines 'junit-jupiter'
             }
             filter {
-                //include all tests from package
-                includeTestsMatching "org.gradle.internal.*"
-
-                //include all unit tests
+               //include all unit tests
                 includeTestsMatching "*Test"
             }
         }

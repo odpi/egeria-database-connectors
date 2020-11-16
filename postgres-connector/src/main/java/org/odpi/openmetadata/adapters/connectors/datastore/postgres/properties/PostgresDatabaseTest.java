@@ -119,9 +119,8 @@ class PostgresDatabaseTest {
 
         Map<String, String> props = database.getProperties();
         assertEquals( props.size(), 7);
-        Boolean b = props.entrySet().stream()
-            .allMatch(e -> e.getValue().equals(testProps.get(e.getKey())));
-        assertTrue( b);
+        assertTrue( props.entrySet().stream()
+                .allMatch(e -> e.getValue().equals(testProps.get(e.getKey()))));
     }
 
     @Test
