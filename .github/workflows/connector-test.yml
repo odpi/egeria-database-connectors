@@ -1,0 +1,25 @@
+name: "Create connector test environment using KinD"
+on: [pull_request, push]
+
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup Helm
+        uses: azure/setup-helm@v1
+      - uses: actions/checkout@v2
+        name: checkout code
+      - uses: engineerd/setup-kind@v0.4.0
+        name: setup kind
+        with:
+            version: "v0.7.0"
+      - name: Testing
+        run: |
+          kubectl cluster-info
+          kubectl get pods -n kube-system
+          echo "current-context:" $(kubectl config current-context)
+          echo "environment-kubeconfig:" ${KUBECONFIG}
+          cd charts
+          helm dep update egeria-database-connector-test
+          helm install --wait test egeria-database-connector-test
+          kubectl get pods
