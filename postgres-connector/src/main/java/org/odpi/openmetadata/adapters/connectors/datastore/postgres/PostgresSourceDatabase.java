@@ -54,9 +54,9 @@ public class PostgresSourceDatabase {
             while (rs.next()) {
                 PostgresSchema attributes = new PostgresSchema(
                         rs.getString("catalog_name"),
-                        rs.getString("catalog_name"),
-                        rs.getString("catalog_name"),
-                        rs.getString("catalog_name"),
+                        rs.getString("schema_name"),
+                        rs.getString("schema_owner"),
+                        rs.getString("default_character_set_catalog"),
                         rs.getString("default_character_set_schema"),
                         rs.getString("default_character_set_name"),
                         rs.getString("sql_path"));
