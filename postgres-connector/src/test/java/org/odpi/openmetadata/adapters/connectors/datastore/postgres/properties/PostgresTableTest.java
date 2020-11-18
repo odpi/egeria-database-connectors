@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgresTableTest {
 
@@ -135,7 +136,7 @@ class PostgresTableTest {
                 "is_typed",
                 "commit_action");
 
-        assertEquals( table.getUser_defined_type_catalog(), "reference_generation");
+        assertEquals( table.getUser_defined_type_catalog(), "user_defined_type_catalog");
     }
 
     @Test
@@ -247,16 +248,21 @@ class PostgresTableTest {
                 "commit_action");
 
         Map<String,String> testProps = new HashMap<>();
-        testProps.put("owner","owner");
-        testProps.put("ctype", "ctype" );
-        testProps.put("version", "version");
-        testProps.put("collate", "collate");
-        testProps.put("encoding", "encoding" );
-        testProps.put("name","name");
-        testProps.put("accessPrivileges", "accessPrivileges" );
+        testProps.put("table_catalog","table_catalog");
+        testProps.put("table_schema","table_schema");
+        testProps.put("table_name", "table_name" );
+        testProps.put("table_type", "table_type");
+        testProps.put("self_referencing_column_name", "self_referencing_column_name");
+        testProps.put("reference_generation", "reference_generation" );
+        testProps.put("user_defined_type_catalog","user_defined_type_catalog");
+        testProps.put("user_defined_type_schema", "user_defined_type_schema" );
+        testProps.put("user_defined_type_name", "user_defined_type_name" );
+        testProps.put("is_insertable_into", "is_insertable_into" );
+        testProps.put("is_typed", "is_typed" );
+        testProps.put("commit_action", "commit_action" );
 
         Map<String, String> props = table.getProperties();
-        assertEquals( props.size(), 7);
+        assertEquals( props.size(), 12);
 
         assertTrue( props.entrySet().stream()
                 .allMatch(e -> e.getValue().equals(testProps.get(e.getKey()))) );

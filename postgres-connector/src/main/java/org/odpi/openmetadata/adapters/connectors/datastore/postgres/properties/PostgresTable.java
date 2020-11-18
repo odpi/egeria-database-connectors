@@ -102,7 +102,7 @@ public class PostgresTable {
         props.put("table_name", table_name);
         props.put("table_type", table_type);
         props.put("self_referencing_column_name", self_referencing_column_name);
-        props.put("this.reference_generation", reference_generation );
+        props.put("reference_generation", reference_generation );
         props.put("user_defined_type_catalog", user_defined_type_catalog );
         props.put("user_defined_type_schema", user_defined_type_schema );
         props.put("user_defined_type_name", user_defined_type_name );
@@ -114,6 +114,6 @@ public class PostgresTable {
     }
 
     public String getQualifiedName ( ) {
-        return table_catalog + "." + table_schema + "." + "." + table_type + "." + table_name;
+        return table_catalog + "." + table_schema + "." + table_type + "." + table_name;
     }
 }

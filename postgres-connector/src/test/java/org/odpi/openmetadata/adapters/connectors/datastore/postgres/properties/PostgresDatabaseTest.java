@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgresDatabaseTest {
 
@@ -109,13 +110,13 @@ class PostgresDatabaseTest {
                 "version");
 
         Map<String,String> testProps = new HashMap<>();
-        testProps.put("Owner","owner");
-        testProps.put("Ctype", "ctype" );
-        testProps.put("Version", "version");
-        testProps.put("Collate", "collate");
-        testProps.put("Encoding", "encoding" );
-        testProps.put("Name","name");
-        testProps.put("AccessPrivileges", "accessPrivileges" );
+        testProps.put("name","name");
+        testProps.put("owner","owner");
+        testProps.put("ctype", "ctype" );
+        testProps.put("version", "version");
+        testProps.put("collate", "collate");
+        testProps.put("encoding", "encoding" );
+        testProps.put("accessPrivileges", "accessPrivileges" );
 
         Map<String, String> props = database.getProperties();
         assertEquals( props.size(), 7);

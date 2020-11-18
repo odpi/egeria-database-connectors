@@ -3,7 +3,7 @@ package org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PostgresForeginKeyLinksTest {
 
@@ -20,7 +20,7 @@ class PostgresForeginKeyLinksTest {
                                                                     "foregin_column");
 
 
-        assertEquals( link.getImportedColumnQualifiedName(), "table_name" + "." + "table_name" + "." + "column_name");
+        assertEquals( link.getImportedColumnQualifiedName(), "table_schema" + "." + "table_name" + "." + "column_name");
     }
 
     @DisplayName("Test getExportedColumnQualifiedName()")
@@ -35,7 +35,7 @@ class PostgresForeginKeyLinksTest {
                 "foregin_table",
                 "foregin_column");
 
-        assertEquals( link.getExportedColumnQualifiedName(), "xxxxforegin_schema" + "." + "foregin_table" + "." + "foregin_column");
+        assertEquals( link.getExportedColumnQualifiedName(), "foregin_schema" + "." + "foregin_table" + "." + "foregin_column");
 
     }
 }
