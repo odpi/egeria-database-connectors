@@ -7,6 +7,12 @@ package org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+This class holds the the attributes of a postgres database
+It's not a true mapping to the database entity and includes data needed
+to build the egeria entity ( Fields such as Version have been added
+The class is immutable
+ */
 public class PostgresDatabase
 {
     private String Name;
@@ -51,18 +57,18 @@ public class PostgresDatabase
     public Map< String, String> getProperties ()
     {
         Map<String, String> props = new HashMap<>();
-        props.put("Name", getName());
-        props.put("Owner", getOwner());
-        props.put("Encoding", getEncoding());
-        props.put("Collate", getCollate());
+        props.put("name", getName());
+        props.put("owner", getOwner());
+        props.put("encoding", getEncoding());
+        props.put("collate", getCollate());
         props.put("ctype", getCtype());
-        props.put("AccessPrivileges", getAccessPrivileges());
-        props.put("Version", getVersion() );
+        props.put("accessPrivileges", getAccessPrivileges());
+        props.put("version", getVersion() );
         return props;
     }
 
     public String getQualifiedName ( ) {
 
-        return Name;
+        return getName() + "." + getOwner() + "." + getEncoding() + "." + getCollate() + "." + getCtype();
     }
 }

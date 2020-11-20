@@ -72,6 +72,6 @@ public class PostgresSchema {
     }
 
     public String getQualifiedName ( ) {
-        return catalog_name + "." + schema_name;
+        return catalog_name + "." + schema_name + "." + sql_path;
     }
 }

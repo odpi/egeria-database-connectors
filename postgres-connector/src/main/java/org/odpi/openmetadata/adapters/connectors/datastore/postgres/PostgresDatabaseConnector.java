@@ -21,6 +21,7 @@ import java.util.List;
 
 public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
+    @Override
     public void refresh ( ) throws ConnectorCheckedException {
 
         String methodName = "PostgresConnector.refresh";
@@ -182,7 +183,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
                 /*insert all tables views and cols*/
                 addTablesForSchema ( sourceDB , schema , schemaGUID );
                 addViews ( sourceDB , schema , schemaGUID );
-                addForeignKeys ( sourceDB , schema , schemaGUID );
+                addForeignKeys ( sourceDB , schema );
             }
         } catch ( SQLException error ) {
             if ( this.auditLog != null ) {
@@ -259,7 +260,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
                 tableProps.setDisplayName ( table.getTable_name ( ) );
                 tableProps.setQualifiedName ( table.getQualifiedName ( ) );
                 String tableGUID = this.context.createDatabaseTable ( schemaGUID , tableProps );
-                //TODO here
+                addColumnsForTable(sourceDB, table, tableGUID);
 
             }
         } catch ( SQLException error ) {
@@ -326,10 +327,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
      *
      * @param sourceDB   the source postgres database
      * @param schema     the attributes of the schema which owns the tables
-     * @param schemaGUID the GUID of the owning schema
      * @throws ConnectorCheckedException
      */
-    private void addForeignKeys ( PostgresSourceDatabase sourceDB , PostgresSchema schema , String schemaGUID ) throws ConnectorCheckedException {
+    private void addForeignKeys ( PostgresSourceDatabase sourceDB , PostgresSchema schema  ) throws ConnectorCheckedException {
         String methodName = "addForeignKeys";
 
         try {

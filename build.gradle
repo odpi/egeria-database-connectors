@@ -25,6 +25,7 @@ buildscript {
  * Plugins for this parent module only - so just high level project related
  */
 
+
 plugins {
         //id "nebula.lint" version "16.9.0"
         //id "nebula-aggregate-javadocs"
@@ -32,6 +33,7 @@ plugins {
 
 /* run './gradlew aggregateJavadocs' at top level to build all docs & output to build/docs/javadoc */
 apply plugin: 'nebula-aggregate-javadocs'
+
 
 
 /*
@@ -62,6 +64,7 @@ allprojects {
 /*
  * Configuration for sub projects only
  */
+apply plugin: 'java-library'
 
 subprojects {
 
@@ -81,11 +84,42 @@ subprojects {
             implementation 'org.odpi.egeria:open-connector-framework:2.5-SNAPSHOT'
             implementation 'org.slf4j:slf4j-api'
         }
+
+        test {
+            useJUnitPlatform {
+                includeEngines 'junit-jupiter'
+            }
+        }
+
     }
 
     // sources required to publish a legitimate maven package for distribution
     java {
         withSourcesJar()
+    }
+
+    test {
+        useJUnitPlatform()
+        dependencies {
+            testCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
+            testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+            testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.0"
+            testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+        }
+
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+
+        reports {
+            html.enabled = true
+        }
+
+        filter {
+           //include all unit tests
+           includeTestsMatching "*Test"
+
+        }
     }
 
     // publish maven package

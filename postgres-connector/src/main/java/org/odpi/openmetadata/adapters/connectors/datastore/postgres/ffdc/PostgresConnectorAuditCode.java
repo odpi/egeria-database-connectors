@@ -86,45 +86,6 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "Ensure that the Postgres database server is available.",
             "Ensure that the Postgres database server is available."),
 
-    EVENT_SEND_IN_ERROR_LOOP("OCF-KAFKA-TOPIC-CONNECTOR-0012",
-            OMRSAuditLogRecordSeverity.ERROR,
-            "Unable to send event on topic {0}.  {1} events successfully sent; {2} events buffered. Latest error message is {3}",
-            "There is a reoccurring error being returned by the Apache Kafka event bus.  Outbound events are being buffered.",
-            "Review the operational status of Apache Kafka to ensure it is running and the topic is defined.  " +
-                    "If no events have been send, then it may be a configuration error, either in this " +
-                    "server or in the event bus itself. Once the error is corrected, " +
-                    "the server will send the buffered events.  "),
-
-    MISSING_PROPERTY( "OCF-KAFKA-TOPIC-CONNECTOR-0013 ",
-            OMRSAuditLogRecordSeverity.ERROR,
-            "Property {0} is missing from the Kafka Event Bus configuration",
-            "The system is unable to connect to the event bus.",
-            "Add the missing property to the event bus properties in the server configuration."),
-
-    SERVICE_FAILED_INITIALIZING( "OCF-KAFKA-TOPIC-CONNECTOR-0014 ",
-            OMRSAuditLogRecordSeverity.ERROR,
-            "Connecting to bootstrap Apache Kafka Broker {0}",
-            "The local server has failed to started up the Apache Kafka connector, Kafka Broker is unavailable",
-            "Ensure Kafka is running and restart the local Egeria Server"),
-
-    KAFKA_CONNECTION_RETRY( "OCF-KAFKA-TOPIC-CONNECTOR-0015",
-            OMRSAuditLogRecordSeverity.STARTUP,
-            "The local server is attempting to connect to Kafka, attempt {0}",
-            "The system retries the connection after a short wait.",
-            "Ensure the Kafka Cluster has started"),
-    UNEXPECTED_SHUTDOWN_EXCEPTION( "OCF-KAFKA-TOPIC-CONNECTOR-0016",
-            OMRSAuditLogRecordSeverity.SHUTDOWN,
-            "An unexpected error {0} was encountered while closing the kafka topic connector for {1}: action {2} and error message {3}",
-            "The connector continues to shutdown.  Some resources may not be released properly.",
-            "Check the OMAG Server's audit log and Kafka error logs for related messages that may indicate " +
-                    "if there are any unreleased resources."),
-    EXCEPTION_COMMITTING_OFFSETS("OCF-KAFKA-TOPIC-CONNECTOR-0017",
-            OMRSAuditLogRecordSeverity.EXCEPTION,
-            "An unexpected error {0} was encountered while committing consumed event offsets to topic {1}: error message is {2}",
-            "Depending on the nature of the error, events may no longer be exchanged with the topic.",
-            "Check the OMAG Server's audit log and Kafka error logs for related messages that " +
-                    "indicate the cause of this error.  Work to clear the underlying error.  " +
-                    "Once fixed, it may be necessary to restart the server to cause a reconnect to Kafka.")
     ;
 
     private final AuditLogMessageDefinition messageDefinition;
@@ -163,6 +124,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
      *
      * @return message definition object.
      */
+    @Override
     public AuditLogMessageDefinition getMessageDefinition()
     {
         return messageDefinition;
@@ -175,6 +137,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
      * @param params array of parameters (all strings).  They are inserted into the message according to the numbering in the message text.
      * @return message definition object.
      */
+    @Override
     public AuditLogMessageDefinition getMessageDefinition(String ...params)
     {
         messageDefinition.setMessageParameters(params);
