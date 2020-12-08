@@ -23,11 +23,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
     @Override
     public void refresh ( ) throws ConnectorCheckedException {
-
         String methodName = "PostgresConnector.refresh";
 
+        /*what does egeria already know about this server */
+        PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase(connectionProperties);
+
         try {
-            List < PostgresDatabase > dbs = DatabaseServer.getDabaseNames ( this.connectionProperties );
+            List < PostgresDatabase > dbs = sourceDatabase.getDabaseNames ( );
 
             for ( PostgresDatabase db : dbs ) {
 
