@@ -173,7 +173,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
         try {
 
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase ( this.connectionProperties );
-            List < PostgresSchema > schemas = sourceDB.getDBSchemas ( db.getName ( ) );
+            List < PostgresSchema > schemas = sourceDB.getDatabaseSchema( db.getName ( ) );
 
             for ( PostgresSchema schema : schemas ) {
                 DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties ( );

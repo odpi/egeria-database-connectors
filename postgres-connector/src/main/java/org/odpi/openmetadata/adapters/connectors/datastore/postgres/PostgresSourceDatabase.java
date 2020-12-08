@@ -33,12 +33,9 @@ public class PostgresSourceDatabase {
      * @return A list of schemas for the given database
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresSchema> getDBSchemas( String databaseName ) throws SQLException
+    public List<PostgresSchema> getDatabaseSchema( String databaseName ) throws SQLException
     {
-        String sql = "SELECT * " +
-                                "FROM information_schema.schemata " +
-                                "WHERE schema_name <> 'information_schema'" +
-                                "AND catalog_name = '%s';";
+        String sql = " SELECT schema_name  FROM information_schema.schemata where schema_name != 'information_schema' AND catalog_name = '%s' AND substring(schema_name, 1, 3) != 'pg_';";
 
         sql = String.format( sql, databaseName );
 
