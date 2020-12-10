@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-package org.odpi.openmetadata.adapters.connectors.datastore.postgres;
+package org.odpi.openmetadata.adapters.connectors.integration.postgres;
 
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresColumn;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresDatabase;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresForeginKeyLinks;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresSchema;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresTable;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresTable;
 import org.odpi.openmetadata.frameworks.connectors.properties.ConnectionProperties;
 
 import java.sql.*;
@@ -26,7 +26,7 @@ public class PostgresSourceDatabase
     public PostgresSourceDatabase(ConnectionProperties egeriaProps )
     {
 
-        //TODO Can the configuration properties be <String,String>
+        //TODO Can the configuration properties be <String,String> to avoid the conversion
         Map<String, Object> objProps = egeriaProps.getConfigurationProperties();
 
         for(Map.Entry<String,Object> obj : objProps.entrySet())
@@ -35,6 +35,7 @@ public class PostgresSourceDatabase
                 postgresProps.put(obj.getKey(), String.valueOf(obj.getValue()));
             }
         }
+        //TODO YIKES and YUK
         postgresProps.setProperty("user", egeriaProps.getUserId());
         postgresProps.setProperty("password", egeriaProps.getClearPassword());
 

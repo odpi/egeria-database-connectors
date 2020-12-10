@@ -1,4 +1,4 @@
-package org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties;
+package org.odpi.openmetadata.adapters.connectors.integration.postgres.properties;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -15,6 +15,11 @@ dependencies {
 
 description = 'Postgres Connector'
 
+//needs it's own PR and commit history
+//compileJava {
+//    options.compilerArgs << '-Xlint:unchecked'
+//}
+
 java {
     withJavadocJar()
 }
