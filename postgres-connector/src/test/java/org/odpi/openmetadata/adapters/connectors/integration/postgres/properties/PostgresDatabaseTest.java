@@ -19,7 +19,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
 
         assertEquals ( database.getName(), "name");
     }
@@ -32,7 +33,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
 
         assertEquals ( database.getOwner(),"owner");
     }
@@ -45,7 +47,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
         assertEquals ( database.getEncoding(),"encoding");
     }
 
@@ -57,7 +60,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
         assertEquals ( database.getCollate(), "collate");
     }
 
@@ -69,7 +73,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
         assertEquals ( database.getCtype(), "ctype");
 
     }
@@ -82,7 +87,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
         assertEquals ( database.getAccessPrivileges(), "accessPrivileges" );
     }
 
@@ -94,7 +100,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
         assertEquals ( database.getVersion(), "version" );
 
     }
@@ -107,7 +114,8 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
+                "version",
+                "instance");
 
         Map<String,String> testProps = new HashMap<>();
         testProps.put("name","name");
@@ -117,9 +125,10 @@ class PostgresDatabaseTest {
         testProps.put("collate", "collate");
         testProps.put("encoding", "encoding" );
         testProps.put("accessPrivileges", "accessPrivileges" );
+        testProps.put("instance", "instance" );
 
         Map<String, String> props = database.getProperties();
-        assertEquals( props.size(), 7);
+        assertEquals( props.size(), 8);
         assertTrue( props.entrySet().stream()
                 .allMatch(e -> e.getValue().equals(testProps.get(e.getKey()))));
     }
@@ -133,8 +142,9 @@ class PostgresDatabaseTest {
                 "collate",
                 "ctype",
                 "accessPrivileges",
-                "version");
-        String qName =  database.getName() + "." + database.getOwner() + "." + database.getEncoding() + "." + database.getCollate() + "." + database.getCtype();
+                "version",
+                "instance");
+        String qName =  database.getInstance() + "."  + database.getOwner() + "." + database.getName();
         assertEquals(database.getQualifiedName(), qName );
     }
 }

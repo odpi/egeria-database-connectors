@@ -29,7 +29,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
     public void refresh ( ) throws ConnectorCheckedException {
         String methodName = "PostgresConnector.refresh";
 
-        /*what does egeria already know about this server */
+        //TODO This all needs to be re written so as the controllling loop is through Egeria entities and we then HAVE to as ask postgres if the known state has changed
+        //TODO or is it ok to as for exact database searches such as the below , where only a single entity will be returned
+
         PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase(connectionProperties);
 
         try {
@@ -122,11 +124,38 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
             DatabaseProperties dbProps = new DatabaseProperties ( );
             dbProps.setDisplayName ( db.getName ( ) );
             dbProps.setQualifiedName ( db.getQualifiedName ( ) );
-            dbProps.setDatabaseType ( "Postgres" );
+            dbProps.setDatabaseType ( "postgres" );     //TODO ??
+            dbProps.setDatabaseInstance(db.getInstance());  //TODO usr@server_addr@port
             dbProps.setDatabaseVersion ( db.getVersion ( ) );
-            dbProps.setEncodingType ( db.getCtype ( ) );
+            dbProps.setEncodingType ( db.getEncoding ( ) );
             dbProps.setEncodingLanguage ( db.getCtype ( ) );
+            dbProps.setOwner( db.getOwner() );     //TODO The owner of the database or the owner of the metadata
+
+
+            //TODO we need to clarify the source of the following properties
+            /*
+                 "DatabaseProperties{" +
+                        "databaseType='" + databaseType + '\'' +
+                        ", databaseImportedFrom='" + databaseImportedFrom + '\'' +
+                        ", createTime=" + getCreateTime() +
+                        ", modifiedTime=" + getModifiedTime() +
+                        ", encodingDescription='" + getEncodingDescription() + '\'' +
+                        ", owner='" + getOwner() + '\'' +
+                        ", ownerCategory=" + getOwnerCategory() +
+                        ", zoneMembership=" + getZoneMembership() +
+                        ", origin=" + getOtherOriginValues() +
+                        ", typeName='" + getTypeName() + '\'' +
+                        ", extendedProperties=" + getExtendedProperties() +
+                        '}';
+}
+             */
+
+
+
+            /* just to aid dev/debug , there are currently no plans to add any AdditionalProperties */
             dbProps.setAdditionalProperties ( db.getProperties ( ) );
+
+
             currentDBGUID = this.context.createDatabase ( dbProps );
             addSchemas ( db , currentDBGUID );
 

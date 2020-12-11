@@ -21,6 +21,9 @@ The PostgresSourceDatabase class abstracts away the connection to the database h
  */
 public class PostgresSourceDatabase
 {
+    /* used to cache the resilts of the getDatabaseInstance() */
+    String instance = null;
+
     Properties postgresProps = new Properties();
 
     public PostgresSourceDatabase(ConnectionProperties egeriaProps )
@@ -31,7 +34,8 @@ public class PostgresSourceDatabase
 
         for(Map.Entry<String,Object> obj : objProps.entrySet())
         {
-            if(obj.getValue() instanceof String) {
+            if(obj.getValue() instanceof String)
+            {
                 postgresProps.put(obj.getKey(), String.valueOf(obj.getValue()));
             }
         }
@@ -39,6 +43,36 @@ public class PostgresSourceDatabase
         postgresProps.setProperty("user", egeriaProps.getUserId());
         postgresProps.setProperty("password", egeriaProps.getClearPassword());
 
+    }
+
+    /*
+    Generates a Database Instance identifier from system tables
+    @return usr@server_addr@port
+     */
+    private String getDatabaseInstance( ) throws SQLException
+    {
+
+        if( this.instance != null )
+            return this.instance;
+
+        String sql = "SELECT CURRENT_USER usr ,inet_server_addr() host, inet_server_port() port;";
+        /*
+         */
+        try( Connection connection  = DriverManager.getConnection( postgresProps.getProperty("url"), postgresProps );
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()
+        )
+        {
+
+            while (rs.next())
+            {
+                instance = rs.getString("usr") + "@" +
+                        rs.getString("host") + "@" +
+                        rs.getString("port");
+            }
+        }
+
+        return instance;
     }
     /*
     returns a list of databases served ny a particular server
@@ -54,10 +88,10 @@ public class PostgresSourceDatabase
     {
         ArrayList<PostgresDatabase> databaseNames = new ArrayList();
         /*
-        This assumes that the connection url contains user/pwd etc
          */
+        String sql = "SELECT VERSION(), * FROM pg_database WHERE datistemplate = false;";
         try( Connection connection  = DriverManager.getConnection( postgresProps.getProperty("url"), postgresProps );
-             PreparedStatement ps = connection.prepareStatement("SELECT VERSION(), * FROM pg_database WHERE datistemplate = false;");
+             PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()
         )
         {
@@ -69,7 +103,8 @@ public class PostgresSourceDatabase
                                                                 rs.getString("Collate"),
                                                                 rs.getString("Ctype"),
                                                                 rs.getString("Access privileges "),
-                                                                rs.getString ( "version" ) ) );
+                                                                rs.getString ( "version" ),
+                                                                getDatabaseInstance()));
             }
         }
 
