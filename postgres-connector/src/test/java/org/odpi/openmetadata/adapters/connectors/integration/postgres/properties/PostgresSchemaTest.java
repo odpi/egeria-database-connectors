@@ -141,6 +141,6 @@ class PostgresSchemaTest {
                 "default_character_set_name",
                 "sql_path");
 
-        assertEquals(schema.getQualifiedName(), "catalog_name" + "." + "schema_name" + "." + "sql_path");
+        assertEquals(schema.getQualifiedName(), "schema_owner" + "::" + "catalog_name" + "::" + "schema_name" );
     }
 }

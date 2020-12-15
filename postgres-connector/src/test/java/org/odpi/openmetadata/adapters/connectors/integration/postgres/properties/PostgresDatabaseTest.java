@@ -144,7 +144,7 @@ class PostgresDatabaseTest {
                 "accessPrivileges",
                 "version",
                 "instance");
-        String qName =  database.getInstance() + "."  + database.getOwner() + "." + database.getName();
+        String qName =  database.getInstance() + "::"  + database.getOwner() + "::" + database.getName();
         assertEquals(database.getQualifiedName(), qName );
     }
 }

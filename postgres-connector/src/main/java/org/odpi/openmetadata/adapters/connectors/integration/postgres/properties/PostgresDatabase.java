@@ -60,18 +60,35 @@ public class PostgresDatabase
     public Map< String, String> getProperties ()
     {
         Map<String, String> props = new HashMap<>();
-        props.put("name", getName());
-        props.put("owner", getOwner());
-        props.put("encoding", getEncoding());
-        props.put("collate", getCollate());
-        props.put("ctype", getCtype());
-        props.put("accessPrivileges", getAccessPrivileges());
-        props.put("version", getVersion() );
-        props.put("instance", getInstance() );
+
+        if( getName() != null )
+            props.put("name", getName());
+
+        if( getOwner() != null )
+            props.put("owner", getOwner() );
+
+        if( getEncoding() != null )
+            props.put("encoding", getEncoding() );
+
+        if( getCollate() != null )
+            props.put("collate", getCollate() );
+
+        if( getCtype() != null )
+            props.put("ctype", getCtype());
+
+        if( getAccessPrivileges() != null )
+            props.put("accessPrivileges", getAccessPrivileges() );
+
+        if( getVersion() != null )
+            props.put("version", getVersion() );
+
+        if( getInstance() != null )
+            props.put("instance", getInstance() );
+
         return props;
     }
 
     public String getQualifiedName ( ) {
-        return getInstance() + "." + getOwner() + "." + getName();
+        return getInstance() + "::" + getOwner() + "::" + getName();
     }
 }

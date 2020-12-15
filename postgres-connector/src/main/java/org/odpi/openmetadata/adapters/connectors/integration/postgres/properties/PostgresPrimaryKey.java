@@ -120,57 +120,158 @@ public class PostgresPrimaryKey
     {
         Map<String, String> props = new HashMap<>();
 
-        props.put("constraint_schema", getConstraint_schema());
-        props.put("constraint_name", getConstraint_name());
-        props.put("constraint_catalog", getConstraint_catalog());
-        props.put("table_catalog", getTable_catalog());
-        props.put("table_schema", getTable_schema());
-        props.put("table_name", getTable_name());
-        props.put("constraint_type", getConstraint_type());
-        props.put("is_deferrable", getIs_deferrable());
-        props.put("initially_deferred", getInitially_deferred());
-        props.put("enforced", getEnforced());
-        props.put("column_name", getColumn_name());
-        props.put("ordinal_position", getOrdinal_position());
-        props.put("column_default", getColumn_default());
-        props.put("is_nullable", getIs_nullable());
-        props.put("data_type", getData_type());
-        props.put("character_maximum_length", getCharacter_maximum_length());
-        props.put("character_octet_length", getCharacter_octet_length());
-        props.put("numeric_precision", getNumeric_precision());
-        props.put("numeric_precision_radix", getNumeric_precision());
-        props.put("numeric_scale", getNumeric_scale());
-        props.put("datetime_precision", getDatetime_precision());
-        props.put("interval_type", getInterval_type());
-        props.put("interval_precision", getInterval_precision());
-        props.put("character_set_catalog", getCharacter_set_catalog());
-        props.put("character_set_schema", getCharacter_set_schema());
-        props.put("character_set_name", getCharacter_set_name());
-        props.put("collation_catalog", getCollation_catalog());
-        props.put("collation_schema", getCollation_schema());
-        props.put("collation_name", getCollation_name());
-        props.put("domain_catalog", getDomain_catalog());
-        props.put("domain_schema", getDomain_schema());
-        props.put("domain_name", getDomain_name());
-        props.put("udt_catalog", getUdt_catalog());
-        props.put("udt_schema", getUdt_schema());
-        props.put("udt_name", getUdt_name());
-        props.put("scope_catalog", getScope_catalog());
-        props.put("scope_schema", getScope_schema());
-        props.put("scope_name", getScope_name());
-        props.put("maximum_cardinality", getMaximum_cardinality());
-        props.put("dtd_identifier", getDtd_identifier());
-        props.put("is_self_referencing", getIs_self_referencing());
-        props.put("is_identity", getIs_identity());
-        props.put("identity_generation", getIdentity_generation());
-        props.put("identity_start", getIdentity_start());
-        props.put("identity_increment", getIdentity_increment());
-        props.put("identity_maximum", getIdentity_maximum());
-        props.put("identity_minimum", getIdentity_minimum());
-        props.put("identity_cycle", getIdentity_cycle());
-        props.put("is_generated", getIs_generated());
-        props.put("generation_expression", getGeneration_expression() );
-        props.put("is_updatable", getIs_updatable());
+        if( getConstraint_schema() != null )
+            props.put("constraint_schema", getConstraint_schema());
+
+        if( getConstraint_name() != null )
+            props.put("constraint_name", getConstraint_name() );
+
+        if( getConstraint_catalog() != null )
+            props.put("constraint_catalog", getConstraint_catalog());
+
+        if(  getTable_catalog() != null )
+            props.put("table_catalog", getTable_catalog());
+
+        if( getTable_schema() != null )
+            props.put("table_schema", getTable_schema());
+
+        if( getTable_name() != null )
+            props.put("table_name", getTable_name());
+
+        if( getConstraint_type() != null )
+            props.put("constraint_type", getConstraint_type() );
+
+        if( getIs_deferrable() != null )
+            props.put("is_deferrable", getIs_deferrable());
+
+        if( getInitially_deferred() != null )
+            props.put("initially_deferred", getInitially_deferred());
+
+        if( getEnforced() != null )
+            props.put("enforced", getEnforced());
+
+        if( getColumn_name() != null )
+            props.put("column_name", getColumn_name());
+
+        if( getOrdinal_position() != null )
+            props.put("ordinal_position", getOrdinal_position());
+
+        if( getColumn_default() != null )
+            props.put("column_default", getColumn_default());
+
+        if( getIs_nullable() != null )
+            props.put("is_nullable", getIs_nullable());
+
+        if( getData_type() != null )
+            props.put("data_type", getData_type());
+
+        if( getCharacter_maximum_length() != null )
+            props.put("character_maximum_length", getCharacter_maximum_length());
+
+        if( getCharacter_octet_length() != null )
+            props.put("character_octet_length", getCharacter_octet_length());
+
+        if( getNumeric_precision() != null )
+            props.put("numeric_precision", getNumeric_precision());
+
+        if( getNumeric_precision_radix() != null )
+            props.put("numeric_precision_radix", getNumeric_precision_radix() );
+
+        if( getNumeric_scale() != null )
+            props.put("numeric_scale", getNumeric_scale());
+
+        if( getDatetime_precision() != null )
+            props.put("datetime_precision", getDatetime_precision());
+
+        if( getInterval_type() != null )
+            props.put("interval_type", getInterval_type());
+
+        if( getInterval_precision() != null )
+            props.put("interval_precision", getInterval_precision());
+
+        if( getCharacter_set_catalog() != null )
+            props.put("character_set_catalog", getCharacter_set_catalog());
+
+        if( getCharacter_set_schema() != null )
+            props.put("character_set_schema", getCharacter_set_schema());
+
+        if( getCharacter_set_name() != null )
+            props.put("character_set_name", getCharacter_set_name());
+
+        if( getCollation_catalog() != null )
+            props.put("collation_catalog", getCollation_catalog());
+
+        if( getCollation_schema() != null )
+            props.put("collation_schema", getCollation_schema());
+
+        if( getCollation_name() != null )
+            props.put("collation_name", getCollation_name());
+
+        if( getDomain_catalog() != null )
+            props.put("domain_catalog", getDomain_catalog());
+
+        if( getDomain_schema() != null )
+            props.put("domain_schema", getDomain_schema());
+
+        if( getDomain_name() != null )
+            props.put("domain_name", getDomain_name());
+
+        if( getUdt_catalog() != null )
+            props.put("udt_catalog", getUdt_catalog());
+
+        if( getUdt_schema() != null )
+            props.put("udt_schema", getUdt_schema());
+
+        if( getUdt_name() != null )
+            props.put("udt_name", getUdt_name());
+
+        if( getScope_catalog() != null )
+            props.put("scope_catalog", getScope_catalog());
+
+        if( getScope_schema() != null )
+            props.put("scope_schema", getScope_schema());
+
+        if( getScope_name() != null )
+            props.put("scope_name", getScope_name());
+
+        if( getMaximum_cardinality() != null )
+            props.put("maximum_cardinality", getMaximum_cardinality());
+
+        if( getDtd_identifier() != null )
+            props.put("dtd_identifier", getDtd_identifier());
+
+        if( getIs_self_referencing() != null )
+            props.put("is_self_referencing", getIs_self_referencing());
+
+        if( getIs_identity() != null )
+            props.put("is_identity", getIs_identity());
+
+        if( getIdentity_generation() != null )
+            props.put("identity_generation", getIdentity_generation());
+
+        if( getIdentity_start() != null )
+            props.put("identity_start", getIdentity_start());
+
+        if( getIdentity_increment() != null )
+            props.put("identity_increment", getIdentity_increment());
+
+        if( getIdentity_maximum() != null )
+            props.put("identity_maximum", getIdentity_maximum());
+
+        if( getIdentity_minimum() != null )
+            props.put("identity_minimum", getIdentity_minimum());
+
+        if( getIdentity_cycle() != null )
+            props.put("identity_cycle", getIdentity_cycle());
+
+        if( getIs_generated() != null )
+            props.put("is_generated", getIs_generated());
+
+        if( getGeneration_expression() != null )
+            props.put("generation_expression", getGeneration_expression() );
+
+        if( getIs_updatable() != null )
+            props.put("is_updatable", getIs_updatable());
 
         return props;
     }

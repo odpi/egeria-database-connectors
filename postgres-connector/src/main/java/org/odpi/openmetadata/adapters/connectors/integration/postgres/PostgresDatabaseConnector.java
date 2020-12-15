@@ -29,9 +29,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
     public void refresh ( ) throws ConnectorCheckedException {
         String methodName = "PostgresConnector.refresh";
 
-        //TODO This all needs to be re written so as the controllling loop is through Egeria entities and we then HAVE to as ask postgres if the known state has changed
-        //TODO or is it ok to as for exact database searches such as the below , where only a single entity will be returned
-
         PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase(connectionProperties);
 
         try {
@@ -39,12 +36,19 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
             for ( PostgresDatabase db : dbs ) {
 
-                List < DatabaseElement > database = this.context.findDatabases ( db.getQualifiedName ( ) , 1 , 1 );
+                List < DatabaseElement > database = this.context.getDatabasesByName ( db.getQualifiedName ( ) , 1 , 1 );
 
-                if ( ! database.isEmpty ( ) ) {
-
-                } else {
+                if (  !database.isEmpty ( ) )
+                {
                     /*
+                    database is known to egeria
+                     */
+                    updateDatabase( db );
+
+                }
+                else {
+                    /*
+                    Database is unknown to egeria
                      */
                     addDatabase ( db );
                 }
@@ -108,6 +112,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
     }
 
     /**
+     * Trawls through a database updating a database where necessary
+     * @param db /* the bean properties of a Postgres Database
+     * @throws ConnectorCheckedException
+     */
+    private void updateDatabase( PostgresDatabase db ) throws ConnectorCheckedException {
+        String methodName = "addDatabase";
+
+    }
+
+    /**
      * mapping function that reads tables, columns and primmary keys
      * for a schema from postgres and adds the data to egeria
      *
@@ -123,9 +137,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
          */
             DatabaseProperties dbProps = new DatabaseProperties ( );
             dbProps.setDisplayName ( db.getName ( ) );
-            dbProps.setQualifiedName ( db.getQualifiedName ( ) );
+            dbProps.setQualifiedName ( db.getQualifiedName ( ) ); //"::" instead of @ and add instance data
             dbProps.setDatabaseType ( "postgres" );     //TODO ??
-            dbProps.setDatabaseInstance(db.getInstance());  //TODO usr@server_addr@port
+            dbProps.setDatabaseInstance(db.getInstance());  //TODO change usr@server_addr@port
             dbProps.setDatabaseVersion ( db.getVersion ( ) );
             dbProps.setEncodingType ( db.getEncoding ( ) );
             dbProps.setEncodingLanguage ( db.getCtype ( ) );
@@ -134,6 +148,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
             //TODO we need to clarify the source of the following properties
             /*
+            ass Hostname
                  "DatabaseProperties{" +
                         "databaseType='" + databaseType + '\'' +
                         ", databaseImportedFrom='" + databaseImportedFrom + '\'' +
@@ -154,7 +169,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
             /* just to aid dev/debug , there are currently no plans to add any AdditionalProperties */
             dbProps.setAdditionalProperties ( db.getProperties ( ) );
-
 
             currentDBGUID = this.context.createDatabase ( dbProps );
             addSchemas ( db , currentDBGUID );
@@ -210,12 +224,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase ( this.connectionProperties );
             List <PostgresSchema> schemas = sourceDB.getDatabaseSchema( db.getName ( ) );
 
+            //TODO Primary Keys ??
             for ( PostgresSchema schema : schemas ) {
                 DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties ( );
                 schemaProps.setDisplayName ( schema.getSchema_name ( ) );
                 schemaProps.setQualifiedName ( schema.getQualifiedName ( ) );
+                schemaProps.setOwner( schema.getSchema_owner() );
+                schemaProps.setAdditionalProperties( schema.getProperties() );
                 String schemaGUID = this.context.createDatabaseSchema ( dbGuidd , schemaProps );
-                /*insert all tables views and cols*/
                 addTablesForSchema ( sourceDB , schema , schemaGUID );
                 addViews ( sourceDB , schema , schemaGUID );
                 addForeignKeys ( sourceDB , schema );
@@ -271,6 +287,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
         }
 
     }
+
+
 
     /**
      * mapping function that reads tables, columns and primmary keys

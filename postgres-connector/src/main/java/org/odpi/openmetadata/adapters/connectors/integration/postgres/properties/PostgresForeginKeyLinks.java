@@ -3,6 +3,9 @@
 
 package org.odpi.openmetadata.adapters.connectors.integration.postgres.properties;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PostgresForeginKeyLinks {
 
     private final String table_schema;
@@ -37,4 +40,33 @@ public class PostgresForeginKeyLinks {
                 foreign_table_name + "." +
                 foreign_column_name;
     }
+
+    public Map< String, String> getProperties ()
+    {
+        Map<String, String> props = new HashMap<>();
+
+        if( table_schema != null )
+            props.put("name", table_schema );
+
+        if( constraint_name != null )
+            props.put("owner", constraint_name );
+
+        if( table_name != null )
+            props.put("encoding", table_name );
+
+        if( column_name != null )
+            props.put("collate", column_name );
+
+        if( foreign_table_name != null )
+            props.put("ctype", foreign_table_name );
+
+        if( foreign_table_schema != null )
+            props.put("accessPrivileges", foreign_table_schema );
+
+        if( foreign_column_name != null )
+            props.put("version", foreign_column_name );
+
+        return props;
+    }
+
 }
