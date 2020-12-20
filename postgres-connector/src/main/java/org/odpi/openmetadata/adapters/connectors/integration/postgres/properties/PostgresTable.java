@@ -84,7 +84,7 @@ public class PostgresTable {
         return commit_action;
     }
 
-    Map<String,String> getProperties()
+    public Map<String,String> getProperties()
     {
         Map props = new HashMap();
         props.put("table_catalog", this.table_catalog);
