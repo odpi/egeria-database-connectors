@@ -42,6 +42,27 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             System.out.println("processing databases");
 
+            /*
+            trim the no longer needed egeria databases first
+             */
+            List<DatabaseElement> knownDatabases = context.getMyDatabases(1, 1000);
+            for( DatabaseElement element : knownDatabases )
+            {
+                String knownName = element.getDatabaseProperties().getQualifiedName();
+                for( PostgresDatabase db : dbs )
+                {
+                    if( db.getQualifiedName().equals(knownName))
+                    {
+                        break;
+                    }
+                    /*
+                    no longer hosted by the server, so remove
+                     */
+                    context.removeDatabase( element.getElementHeader().getGUID(), knownName );
+                }
+            }
+
+
             for (PostgresDatabase db : dbs)
             {
 
@@ -151,6 +172,24 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<DatabaseElement> databases = context.getDatabasesByName(db.getQualifiedName(), 1, 1);
             String dbGuid = databases.get(0).getElementHeader().getGUID();
 
+        List<DatabaseSchemaElement> knownSchemas = context.getSchemasForDatabase(db.getQualifiedName(), 1, 1000);
+
+        for( DatabaseSchemaElement s : knownSchemas )
+        {
+            String knownName = s.getDatabaseSchemaProperties().getQualifiedName();
+            for( PostgresSchema schema : schemas )
+            {
+                if( schema.getQualifiedName().equals(knownName))
+                {
+                    break;
+                }
+                    /*
+                    no longer hosted by the server, so remove
+                     */
+                context.removeDatabaseTable( s.getElementHeader().getGUID(), knownName );
+            }
+        }
+
             for (PostgresSchema sch : schemas)
             {
                 List<DatabaseSchemaElement> entity = context.getDatabaseSchemasByName(sch.getQualifiedName(), 1, 1);
@@ -215,12 +254,27 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                                                                                                          UserNotAuthorizedException,
                                                                                                          ConnectorCheckedException
     {
-
         PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase( this.connectionProperties);
-
         try
         {
             List<PostgresTable> tables = sourceDatabase.getTables(sch);
+            List<DatabaseTableElement> knownTables = context.getTablesForDatabaseSchema(sch.getQualifiedName(), 1, 1000);
+
+            for( DatabaseTableElement t : knownTables )
+            {
+                String knownName = t.getDatabaseTableProperties().getQualifiedName();
+                for( PostgresTable table : tables )
+                {
+                    if( table.getQualifiedName().equals(knownName))
+                    {
+                        break;
+                    }
+                    /*
+                    no longer hosted by the server, so remove
+                     */
+                    context.removeDatabaseTable( element.getElementHeader().getGUID(), knownName );
+                }
+            }
 
             for (PostgresTable t : tables)
             {
@@ -279,6 +333,23 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         {
             List<PostgresColumn> columns = source.getColumnAttributes( table.getTable_name() );
             List<String> primaryKeys = source.getPrimaryKeyColumnNamesForTable(table.getTable_name());
+
+            List<DatabaseColumnElement> knownColumns = context.getColumnsForDatabaseTable(table.getQualifiedName(), 1, 1000);
+            for( DatabaseColumnElement c : knownColumns )
+            {
+                String knownName = c.getDatabaseColumnProperties().getQualifiedName();
+                for( PostgresColumn col : columns )
+                {
+                    if( col.getQualifiedName().equals(knownName))
+                    {
+                        break;
+                    }
+                    /*
+                    no longer hosted by the server, so remove
+                     */
+                    context.removeDatabaseColumn( c.getElementHeader().getGUID(), knownName );
+                }
+            }
 
             for (PostgresColumn col : columns )
             {
