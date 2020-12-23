@@ -1,4 +1,4 @@
-package org.odpi.openmetadata.adapters.connectors.datastore.postgres.ffdc;
+package org.odpi.openmetadata.adapters.connectors.integration.postgres.ffdc;
 
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDefinition;
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageSet;

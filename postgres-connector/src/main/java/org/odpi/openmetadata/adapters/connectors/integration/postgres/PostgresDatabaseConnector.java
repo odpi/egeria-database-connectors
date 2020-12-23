@@ -1,4 +1,4 @@
-package org.odpi.openmetadata.adapters.connectors.datastore.postgres;
+package org.odpi.openmetadata.adapters.connectors.integration.postgres;
 
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
@@ -6,9 +6,13 @@ package org.odpi.openmetadata.adapters.connectors.datastore.postgres;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.*;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.ffdc.PostgresConnectorAuditCode;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.ffdc.PostgresConnectorErrorCode;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.*;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.ffdc.PostgresConnectorAuditCode;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.ffdc.PostgresConnectorErrorCode;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresTable;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
@@ -23,11 +27,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
     @Override
     public void refresh ( ) throws ConnectorCheckedException {
-
         String methodName = "PostgresConnector.refresh";
 
+        //TODO This all needs to be re written so as the controllling loop is through Egeria entities and we then HAVE to as ask postgres if the known state has changed
+        //TODO or is it ok to as for exact database searches such as the below , where only a single entity will be returned
+
+        PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase(connectionProperties);
+
         try {
-            List < PostgresDatabase > dbs = DatabaseServer.getDabaseNames ( this.connectionProperties );
+            List <PostgresDatabase> dbs = sourceDatabase.getDabaseNames ( );
 
             for ( PostgresDatabase db : dbs ) {
 
@@ -116,11 +124,38 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
             DatabaseProperties dbProps = new DatabaseProperties ( );
             dbProps.setDisplayName ( db.getName ( ) );
             dbProps.setQualifiedName ( db.getQualifiedName ( ) );
-            dbProps.setDatabaseType ( "Postgres" );
+            dbProps.setDatabaseType ( "postgres" );     //TODO ??
+            dbProps.setDatabaseInstance(db.getInstance());  //TODO usr@server_addr@port
             dbProps.setDatabaseVersion ( db.getVersion ( ) );
-            dbProps.setEncodingType ( db.getCtype ( ) );
+            dbProps.setEncodingType ( db.getEncoding ( ) );
             dbProps.setEncodingLanguage ( db.getCtype ( ) );
+            dbProps.setOwner( db.getOwner() );     //TODO The owner of the database or the owner of the metadata
+
+
+            //TODO we need to clarify the source of the following properties
+            /*
+                 "DatabaseProperties{" +
+                        "databaseType='" + databaseType + '\'' +
+                        ", databaseImportedFrom='" + databaseImportedFrom + '\'' +
+                        ", createTime=" + getCreateTime() +
+                        ", modifiedTime=" + getModifiedTime() +
+                        ", encodingDescription='" + getEncodingDescription() + '\'' +
+                        ", owner='" + getOwner() + '\'' +
+                        ", ownerCategory=" + getOwnerCategory() +
+                        ", zoneMembership=" + getZoneMembership() +
+                        ", origin=" + getOtherOriginValues() +
+                        ", typeName='" + getTypeName() + '\'' +
+                        ", extendedProperties=" + getExtendedProperties() +
+                        '}';
+}
+             */
+
+
+
+            /* just to aid dev/debug , there are currently no plans to add any AdditionalProperties */
             dbProps.setAdditionalProperties ( db.getProperties ( ) );
+
+
             currentDBGUID = this.context.createDatabase ( dbProps );
             addSchemas ( db , currentDBGUID );
 
@@ -173,7 +208,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
         try {
 
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase ( this.connectionProperties );
-            List < PostgresSchema > schemas = sourceDB.getDBSchemas ( db.getName ( ) );
+            List <PostgresSchema> schemas = sourceDB.getDatabaseSchema( db.getName ( ) );
 
             for ( PostgresSchema schema : schemas ) {
                 DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties ( );
@@ -248,7 +283,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
      */
     private void addTablesForSchema ( PostgresSourceDatabase sourceDB , PostgresSchema schema , String schemaGUID ) throws ConnectorCheckedException {
         String methodName = "addTablesForSchema";
-        List < PostgresTable > tables;
+        List <PostgresTable> tables;
 
         try {
             /* add the schema tables */
@@ -337,7 +372,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
             List < PostgresTable > tables = sourceDB.getTables ( schema );
 
             for ( PostgresTable t : tables ) {
-                List < PostgresForeginKeyLinks > foreginKeys = sourceDB.getForeginKeyLinksForTable ( t.getTable_name ( ) );
+                List <PostgresForeginKeyLinks> foreginKeys = sourceDB.getForeginKeyLinksForTable ( t.getTable_name ( ) );
                 List < String > importedGuids = new ArrayList <> ( );
                 List < String > exportedGuids = new ArrayList <> ( );
 
@@ -520,7 +555,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector {
 
         try {
             List < String > primaryKeys = sourceDB.getPrimaryKeyColumnNamesForTable ( table.getTable_name ( ) );
-            List < PostgresColumn > cols = sourceDB.getColumnAttributes ( table.getTable_name ( ) );
+            List <PostgresColumn> cols = sourceDB.getColumnAttributes ( table.getTable_name ( ) );
 
             for ( PostgresColumn col : cols ) {
                 DatabaseColumnProperties colProps = new DatabaseColumnProperties ( );

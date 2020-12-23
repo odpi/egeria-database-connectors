@@ -1,30 +1,114 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-package org.odpi.openmetadata.adapters.connectors.datastore.postgres;
+package org.odpi.openmetadata.adapters.connectors.integration.postgres;
 
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresColumn;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresForeginKeyLinks;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresSchema;
-import org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties.PostgresTable;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresTable;
 import org.odpi.openmetadata.frameworks.connectors.properties.ConnectionProperties;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-public class PostgresSourceDatabase {
+/*
+The PostgresSourceDatabase class abstracts away the connection to the database host system which is needed to gain a list of databases
+ */
+public class PostgresSourceDatabase
+{
+    /* used to cache the resilts of the getDatabaseInstance() */
+    String instance = null;
 
-    /* used to connect to the postres server */
-    final ConnectionProperties connectionProps;
+    Properties postgresProps = new Properties();
 
-    /**
-     * default constructor
-     * @param props the properties needed to connect to the Postgres Database Server
-     */
-    public PostgresSourceDatabase(ConnectionProperties props)
+    public PostgresSourceDatabase(ConnectionProperties egeriaProps )
     {
-        connectionProps = props;
+
+        //TODO Can the configuration properties be <String,String> to avoid the conversion
+        Map<String, Object> objProps = egeriaProps.getConfigurationProperties();
+
+        for(Map.Entry<String,Object> obj : objProps.entrySet())
+        {
+            if(obj.getValue() instanceof String)
+            {
+                postgresProps.put(obj.getKey(), String.valueOf(obj.getValue()));
+            }
+        }
+        //TODO YIKES and YUK
+        postgresProps.setProperty("user", egeriaProps.getUserId());
+        postgresProps.setProperty("password", egeriaProps.getClearPassword());
+
+    }
+
+    /*
+    Generates a Database Instance identifier from system tables
+    @return usr@server_addr@port
+     */
+    private String getDatabaseInstance( ) throws SQLException
+    {
+
+        if( this.instance != null )
+            return this.instance;
+
+        String sql = "SELECT CURRENT_USER usr ,inet_server_addr() host, inet_server_port() port;";
+        /*
+         */
+        try( Connection connection  = DriverManager.getConnection( postgresProps.getProperty("url"), postgresProps );
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()
+        )
+        {
+
+            while (rs.next())
+            {
+                instance = rs.getString("usr") + "@" +
+                        rs.getString("host") + "@" +
+                        rs.getString("port");
+            }
+        }
+
+        return instance;
+    }
+    /*
+    returns a list of databases served ny a particular server
+    connection url MUST be in format dbc:postgresql://host:port
+
+     * @param props contains the database connection properties
+     * @return A list of datbase attributes hosted by the host serever
+     * @throws SQLException thrown by the JDBC Driver
+
+     */
+
+    public List<PostgresDatabase> getDabaseNames( ) throws SQLException
+    {
+        ArrayList<PostgresDatabase> databaseNames = new ArrayList();
+        /*
+         */
+        String sql = "SELECT VERSION(), * FROM pg_database WHERE datistemplate = false;";
+        try( Connection connection  = DriverManager.getConnection( postgresProps.getProperty("url"), postgresProps );
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()
+        )
+        {
+
+            while (rs.next()) {
+                databaseNames.add( new PostgresDatabase(rs.getString("Name"),
+                                                                rs.getString("Owner"),
+                                                                rs.getString("Encoding"),
+                                                                rs.getString("Collate"),
+                                                                rs.getString("Ctype"),
+                                                                rs.getString("Access privileges "),
+                                                                rs.getString ( "version" ),
+                                                                getDatabaseInstance()));
+            }
+        }
+
+        return databaseNames;
     }
 
     /**
@@ -33,12 +117,9 @@ public class PostgresSourceDatabase {
      * @return A list of schemas for the given database
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresSchema> getDBSchemas( String databaseName ) throws SQLException
+    public List<PostgresSchema> getDatabaseSchema(String databaseName ) throws SQLException
     {
-        String sql = "SELECT * " +
-                                "FROM information_schema.schemata " +
-                                "WHERE schema_name <> 'information_schema'" +
-                                "AND catalog_name = '%s';";
+        String sql = " SELECT schema_name  FROM information_schema.schemata where schema_name != 'information_schema' AND catalog_name = '%s' AND substring(schema_name, 1, 3) != 'pg_';";
 
         sql = String.format( sql, databaseName );
 
@@ -46,7 +127,7 @@ public class PostgresSourceDatabase {
         List<PostgresSchema> schemas = new ArrayList<>();
 
         try (
-                Connection conn = DriverManager.getConnection(connectionProps.getURL());
+                Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
         ) {
@@ -89,7 +170,7 @@ public class PostgresSourceDatabase {
         sql = String.format(sql, schema);
 
         try (
-                Connection conn = DriverManager.getConnection(connectionProps.getURL());
+                Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
         ) {
@@ -117,7 +198,7 @@ public class PostgresSourceDatabase {
         List<PostgresTable> attributes = new ArrayList<PostgresTable>();
 
         try (
-                Connection conn = DriverManager.getConnection(connectionProps.getURL());
+                Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
         ) {
@@ -156,7 +237,7 @@ public class PostgresSourceDatabase {
         List<PostgresColumn> cols = new ArrayList<PostgresColumn>();
 
         try (
-                Connection conn = DriverManager.getConnection(connectionProps.getURL());
+                Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
         ) {
@@ -282,7 +363,7 @@ public class PostgresSourceDatabase {
 
 
         try (
-                Connection conn = DriverManager.getConnection(connectionProps.getURL());
+                Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
         ) {
@@ -329,7 +410,7 @@ public class PostgresSourceDatabase {
         List<PostgresForeginKeyLinks> results = new ArrayList<>();
 
         try (
-                Connection conn = DriverManager.getConnection(connectionProps.getURL());
+                Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
         )

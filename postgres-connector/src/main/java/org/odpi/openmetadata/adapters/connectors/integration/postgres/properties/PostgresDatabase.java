@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache 2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
 
-package org.odpi.openmetadata.adapters.connectors.datastore.postgres.properties;
+package org.odpi.openmetadata.adapters.connectors.integration.postgres.properties;
 
 
 import java.util.HashMap;
@@ -22,8 +22,9 @@ public class PostgresDatabase
     private String Ctype;
     private String AccessPrivileges;
     private String Version;
+    private String Instance;
 
-    public PostgresDatabase(String name, String owner, String encoding, String collate, String ctype, String accessPrivileges, String version)
+    public PostgresDatabase(String name, String owner, String encoding, String collate, String ctype, String accessPrivileges, String version, String instance)
     {
         Name = name;
         Owner = owner;
@@ -32,6 +33,7 @@ public class PostgresDatabase
         Ctype = ctype;
         AccessPrivileges = accessPrivileges;
         Version = version;
+        Instance = instance;
     }
 
     public String getName() {
@@ -53,6 +55,7 @@ public class PostgresDatabase
         return AccessPrivileges;
     }
     public String getVersion() { return Version; }
+    public String getInstance() { return Instance; }
 
     public Map< String, String> getProperties ()
     {
@@ -64,11 +67,11 @@ public class PostgresDatabase
         props.put("ctype", getCtype());
         props.put("accessPrivileges", getAccessPrivileges());
         props.put("version", getVersion() );
+        props.put("instance", getInstance() );
         return props;
     }
 
     public String getQualifiedName ( ) {
-
-        return getName() + "." + getOwner() + "." + getEncoding() + "." + getCollate() + "." + getCtype();
+        return getInstance() + "." + getOwner() + "." + getName();
     }
 }
