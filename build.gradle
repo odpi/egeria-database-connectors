@@ -75,14 +75,9 @@ subprojects {
     apply plugin: 'maven-publish'
 
     // Dependency Management - to fix versions. Pick up maven build settings for now
+    // Unnecessary for now as we have a single module
     dependencies {
         constraints {
-            implementation("org.slf4j:slf4j-api:1.7.30")
-            implementation 'org.odpi.egeria:data-manager-client:2.6-SNAPSHOT'
-            implementation 'org.odpi.egeria:data-manager-api:2.6-SNAPSHOT'
-            implementation 'org.odpi.egeria:database-integrator-api:2.6-SNAPSHOT'
-            implementation 'org.odpi.egeria:open-connector-framework:2.6-SNAPSHOT'
-            implementation 'org.slf4j:slf4j-api'
         }
 
         test {
