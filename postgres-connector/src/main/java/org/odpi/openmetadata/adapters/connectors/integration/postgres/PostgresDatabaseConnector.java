@@ -60,7 +60,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 List<DatabaseElement> database = this.context.getDatabasesByName(db.getQualifiedName(), 0, 100);
                 if (database != null)
                 {
-                    updateDatabase( db );
+//                    updateDatabase( db );
                 }
                 else
                 {
