@@ -2,16 +2,25 @@
  * SPDX-License-Identifier: Apache-2.0
  * Copyright Contributors to the ODPi Egeria project.
  */
+apply plugin: 'java'
 
+//repositories {
+  //  maven {
+    //    url("https://mvnrepository.com/artifact/org.postgresql/postgresql")
+      //  }
+  //}
+
+ configurations {
+    releaseJars
+}
 
 dependencies {
-    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+//    implementation 'org.postgresql:postgresql'
     implementation 'org.odpi.egeria:data-manager-client'
-    implementation 'org.odpi.egeria:data-manager-api'
     implementation 'org.odpi.egeria:database-integrator-api'
-    implementation 'org.odpi.egeria:open-connector-framework'
-    implementation 'org.slf4j:slf4j-api'
-}
+  }
+
 
 description = 'Postgres Connector'
 
@@ -25,7 +34,18 @@ java {
 }
 
 jar {
-  from {
-    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-  }
+
+// manifest {
+//        attributes(
+//                'Class-Path': configurations.compile.files.collect { "libs/$it.name" }.join(' ')
+//        )
+//    }
+
+    task copyJarToBin {
+        copy {
+            from 'build/libs/postgres-connector-2.5-SNAPSHOT.jar'
+            into "libs"
+        }
 }
+}
+

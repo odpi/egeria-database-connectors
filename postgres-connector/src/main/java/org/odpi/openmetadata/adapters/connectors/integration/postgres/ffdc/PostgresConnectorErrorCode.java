@@ -25,7 +25,7 @@ import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageSet
 
 public enum PostgresConnectorErrorCode implements ExceptionMessageSet
 {
-        ERROR_READING_DATABASES(400, "POSTGRES-CONNECTOR-400-001 ",
+        ERROR_READING_DATABASES(400, "POSTGRES-CONNECTOR-400-001",
                 "An unexpected {0} exception was caught while sending an event to topic {1}.  The message in the exception was: {2}",
                 "The system is unable to send the event.",
                 "Review the exception that was returned from the send."),
