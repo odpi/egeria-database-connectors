@@ -43,58 +43,48 @@ public class PostgresTable {
     {
         return table_schema;
     }
-
     public String getTable_name()
     {
         return table_name;
     }
-
     public String getTable_type()
     {
         return table_type;
     }
-
     public String getSelf_referencing_column_name()
     {
         return self_referencing_column_name;
     }
-
     public String getReference_generation()
     {
         return reference_generation;
     }
-
     public String getUser_defined_type_catalog()
     {
         return user_defined_type_catalog;
     }
-
     public String getUser_defined_type_schema()
     {
         return user_defined_type_schema;
     }
-
     public String getUser_defined_type_name()
     {
         return user_defined_type_name;
     }
-
     public String getIs_insertable_into()
     {
         return is_insertable_into;
     }
-
     public String getIs_typed()
     {
         return is_typed;
     }
-
     public String getCommit_action()
     {
         return commit_action;
     }
 
-    Map<String,String> getProperties()
+    public Map<String,String> getProperties()
     {
         Map props = new HashMap();
         props.put("table_catalog", this.table_catalog);

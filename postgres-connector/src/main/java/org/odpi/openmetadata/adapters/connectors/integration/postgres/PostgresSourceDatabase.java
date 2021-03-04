@@ -42,6 +42,7 @@ public class PostgresSourceDatabase
         //TODO YIKES and YUK
         postgresProps.setProperty("user", egeriaProps.getUserId());
         postgresProps.setProperty("password", egeriaProps.getClearPassword());
+       //  postgresProps.setProperty("password", "password");
 
     }
 
@@ -54,6 +55,7 @@ public class PostgresSourceDatabase
 
         if( this.instance != null )
             return this.instance;
+
 
         String sql = "SELECT CURRENT_USER usr ,inet_server_addr() host, inet_server_port() port;";
         /*
@@ -84,27 +86,24 @@ public class PostgresSourceDatabase
 
      */
 
-    public List<PostgresDatabase> getDabaseNames( ) throws SQLException
+    public List<PostgresDatabase> getDabaseNames( ) throws SQLException, ClassNotFoundException
     {
         ArrayList<PostgresDatabase> databaseNames = new ArrayList();
         /*
          */
         String sql = "SELECT VERSION(), * FROM pg_database WHERE datistemplate = false;";
-        try( Connection connection  = DriverManager.getConnection( postgresProps.getProperty("url"), postgresProps );
+        try(Connection connection  = DriverManager.getConnection( postgresProps.getProperty("url"), postgresProps );
              PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()
         )
         {
 
             while (rs.next()) {
-                databaseNames.add( new PostgresDatabase(rs.getString("Name"),
-                                                                rs.getString("Owner"),
-                                                                rs.getString("Encoding"),
-                                                                rs.getString("Collate"),
-                                                                rs.getString("Ctype"),
-                                                                rs.getString("Access privileges "),
-                                                                rs.getString ( "version" ),
-                                                                getDatabaseInstance()));
+                databaseNames.add( new PostgresDatabase(rs.getString("datname"),
+                                                                rs.getString("encoding"),
+                                                                rs.getString("datcollate"),
+                                                                rs.getString("datctype"),
+                                                                rs.getString ( "version" )));
             }
         }
 
@@ -119,7 +118,7 @@ public class PostgresSourceDatabase
      */
     public List<PostgresSchema> getDatabaseSchema(String databaseName ) throws SQLException
     {
-        String sql = " SELECT schema_name  FROM information_schema.schemata where schema_name != 'information_schema' AND catalog_name = '%s' AND substring(schema_name, 1, 3) != 'pg_';";
+        String sql = "SELECT *  FROM information_schema.schemata where catalog_name = '%s' ;";
 
         sql = String.format( sql, databaseName );
 
@@ -211,9 +210,9 @@ public class PostgresSourceDatabase
                         rs.getString("self_referencing_column_name"),
                         rs.getString("reference_generation"),
                         rs.getString("user_defined_type_catalog"),
-                        rs.getString("user_defined_type_schema;"),
-                        rs.getString("user_defined_type_name;"),
-                        rs.getString("user_defined_type_name;"),
+                        rs.getString("user_defined_type_schema"),
+                        rs.getString("user_defined_type_name"),
+                        rs.getString("user_defined_type_name"),
                         rs.getString("is_insertable_into"),
                         rs.getString("commit_action")
                 );
@@ -352,12 +351,7 @@ public class PostgresSourceDatabase
     private List<String> getKeyNamesForTable(String tableName, String type) throws SQLException {
         List<String> names = new ArrayList<>();
 
-        String sql = "SELECT c.column_name AS name" +
-                "FROM information_schema.table_constraints tc \n" +
-                "JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) \n" +
-                "JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema\n" +
-                " AND tc.table_name = c.table_name AND ccu.column_name = c.column_name\n" +
-                "WHERE constraint_type = '%s' and tc.table_name = '%s';\n";
+        String sql = "SELECT c.column_name AS name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type = '%s' and tc.table_name = '%s';";
 
         sql = String.format(sql, type, tableName);
 

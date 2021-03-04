@@ -22,8 +22,7 @@ public class PostgresDatabaseProvider extends ConnectorProviderBase
     {
         Class<?> connectorClass = PostgresDatabaseProvider.class;
 
-        super.setConnectorClassName(connectorClass.getName());
-
+        super.setConnectorClassName("org.odpi.openmetadata.adapters.connectors.integration.postgres.PostgresDatabaseConnector");
 
         ConnectorType connectorType = new ConnectorType();
         connectorType.setType(ConnectorType.getConnectorTypeType());

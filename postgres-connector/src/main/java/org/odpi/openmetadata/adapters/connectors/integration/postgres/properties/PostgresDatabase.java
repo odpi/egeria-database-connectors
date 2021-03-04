@@ -16,31 +16,22 @@ The class is immutable
 public class PostgresDatabase
 {
     private String Name;
-    private String Owner;
     private String Encoding;
     private String Collate;
     private String Ctype;
-    private String AccessPrivileges;
     private String Version;
-    private String Instance;
 
-    public PostgresDatabase(String name, String owner, String encoding, String collate, String ctype, String accessPrivileges, String version, String instance)
+    public PostgresDatabase(String name, String encoding, String collate, String ctype,  String version)
     {
         Name = name;
-        Owner = owner;
         Encoding = encoding;
         Collate = collate;
         Ctype = ctype;
-        AccessPrivileges = accessPrivileges;
         Version = version;
-        Instance = instance;
     }
 
     public String getName() {
         return Name;
-    }
-    public String getOwner() {
-        return Owner;
     }
     public String getEncoding() {
         return Encoding;
@@ -51,27 +42,31 @@ public class PostgresDatabase
     public String getCtype() {
         return Ctype;
     }
-    public String getAccessPrivileges() {
-        return AccessPrivileges;
-    }
     public String getVersion() { return Version; }
-    public String getInstance() { return Instance; }
 
     public Map< String, String> getProperties ()
     {
         Map<String, String> props = new HashMap<>();
-        props.put("name", getName());
-        props.put("owner", getOwner());
-        props.put("encoding", getEncoding());
-        props.put("collate", getCollate());
-        props.put("ctype", getCtype());
-        props.put("accessPrivileges", getAccessPrivileges());
-        props.put("version", getVersion() );
-        props.put("instance", getInstance() );
+
+        if( getName() != null )
+            props.put("name", getName());
+
+        if( getEncoding() != null )
+            props.put("encoding", getEncoding() );
+
+        if( getCollate() != null )
+            props.put("collate", getCollate() );
+
+        if( getCtype() != null )
+            props.put("ctype", getCtype());
+
+        if( getVersion() != null )
+            props.put("version", getVersion() );
+
         return props;
     }
 
     public String getQualifiedName ( ) {
-        return getInstance() + "." + getOwner() + "." + getName();
+        return getName();
     }
 }
