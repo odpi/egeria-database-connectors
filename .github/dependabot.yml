@@ -10,3 +10,10 @@ updates:
   reviewers:
   - planetf1
   - wbittles
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 25
+  reviewers:
+  - planetf1
