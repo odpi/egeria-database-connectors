@@ -37,7 +37,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         try
         {
             List<PostgresDatabase> dbs = sourceDatabase.getDabaseNames();
- /*           List<DatabaseElement> knownDatabases = context.getMyDatabases(1, 100);
+            List<DatabaseElement> knownDatabases = context.getMyDatabases(1, 100);
             if( knownDatabases != null )
             {
                 for (DatabaseElement element : knownDatabases)
@@ -53,14 +53,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     }
                 }
             }
-*/
+
             for (PostgresDatabase db : dbs)
             {
 
                 List<DatabaseElement> database = this.context.getDatabasesByName(db.getQualifiedName(), 0, 100);
                 if (database != null)
                 {
-//                    updateDatabase( db );
+                    updateDatabase( db );
                 }
                 else
                 {
@@ -427,16 +427,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             DatabaseProperties dbProps = new DatabaseProperties();
             dbProps.setDisplayName(db.getName());
             dbProps.setQualifiedName(db.getQualifiedName());
-/*            dbProps.setDatabaseType("postgres");     //TODO ??
+            dbProps.setDatabaseType("postgres");
             dbProps.setDatabaseVersion(db.getVersion());
-
             dbProps.setEncodingType(db.getEncoding());
             dbProps.setEncodingLanguage(db.getCtype());
-            dbProps.setDatabaseImportedFrom( "https://localhost:5432");
-            dbProps.setDatabaseInstance("localhost");
-            dbProps.setDatabaseVersion("0.1");
-            dbProps.setDescription("Postgres First Test Database ");
-*/
+            //dbProps.setDatabaseImportedFrom( "https://localhost:5432");
+            //dbProps.setDatabaseInstance("localhost");
+            //dbProps.setDatabaseVersion("0.1");
+            //dbProps.setDescription("Postgres First Test Database ");
+
             //TODO we need to clarify the source of the following properties
             /*
             ass Hostname
@@ -769,21 +768,32 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                 for (PostgresForeginKeyLinks link : foreginKeys)
                 {
-                    List<DatabaseColumnElement> importedEntities = this.context.findDatabaseColumns(link.getImportedColumnQualifiedName(), 1, 20);
-                    for (DatabaseColumnElement col : importedEntities)
+                    List<DatabaseColumnElement> importedEntities = this.context.findDatabaseColumns(link.getImportedColumnQualifiedName(), 1, 100) ;
+                    if( importedEntities != null )
                     {
-                        importedGuids.add(col.getReferencedColumnGUID());
+                        for (DatabaseColumnElement col : importedEntities)
+                        {
+                            importedGuids.add(col.getReferencedColumnGUID());
+                        }
                     }
 
-                    List<DatabaseColumnElement> exportedEntities = this.context.findDatabaseColumns(link.getExportedColumnQualifiedName(), 1, 1);
+                    List<DatabaseColumnElement> exportedEntities = this.context.findDatabaseColumns(link.getExportedColumnQualifiedName(), 1, 100);
 
-                    for (DatabaseColumnElement col : exportedEntities)
+                    if( exportedEntities != null )
                     {
-                        exportedGuids.add(col.getReferencedColumnGUID());
+                        for (DatabaseColumnElement col : exportedEntities)
+                        {
+                            exportedGuids.add(col.getReferencedColumnGUID());
+                        }
                     }
 
-                    DatabaseForeignKeyProperties linkProps = new DatabaseForeignKeyProperties();
-                    this.context.addForeignKeyRelationship(importedGuids.get(0), exportedGuids.get(0), linkProps);
+                    //TODO HUH ?
+                    for( String str : importedGuids )
+                    {
+                        DatabaseForeignKeyProperties linkProps = new DatabaseForeignKeyProperties();
+                        for( String s : exportedGuids )
+                            this.context.addForeignKeyRelationship(str, s, linkProps);
+                    }
 
                 }
             }
@@ -999,14 +1009,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 colProps.setDisplayName(col.getColumn_name());
                 colProps.setQualifiedName(col.getQualifiedName());
                 colProps.setAdditionalProperties(col.getProperties());
-
                 String colGUID = this.context.createDatabaseColumn(tableGUID, colProps);
 
                 if (primaryKeys.contains(col.getColumn_name()))
                 {
                     DatabasePrimaryKeyProperties keyProps = new DatabasePrimaryKeyProperties();
                     keyProps.setName(col.getColumn_name());
-                    this.context.setPrimaryKeyOnColumn(colGUID, keyProps);
+                    //TODO
+                    //this.context.setPrimaryKeyOnColumn(colGUID, keyProps);
                 }
             }
         } catch (InvalidParameterException e)

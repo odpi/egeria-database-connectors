@@ -352,9 +352,7 @@ public class PostgresSourceDatabase
         List<String> names = new ArrayList<>();
 
         String sql = "SELECT c.column_name AS name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type = '%s' and tc.table_name = '%s';";
-
         sql = String.format(sql, type, tableName);
-
 
         try (
                 Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
@@ -385,9 +383,9 @@ public class PostgresSourceDatabase
                 "    tc.constraint_name, \n" +
                 "    tc.table_name, \n" +
                 "    kcu.column_name, \n" +
-                "    ccu.table_schema AS foreign_table_schema,\n" +
-                "    ccu.table_name AS foreign_table_name,\n" +
-                "    ccu.column_name AS foreign_column_name \n" +
+                "    ccu.table_schema AS ftschema,\n" +
+                "    ccu.table_name AS ftname,\n" +
+                "    ccu.column_name AS fcolumn \n" +
                 "FROM \n" +
                 "    information_schema.table_constraints AS tc \n" +
                 "    JOIN information_schema.key_column_usage AS kcu\n" +
@@ -415,9 +413,9 @@ public class PostgresSourceDatabase
                         rs.getString("constraint_name"),
                         rs.getString("table_name"),
                         rs.getString("column_name"),
-                        rs.getString("foregin_table_schema"),
-                        rs.getString("foregin_table_name"),
-                        rs.getString("foregin_column_name"));
+                        rs.getString("ftschema"),
+                        rs.getString("ftname"),
+                        rs.getString("fcolumn"));
 
                 results.add(link);
             }
