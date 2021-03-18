@@ -91,6 +91,11 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
             "The Postgres Connector experienced an exception while trying to remove a database entity from Egeria.",
             "Ensure that the Postgres database server is available.",
             "Verify that the Postgres database server is available."),
+
+    PROPERTY_SERVER_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-012",
+            "The Egeria OMAS Server returned a Property Server Exception",
+            "Verify that the Egeria OMAS server is available",
+            "Verify that the Postgres database server is available."),
     ;
 
     private final ExceptionMessageDefinition messageDefinition;
