@@ -80,8 +80,20 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
             "The Postgres Connector experienced an exception accessing the Postgres columns.",
             "Ensure that the Postgres database server is available.",
             "Verify that the Postgres database server is available."),
+
+    ERROR_REMOVING_COLUMNS( 400, "POSTGRES-CONNECTOR-400-011",
+            "The Postgres Connector experienced an exception while trying to remove a database entity from Egeria.",
+            "Ensure that the Postgres database server is available.",
+            "Verify that the Postgres database server is available."),
+
+
+    ERROR_REMOVING_DATABASES( 400, "POSTGRES-CONNECTOR-400-011",
+            "The Postgres Connector experienced an exception while trying to remove a database entity from Egeria.",
+            "Ensure that the Postgres database server is available.",
+            "Verify that the Postgres database server is available."),
     ;
-        private final ExceptionMessageDefinition messageDefinition;
+
+    private final ExceptionMessageDefinition messageDefinition;
 
 
         /**

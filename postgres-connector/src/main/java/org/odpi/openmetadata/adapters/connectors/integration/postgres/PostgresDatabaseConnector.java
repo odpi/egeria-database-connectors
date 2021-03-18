@@ -31,33 +31,25 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     @Override
     public void refresh() throws ConnectorCheckedException
     {
+
+        //TODO
+        System.out.println("Refreshing .......");
         String methodName = "PostgresConnector.refresh";
         PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase(connectionProperties);
 
         try
         {
+            /*
+            get a list of databases currently hosted in postgres
+            and remove any databases that have been removed since the last refresh
+             */
             List<PostgresDatabase> dbs = sourceDatabase.getDabaseNames();
-            List<DatabaseElement> knownDatabases = context.getMyDatabases(1, 100);
-            if( knownDatabases != null )
-            {
-                for (DatabaseElement element : knownDatabases)
-                {
-                    String knownName = element.getDatabaseProperties().getQualifiedName();
-                    for (PostgresDatabase db : dbs)
-                    {
-                        if (db.getQualifiedName().equals(knownName))
-                        {
-                            break;
-                        }
-                        context.removeDatabase(element.getElementHeader().getGUID(), knownName);
-                    }
-                }
-            }
+            purgeDatabases( dbs );
 
             for (PostgresDatabase db : dbs)
             {
 
-                List<DatabaseElement> database = this.context.getDatabasesByName(db.getQualifiedName(), 0, 100);
+                List<DatabaseElement> database = this.context.getDatabasesByName(db.getQualifiedName(), 1, 100);
                 if (database != null)
                 {
                     updateDatabase( db );
@@ -143,6 +135,57 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         }
 
+    }
+
+    /**
+     * Checks if any databases need to be removed from egeria
+     *
+     * @param dbs              a list of the bean properties of a Postgres Database
+     * @throws                  ConnectorCheckedException
+     */
+    private void purgeDatabases(List<PostgresDatabase> dbs) throws ConnectorCheckedException
+    {
+
+        String methodName = "purgeDatabases";
+        int startFrom = 0;
+        int pageSize = 100;
+
+        try
+        {
+            List<DatabaseElement> knownDatabases = context.getMyDatabases(startFrom, pageSize);
+
+            if (knownDatabases != null)
+            {
+                for (DatabaseElement element : knownDatabases)
+                {
+                    String knownName = element.getDatabaseProperties().getQualifiedName();
+                    for (PostgresDatabase db : dbs)
+                    {
+                        String sourceName = db.getQualifiedName();
+                        if (sourceName.equals(knownName))
+                        {
+                            break;
+                        }
+                        context.removeDatabase(element.getElementHeader().getGUID(), knownName);
+                    }
+                }
+            }
+        }
+        catch(Exception error )
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.ERROR_REMOVING_DATABASES.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_REMOVING_DATABASES.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
     }
 
     /**

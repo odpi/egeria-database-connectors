@@ -86,7 +86,14 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "Ensure that the Postgres database server is available.",
             "Ensure that the Postgres database server is available."),
 
+    ERROR_REMOVING_DATABASES("POSTGRES-CONNECTOR-0012",
+            OMRSAuditLogRecordSeverity.SHUTDOWN,
+            "The Postgres Connector experienced a problem while trying to remove a database from Egeria.",
+            "Ensure that the OMAS server is availabale and is responsive",
+            "Ensure that the OMAS server is availabale and is responsive."),
     ;
+
+
 
     private final AuditLogMessageDefinition messageDefinition;
 
