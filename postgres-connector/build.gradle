@@ -17,8 +17,12 @@ apply plugin: 'java'
 dependencies {
     compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
 //    implementation 'org.postgresql:postgresql'
-    implementation 'org.odpi.egeria:data-manager-client'
-    implementation 'org.odpi.egeria:database-integrator-api'
+            implementation("org.slf4j:slf4j-api:1.7.30")
+            implementation 'org.odpi.egeria:data-manager-client:2.7-SNAPSHOT'
+            implementation 'org.odpi.egeria:data-manager-api:2.7-SNAPSHOT'
+            implementation 'org.odpi.egeria:database-integrator-api:2.7-SNAPSHOT'
+            implementation 'org.odpi.egeria:open-connector-framework:2.7-SNAPSHOT'
+            implementation 'org.slf4j:slf4j-api'
   }
 
 
@@ -35,11 +39,11 @@ java {
 
 jar {
 
-// manifest {
-//        attributes(
-//                'Class-Path': configurations.compile.files.collect { "libs/$it.name" }.join(' ')
-//        )
-//    }
+ manifest {
+        attributes(
+                'Class-Path': configurations.compile.files.collect { "libs/$it.name" }.join(' ')
+        )
+    }
 
     task copyJarToBin {
         copy {

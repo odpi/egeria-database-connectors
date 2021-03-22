@@ -47,11 +47,17 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             and remove any databases that have been removed since the last refresh
              */
             List<PostgresDatabase> dbs = sourceDatabase.getDabaseNames();
-            purgeDatabases( dbs );
+            //purgeDatabases( dbs );
 
             for (PostgresDatabase db : dbs)
             {
-                List<DatabaseElement> database = this.context.getDatabasesByName(db.getQualifiedName(), startFrom, pageSize);
+                //List<DatabaseElement> database = context.getDatabasesByName(db.getQualifiedName(), startFrom, pageSize);
+                List <DatabaseElement> database = context.getMyDatabases( startFrom, pageSize);
+                //TODO
+                System.out.println("Searched for " + db.getQualifiedName());
+                if (database != null )
+                    System.out.println("Database found ");
+
                 if (database != null)
                 {
                     updateDatabase( db );
@@ -539,6 +545,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "addDatabase";
         String guid = null;
+
+        //TODO
+        System.out.println("..... Creating Database " + db.getQualifiedName());
+
         try
         {
          /*
@@ -580,6 +590,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             /* just to aid dev/debug , there are currently no plans to add any AdditionalProperties */
             dbProps.setAdditionalProperties(db.getProperties());
 
+            //TODO
+            System.out.println("Creating Database " + dbProps.getQualifiedName());
             guid = this.context.createDatabase(dbProps);
             addSchemasForDatabase(db, guid);
 
