@@ -10,6 +10,7 @@ import org.odpi.openmetadata.accessservices.datamanager.metadataelements.Databas
 import org.odpi.openmetadata.accessservices.datamanager.properties.*;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.ffdc.PostgresConnectorAuditCode;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.ffdc.PostgresConnectorErrorCode;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.mapper.PostgresMapper;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
@@ -224,12 +225,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             /* we need to get the guid for the egeria database entity */
             List<DatabaseElement> databases = context.getDatabasesByName(db.getQualifiedName(), startFrom, pageSize);
 
-            /* we are on;ly expecting one database */
+            /* we are only expecting one database */
             /* but we process what we get */
             if( databases != null )
             {
                 for ( DatabaseElement element : databases )
                 {
+                    //TODO
+                    System.out.println("Updating Database " + databases);
+
                     String dbGuid = element.getElementHeader().getGUID();
                     List<DatabaseSchemaElement> knownSchemas = context.getSchemasForDatabase(dbGuid, startFrom, pageSize);
                     if( knownSchemas != null )
@@ -554,48 +558,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
          /*
          new database so build the database in egeria
          */
-            DatabaseProperties dbProps = new DatabaseProperties();
-            dbProps.setDisplayName(db.getName());
-            dbProps.setQualifiedName(db.getQualifiedName());
-            dbProps.setDatabaseType("postgres");
-            dbProps.setDatabaseVersion(db.getVersion());
-            dbProps.setEncodingType(db.getEncoding());
-            dbProps.setEncodingLanguage(db.getCtype());
-            //dbProps.setDatabaseImportedFrom( "https://localhost:5432");
-            //dbProps.setDatabaseInstance("localhost");
-            //dbProps.setDatabaseVersion("0.1");
-            //dbProps.setDescription("Postgres First Test Database ");
-
-            //TODO we need to clarify the source of the following properties
-            /*
-            ass Hostname
-                 "DatabaseProperties{" +
-                        "databaseType='" + databaseType + '\'' +
-                        ", databaseImportedFrom='" + databaseImportedFrom + '\'' +
-                        ", createTime=" + getCreateTime() +
-                        ", modifiedTime=" + getModifiedTime() +
-                        ", encodingDescription='" + getEncodingDescription() + '\'' +
-                        ", owner='" + getOwner() + '\'' +
-                        ", ownerCategory=" + getOwnerCategory() +
-                        ", zoneMembership=" + getZoneMembership() +
-                        ", origin=" + getOtherOriginValues() +
-                        ", typeName='" + getTypeName() + '\'' +
-                        ", extendedProperties=" + getExtendedProperties() +
-                        '}';
-}
-             */
-
-
-
-            /* just to aid dev/debug , there are currently no plans to add any AdditionalProperties */
-            dbProps.setAdditionalProperties(db.getProperties());
+            PostgresMapper mapper  = new PostgresMapper();
+            DatabaseProperties dbProps = mapper.mapDatabaseProperties(db);
 
             //TODO
             System.out.println("Creating Database " + dbProps.getQualifiedName());
             guid = this.context.createDatabase(dbProps);
-            addSchemasForDatabase(db, guid);
+            addSchemasForDatabase(db.getName(), guid);
 
-        } catch (InvalidParameterException error)
+        }
+        catch (InvalidParameterException error)
         {
             if (this.auditLog != null)
             {
@@ -642,35 +614,42 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     }
 
-    private void addSchemasForDatabase(PostgresDatabase db, String currentDBGUID) throws ConnectorCheckedException
+    /**
+     * Adds schema entites to egeria for a given database
+     *
+     * @param db the postgres attributes of the database
+     * @param dbGUID the GUID of the datbase enitity to attach the schemas
+     * @throws ConnectorCheckedException
+     */
+    private void addSchemasForDatabase(String dbName, String dbGUID) throws ConnectorCheckedException
     {
 
         String methodName = "addSchemasForDatabase";
 
         try
         {
+            /*
+            get the list of schemas
+             */
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
-            List<PostgresSchema> schemas = sourceDB.getDatabaseSchema(db.getName());
+            List<PostgresSchema> schemas = sourceDB.getDatabaseSchema( dbName );
 
-            if( schemas == null )
+            /*
+            create each schema entity in egeria
+             */
+            for ( PostgresSchema sch : schemas )
             {
-                 if (this.auditLog != null)
-                {
-                    //auditLog.logMessage("addSchema", );
-                }
+                addSchema(sch, dbGUID);
 
             }
-            for (PostgresSchema schema : schemas)
-            {
-                addSchema(schema, currentDBGUID);
-            }
 
-        } catch (SQLException error)
+        }
+        catch (SQLException error)
         {
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.ERROR_READING_SCHEMAS.getMessageDefinition(db.getName()),
+                        PostgresConnectorAuditCode.ERROR_READING_SCHEMAS.getMessageDefinition(dbName),
                         error);
             }
 
@@ -679,12 +658,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     this.getClass().getName(),
                     methodName,error);
 
-        } catch (InvalidParameterException error)
+        }
+        catch (InvalidParameterException error)
         {
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(db.getName()),
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(dbName),
                         error);
 
             }
@@ -695,14 +675,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName,error);
 
 
-
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
 
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(db.getName()),
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(dbName),
                         error);
 
             }
@@ -714,12 +694,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
 
-        } catch (PropertyServerException error)
+        }
+        catch (PropertyServerException error)
         {
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.INVALID_PROPERTY.getMessageDefinition(db.getName()),
+                        PostgresConnectorAuditCode.INVALID_PROPERTY.getMessageDefinition(dbName),
                         error);
             }
 
@@ -747,18 +728,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         String methodName = "addSchema";
 
         PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
-
-        DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties();
-        schemaProps.setDisplayName(sch.getSchema_name());
-        schemaProps.setQualifiedName(sch.getQualifiedName());
-        schemaProps.setOwner(sch.getSchema_owner());
-        schemaProps.setAdditionalProperties(sch.getProperties());
-
-        String schemaGUID = this.context.createDatabaseSchema(dbGuidd, schemaProps);
+        PostgresMapper mapper = new PostgresMapper();
+        DatabaseSchemaProperties schemaProps = mapper.mapSchemaProlperties( sch );
+        String schemaGUID = context.createDatabaseSchema(dbGuidd, schemaProps);
         addTablesForSchema(sourceDB, sch, schemaGUID);
         addViews(sourceDB, sch, schemaGUID);
         addForeignKeys(sourceDB, sch);
-
     }
 
     /**
