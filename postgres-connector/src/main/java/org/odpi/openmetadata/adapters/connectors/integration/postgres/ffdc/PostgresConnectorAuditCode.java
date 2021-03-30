@@ -96,6 +96,12 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "The Postgres Connector experienced a problem while trying to remove a database from Egeria.",
             "Ensure that the OMAS server is availabale and is responsive",
             "Ensure that the OMAS server is availabale and is responsive."),
+
+    CONNECTOR_CHECKED("POSTGRES-CONNECTOR-0013",
+            OMRSAuditLogRecordSeverity.SHUTDOWN,
+            "The Egeria omas server returned a connector checked exception",
+            "Ensure that the OMAS server is availabale and is responsive",
+            "Check exception details to rectify the problem"),
     ;
 
 

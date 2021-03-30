@@ -33,14 +33,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     public void refresh() throws ConnectorCheckedException
     {
 
-        //TODO
-        System.out.println("Refreshing .......");
         String methodName = "PostgresConnector.refresh";
         int startFrom = 1;
         int pageSize = 100;
 
         PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase(connectionProperties);
-
         try
         {
             /*
@@ -48,27 +45,34 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             and remove any databases that have been removed since the last refresh
              */
             List<PostgresDatabase> dbs = sourceDatabase.getDabaseNames();
-            //purgeDatabases( dbs );
+            List <DatabaseElement> knownDatabases = getContext().getMyDatabases( startFrom, pageSize);
 
             for (PostgresDatabase db : dbs)
             {
-                //List<DatabaseElement> database = context.getDatabasesByName(db.getQualifiedName(), startFrom, pageSize);
-                List <DatabaseElement> database = context.getMyDatabases( startFrom, pageSize);
-                //TODO
-                System.out.println("Searched for " + db.getQualifiedName());
-                if (database != null )
-                    System.out.println("Database found ");
+                boolean found = false;
 
-                if (database != null)
+                for( DatabaseElement base : knownDatabases )
                 {
-                    updateDatabase( db );
+                    if( base.getDatabaseProperties().getQualifiedName().equals( db.getQualifiedName()))
+                    {
+                        /*
+                        we have found an exact instance to update
+                         */
+                        found = true;
+                        updateDatabase(db, knownDatabases );
+                        break;
+                    }
                 }
-                else
+                    /*
+                    this is a new table so add it
+                     */
+                if( found == false )
                 {
-                    addDatabase(db);
+                    addDatabase( db );
                 }
             }
-        } catch (SQLException error)
+        }
+        catch (SQLException error)
         {
             if (this.auditLog != null)
             {
@@ -130,7 +134,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         }
         catch (ConnectorCheckedException error)
         {
-            // do nothing as it's already been handled
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
             throw error;
         }
         catch (Exception error)
@@ -155,9 +165,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * Checks if any databases need to be removed from egeria
      *
      * @param dbs              a list of the bean properties of a Postgres Database
+     * @param knownDatabases    a list of the Databases already known to egeria
      * @throws                  ConnectorCheckedException
      */
-    private void purgeDatabases(List<PostgresDatabase> dbs) throws ConnectorCheckedException
+    private void purgeDatabases(List<PostgresDatabase> dbs, List<DatabaseElement> knownDatabases) throws ConnectorCheckedException
     {
 
         String methodName = "purgeDatabases";
@@ -166,8 +177,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
-            List<DatabaseElement> knownDatabases = context.getMyDatabases(startFrom, pageSize);
-
             if (knownDatabases != null)
             {
                 for (DatabaseElement element : knownDatabases)
@@ -180,21 +189,77 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         {
                             break;
                         }
-                        context.removeDatabase(element.getElementHeader().getGUID(), knownName);
+                        getContext().removeDatabase(element.getElementHeader().getGUID(), knownName);
                     }
                 }
             }
         }
-        catch(Exception error )
+        catch (InvalidParameterException error)
         {
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.ERROR_REMOVING_DATABASES.getMessageDefinition(),
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_REMOVING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (PropertyServerException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (ConnectorCheckedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
+            throw error;
+        }
+        catch (Exception error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -206,9 +271,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * Trawls through a database updating a database where necessary
      *
      * @param db              the bean properties of a Postgres Database
+     * @param databases
      * @throws ConnectorCheckedException
      */
-    private void updateDatabase( PostgresDatabase db ) throws ConnectorCheckedException, InvalidParameterException, PropertyServerException, UserNotAuthorizedException, SQLException
+    private void updateDatabase(PostgresDatabase db, List<DatabaseElement> databases) throws ConnectorCheckedException, InvalidParameterException, PropertyServerException, UserNotAuthorizedException, SQLException
     {
         String methodName = "updateDatabase";
         int startFrom = 1;
@@ -217,41 +283,26 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         try
         {
             PostgresSourceDatabase source = new PostgresSourceDatabase( this.connectionProperties);
-            /*
-            first get a list of schemas for a given database
-             */
             List<PostgresSchema> schemas = source.getDatabaseSchema(db.getQualifiedName());
 
-            /* we need to get the guid for the egeria database entity */
-            List<DatabaseElement> databases = context.getDatabasesByName(db.getQualifiedName(), startFrom, pageSize);
-
-            /* we are only expecting one database */
-            /* but we process what we get */
             if( databases != null )
             {
                 for ( DatabaseElement element : databases )
                 {
-                    //TODO
-                    System.out.println("Updating Database " + databases);
-
                     String dbGuid = element.getElementHeader().getGUID();
-                    List<DatabaseSchemaElement> knownSchemas = context.getSchemasForDatabase(dbGuid, startFrom, pageSize);
+                    List<DatabaseSchemaElement> knownSchemas = getContext().getSchemasForDatabase(dbGuid, startFrom, pageSize);
                     if( knownSchemas != null )
                     {
                         for (PostgresSchema sch : schemas)
                         {
-                            List<DatabaseSchemaElement> entity = context.getDatabaseSchemasByName(sch.getQualifiedName(), startFrom, pageSize);
+                            List<DatabaseSchemaElement> entity = getContext().getDatabaseSchemasByName(sch.getQualifiedName(), startFrom, pageSize);
                             if ( entity != null )
                             {
-                             /*
-                            new schema so add it and all it's child elements
-                             */
                                 addSchema(sch, dbGuid);
                             }
                             else
                             {
-                                /* we've seen this one before */
-                                updateSchema(sch);
+                                updateSchema(sch, dbGuid);
                             }
 
                         }
@@ -322,110 +373,236 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         }
         catch (ConnectorCheckedException error)
         {
-            /* already logged */
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
             throw error;
         }
+
     }
 
     /**
      * Changes the properties of an egeria schema entity
      * @param sch the Postgres Schema properties
      *
+     * @param dbGuid
      * @throws InvalidParameterException
      * @throws PropertyServerException
      * @throws UserNotAuthorizedException
      */
-    private void updateSchema( PostgresSchema sch ) throws InvalidParameterException,
-                                                           PropertyServerException,
-                                                           UserNotAuthorizedException,
-                                                           ConnectorCheckedException
+    private void updateSchema(PostgresSchema sch, String dbGuid) throws ConnectorCheckedException
     {
-        /*
-        find the original schema
-         */
-        List<DatabaseSchemaElement> schemas = this.context.getDatabaseSchemasByName(sch.getQualifiedName(), 0,100);
-        DatabaseSchemaElement element = null;
-
-        if( schemas != null )
+        String methodName = "updateSchema";
+        int startFrom = 1;
+        int pageSize = 100;
+        try
         {
-            element = schemas.get(0);
+            List<DatabaseSchemaElement> schemas = getContext().getSchemasForDatabase(dbGuid, startFrom, pageSize);
+            for (DatabaseSchemaElement egSch : schemas)
+            {
+                DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties();
+                schemaProps.setDisplayName(sch.getQualifiedName());
+                schemaProps.setQualifiedName(sch.getQualifiedName());
+                schemaProps.setOwner(sch.getSchema_owner());
+                schemaProps.setAdditionalProperties(sch.getProperties());
+                getContext().updateDatabaseSchema(egSch.getElementHeader().getGUID(), schemaProps);
+                updateTables(sch, egSch);
+            }
         }
-        else
+        catch (InvalidParameterException error)
         {
-            //TODO add logic for error condition of more than one
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
         }
-        DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties();
-        schemaProps.setDisplayName(sch.getSchema_name());
-        schemaProps.setQualifiedName(sch.getQualifiedName());
-        schemaProps.setOwner(sch.getSchema_owner());
-        schemaProps.setAdditionalProperties(sch.getProperties());
+        catch (PropertyServerException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
 
-        context.updateDatabaseSchema( element.getElementHeader().getGUID(), schemaProps);
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
 
-        updateTablesForDatabaseSchema(sch, element);
+        }
+        catch (UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (ConnectorCheckedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
+            throw error;
+        }
+        catch (Exception error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
     }
 
     /**
      *
-     * @param sch
-     * @param element
-     * @throws InvalidParameterException
-     * @throws PropertyServerException
-     * @throws UserNotAuthorizedException
+     * @param sch           the postgres schema bean
+     * @param schema        the egeria schema bean
+     * @throws ConnectorCheckedException
      */
-    private void updateTablesForDatabaseSchema(PostgresSchema sch, DatabaseSchemaElement element) throws InvalidParameterException,
-                                                                                                         PropertyServerException,
-                                                                                                         UserNotAuthorizedException,
-                                                                                                         ConnectorCheckedException
+    private void updateTables(PostgresSchema sch, DatabaseSchemaElement schema) throws ConnectorCheckedException
     {
         final String methodName = "updateTablesForDatabaseSchema";
+        int startFrom = 1;
+        int pageSize = 100;
+
+        String schemaGuid = schema.getElementHeader().getGUID();
         PostgresSourceDatabase sourceDatabase = new PostgresSourceDatabase( this.connectionProperties);
+
         try
         {
             List<PostgresTable> tables = sourceDatabase.getTables(sch);
-            List<DatabaseTableElement> knownTables = context.getTablesForDatabaseSchema(sch.getQualifiedName(), 1, 1000);
+            List<DatabaseTableElement> knownTables = getContext().getTablesForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
-            for( DatabaseTableElement t : knownTables )
+            if (knownTables != null)
             {
-                String knownName = t.getDatabaseTableProperties().getQualifiedName();
-                for( PostgresTable table : tables )
+                for (DatabaseTableElement t : knownTables)
                 {
-                    if( table.getQualifiedName().equals(knownName))
+                    String knownName = t.getDatabaseTableProperties().getQualifiedName();
+                    for (PostgresTable table : tables)
                     {
-                        break;
+                        if (table.getQualifiedName().equals(knownName))
+                        {
+                            break;
+                        }
+                        getContext().removeDatabaseTable(schemaGuid, knownName);
+                    }
+                }
+
+                for (PostgresTable t : tables)
+                {
+                    boolean found = false;
+                    for( DatabaseTableElement table : knownTables )
+                    {
+                            if( table.getDatabaseTableProperties().getQualifiedName().equals( t.getQualifiedName()))
+                            {
+                                /*
+                                we have found an exact instance to update
+                                 */
+                                updateTable(t, schemaGuid );
+                                found = true;
+                                break;
+                            }
                     }
                     /*
-                    no longer hosted by the server, so remove
+                    this is a new table so add it
                      */
-                    context.removeDatabaseTable( element.getElementHeader().getGUID(), knownName );
+                    if( found == false )
+                    {
+                        addTable( t, schemaGuid);
+                    }
                 }
             }
 
-            for (PostgresTable t : tables)
-            {
-                List<DatabaseTableElement> tableElements = context.getDatabaseTablesByName(t.getQualifiedName(), 1, 1);
-                if( tableElements.isEmpty() )
-                {
-                    addTable(t, element.getElementHeader().getGUID());
-                }
-                else
-                {
-                    updateTable(t);
-                }
-
-
-            }
         }
         catch (SQLException  error )
         {
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.ERROR_READING_DATABASES.getMessageDefinition(),
+                        PostgresConnectorAuditCode.ERROR_READING_TABLES.getMessageDefinition(),
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_TABLES.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+
+        catch (InvalidParameterException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (PropertyServerException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -437,40 +614,110 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      *
      * @param table
+     * @param schemaGuid
      * @throws InvalidParameterException
      * @throws PropertyServerException
      * @throws UserNotAuthorizedException
      */
-    private void updateTable( PostgresTable table ) throws InvalidParameterException,
-                                                           PropertyServerException,
-                                                           UserNotAuthorizedException, ConnectorCheckedException
+    private void updateTable(PostgresTable table, String schemaGuid) throws ConnectorCheckedException
     {
-        /*
-        find the original schema
-         */
-        List<DatabaseTableElement> tables = this.context.getDatabaseTablesByName(table.getQualifiedName(), 1,1);
-        DatabaseTableElement element = tables.get(0);
+        String methodName = "updateTable";
+        int startFrom = 1;
+        int pageSize = 100;
 
-        DatabaseTableProperties props = new DatabaseTableProperties();
-        props.setDisplayName(table.getTable_name() );
-        props.setQualifiedName(table.getQualifiedName());
-        props.setAdditionalProperties(table.getProperties());
+        try
+        {
+                DatabaseTableProperties props = new DatabaseTableProperties();
+                props.setDisplayName(table.getQualifiedName());
+                props.setQualifiedName(table.getQualifiedName());
+                props.setAdditionalProperties(table.getProperties());
+                getContext().updateDatabaseTable(schemaGuid, props);
+                updateCols(table);
+        }
+        catch (InvalidParameterException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
 
-        context.updateDatabaseTable( element.getElementHeader().getGUID(), props);
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
 
-        updateColsForDatabaseTable(table);
+        }
+        catch (PropertyServerException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (ConnectorCheckedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
+            throw error;
+        }
+        catch (Exception error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+
     }
 
-    private void updateColsForDatabaseTable(PostgresTable table) throws InvalidParameterException, PropertyServerException, UserNotAuthorizedException, ConnectorCheckedException
+    private void updateCols(PostgresTable table) throws InvalidParameterException, PropertyServerException, UserNotAuthorizedException, ConnectorCheckedException
     {
-        final String methodName = "updateColsForDatabaseTable";
+        final String methodName = "updateCols";
         PostgresSourceDatabase source = new PostgresSourceDatabase( this.connectionProperties);
         try
         {
             List<PostgresColumn> columns = source.getColumnAttributes( table.getTable_name() );
             List<String> primaryKeys = source.getPrimaryKeyColumnNamesForTable(table.getTable_name());
 
-            List<DatabaseColumnElement> knownColumns = context.getColumnsForDatabaseTable(table.getQualifiedName(), 1, 1000);
+            List<DatabaseColumnElement> knownColumns = getContext().getColumnsForDatabaseTable(table.getQualifiedName(), 1, 1000);
             for( DatabaseColumnElement c : knownColumns )
             {
                 String knownName = c.getDatabaseColumnProperties().getQualifiedName();
@@ -483,15 +730,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     /*
                     no longer hosted by the server, so remove
                      */
-                    context.removeDatabaseColumn( c.getElementHeader().getGUID(), knownName );
+                    getContext().removeDatabaseColumn( c.getElementHeader().getGUID(), knownName );
                 }
             }
 
             for (PostgresColumn col : columns )
             {
-                List<DatabaseColumnElement> colElements = context.getDatabaseColumnsByName(col.getQualifiedName(), 1, 1);
+                List<DatabaseColumnElement> colElements = getContext().getDatabaseColumnsByName(col.getQualifiedName(), 1, 1);
                 DatabaseColumnElement element = colElements.get(0);
-                if( colElements.isEmpty() )
+                if( colElements != null)
                 {
                     addColumn(col, element.getElementHeader().getGUID(), primaryKeys);
                 }
@@ -508,11 +755,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.ERROR_READING_DATABASES.getMessageDefinition(),
+                        PostgresConnectorAuditCode.ERROR_READING_COLUMNS.getMessageDefinition(),
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_COLUMNS.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -521,20 +768,94 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     }
 
-    private void updateColumn( PostgresColumn col) throws InvalidParameterException, PropertyServerException, UserNotAuthorizedException
+    private void updateColumn( PostgresColumn col) throws ConnectorCheckedException
     {
-        /*
-        find the original schema
-         */
-        List<DatabaseColumnElement> columns = this.context.getDatabaseColumnsByName(col.getQualifiedName(), 1,1);
-        DatabaseColumnElement element = columns.get(0);
+        String methodName = "updateColumn";
+        int stratFrom = 1;
+        int pageSize = 100;
 
-        DatabaseTableProperties props = new DatabaseTableProperties();
-        props.setDisplayName(col.getTable_name() );
-        props.setQualifiedName(col.getQualifiedName());
-        props.setAdditionalProperties(col.getProperties());
+        try
+        {
+            List<DatabaseColumnElement> columns = this.getContext().getDatabaseColumnsByName(col.getQualifiedName(), stratFrom, pageSize);
+            DatabaseColumnElement element = columns.get(0);
 
-        context.updateDatabaseTable( element.getElementHeader().getGUID(), props);
+            DatabaseTableProperties props = new DatabaseTableProperties();
+            props.setDisplayName(col.getTable_name());
+            props.setQualifiedName(col.getQualifiedName());
+            props.setAdditionalProperties(col.getProperties());
+            getContext().updateDatabaseTable(element.getElementHeader().getGUID(), props);
+        }
+        catch (InvalidParameterException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (PropertyServerException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (ConnectorCheckedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
+            throw error;
+        }
+        catch (Exception error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
 
     }
 
@@ -549,10 +870,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "addDatabase";
         String guid = null;
-
-        //TODO
-        System.out.println("..... Creating Database " + db.getQualifiedName());
-
         try
         {
          /*
@@ -560,11 +877,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
          */
             PostgresMapper mapper  = new PostgresMapper();
             DatabaseProperties dbProps = mapper.mapDatabaseProperties(db);
-
-            //TODO
-            System.out.println("Creating Database " + dbProps.getQualifiedName());
-            guid = this.context.createDatabase(dbProps);
-            addSchemasForDatabase(db.getName(), guid);
+            guid = this.getContext().createDatabase(dbProps);
+            addSchemas(db.getName(), guid);
 
         }
         catch (InvalidParameterException error)
@@ -617,30 +931,21 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * Adds schema entites to egeria for a given database
      *
-     * @param db the postgres attributes of the database
+     * @param dbName the name of the database
      * @param dbGUID the GUID of the datbase enitity to attach the schemas
      * @throws ConnectorCheckedException
      */
-    private void addSchemasForDatabase(String dbName, String dbGUID) throws ConnectorCheckedException
+    private void addSchemas(String dbName, String dbGUID) throws ConnectorCheckedException
     {
 
-        String methodName = "addSchemasForDatabase";
-
+        String methodName = "addSchemas";
         try
         {
-            /*
-            get the list of schemas
-             */
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
             List<PostgresSchema> schemas = sourceDB.getDatabaseSchema( dbName );
-
-            /*
-            create each schema entity in egeria
-             */
             for ( PostgresSchema sch : schemas )
             {
                 addSchema(sch, dbGUID);
-
             }
 
         }
@@ -653,58 +958,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
-                    error.getMessage()),
-                    this.getClass().getName(),
-                    methodName,error);
-
-        }
-        catch (InvalidParameterException error)
-        {
-            if (this.auditLog != null)
-            {
-                auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(dbName),
-                        error);
-
-            }
-
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
-                    error.getMessage()),
-                    this.getClass().getName(),
-                    methodName,error);
-
-
-        }
-        catch (UserNotAuthorizedException error)
-        {
-
-            if (this.auditLog != null)
-            {
-                auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(dbName),
-                        error);
-
-            }
-
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
-                    error.getMessage()),
-                    this.getClass().getName(),
-                    methodName,error);
-
-
-
-        }
-        catch (PropertyServerException error)
-        {
-            if (this.auditLog != null)
-            {
-                auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.INVALID_PROPERTY.getMessageDefinition(dbName),
-                        error);
-            }
-
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_SCHEMAS.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -720,20 +974,77 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param dbGuidd the egeria GUID of the database
      * @throws ConnectorCheckedException
      */
-    private void addSchema(PostgresSchema sch, String dbGuidd) throws ConnectorCheckedException,
-                                                                      InvalidParameterException,
-                                                                      PropertyServerException,
-                                                                      UserNotAuthorizedException
+    private void addSchema(PostgresSchema sch, String dbGuidd) throws ConnectorCheckedException
     {
         String methodName = "addSchema";
+        try
+        {
+            PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
+            PostgresMapper mapper = new PostgresMapper();
+            DatabaseSchemaProperties schemaProps = mapper.mapSchemaProlperties(sch);
+            String schemaGUID = getContext().createDatabaseSchema(dbGuidd, schemaProps);
+            addTables(sourceDB, sch, schemaGUID);
+            addViews(sourceDB, sch, schemaGUID);
+            addForeignKeys(sourceDB, sch);
+        }
+        catch ( UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
 
-        PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
-        PostgresMapper mapper = new PostgresMapper();
-        DatabaseSchemaProperties schemaProps = mapper.mapSchemaProlperties( sch );
-        String schemaGUID = context.createDatabaseSchema(dbGuidd, schemaProps);
-        addTablesForSchema(sourceDB, sch, schemaGUID);
-        addViews(sourceDB, sch, schemaGUID);
-        addForeignKeys(sourceDB, sch);
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+
+        }
+        catch ( PropertyServerException error )
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch ( InvalidParameterException error )
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+        }
+        catch (Exception error )
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
     }
 
     /**
@@ -745,9 +1056,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param schemaGUID the GUID of the owning schema
      * @throws ConnectorCheckedException
      */
-    private void addTablesForSchema(PostgresSourceDatabase sourceDB, PostgresSchema schema, String schemaGUID) throws ConnectorCheckedException
+    private void addTables(PostgresSourceDatabase sourceDB, PostgresSchema schema, String schemaGUID) throws
+                                                                                                               ConnectorCheckedException
     {
-        String methodName = "addTablesForSchema";
+        String methodName = "addTables";
         List<PostgresTable> tables;
 
         try
@@ -768,57 +1080,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_TABLES.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
 
 
-        } catch (InvalidParameterException error)
-        {
-            if (this.auditLog != null)
-            {
-                auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
-                        error);
-            }
-
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
-                    error.getMessage()),
-                    this.getClass().getName(),
-                    methodName,error);
-
-        } catch (UserNotAuthorizedException error)
-        {
-
-            if (this.auditLog != null)
-            {
-                auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
-                        error);
-            }
-
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
-                    error.getMessage()),
-                    this.getClass().getName(),
-                    methodName,error);
-
-
-        } catch (PropertyServerException error)
-        {
-            if (this.auditLog != null)
-            {
-                auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.INVALID_PROPERTY.getMessageDefinition(),
-                        error);
-            }
-
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
-                    error.getMessage()),
-                    this.getClass().getName(),
-                    methodName,error);
-
-        } catch (Throwable error)
+        }
+        catch (Exception error)
         {
             if (this.auditLog != null)
             {
@@ -827,7 +1096,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -837,18 +1106,89 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     }
 
-
-    private void addTable(PostgresTable table, String schemaGUID) throws InvalidParameterException,
-                                                                         PropertyServerException,
-                                                                         UserNotAuthorizedException,
-                                                                         ConnectorCheckedException
+    /**
+     * Reads the postgres metadata for a given table and creates a corresponding egeria entity.
+     *
+     * @param table     the postgres schema attributes to be
+     * @param schemaGUID the egeria GUID of the schema
+     * @throws ConnectorCheckedException
+     */
+    private void addTable(PostgresTable table, String schemaGUID) throws ConnectorCheckedException
     {
-        DatabaseTableProperties props = new DatabaseTableProperties();
-        props.setDisplayName(table.getTable_name());
-        props.setQualifiedName(table.getQualifiedName());
-        props.setAdditionalProperties( table.getProperties() );
-        String tableGUID = this.context.createDatabaseTable(schemaGUID, props);
-        addColumnsForTable(table, tableGUID);
+        String methodName = "addTable";
+        try
+        {
+            DatabaseTableProperties props = new DatabaseTableProperties();
+            props.setDisplayName(table.getQualifiedName());
+            props.setQualifiedName(table.getQualifiedName());
+            props.setAdditionalProperties(table.getProperties());
+            String tableGUID = this.getContext().createDatabaseTable(schemaGUID, props);
+            addColumns(table, tableGUID);
+        }
+        catch ( ConnectorCheckedException error )
+        {
+
+        }
+        catch ( UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (PropertyServerException error )
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch ( InvalidParameterException error )
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+
+        }
+        catch (Exception error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+
     }
 
     /**
@@ -862,11 +1202,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addForeignKeys(PostgresSourceDatabase sourceDB, PostgresSchema schema) throws ConnectorCheckedException
     {
         String methodName = "addForeignKeys";
+        int startFrom = 1;
+        int pageSize = 100;
+
         try
         {
 
             List<PostgresTable> tables = sourceDB.getTables(schema);
-
             for (PostgresTable t : tables)
             {
                 List<PostgresForeginKeyLinks> foreginKeys = sourceDB.getForeginKeyLinksForTable(t.getTable_name());
@@ -875,7 +1217,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                 for (PostgresForeginKeyLinks link : foreginKeys)
                 {
-                    List<DatabaseColumnElement> importedEntities = this.context.findDatabaseColumns(link.getImportedColumnQualifiedName(), 1, 100) ;
+                    List<DatabaseColumnElement> importedEntities = this.getContext().findDatabaseColumns(link.getImportedColumnQualifiedName(), startFrom, pageSize) ;
                     if( importedEntities != null )
                     {
                         for (DatabaseColumnElement col : importedEntities)
@@ -884,7 +1226,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
 
-                    List<DatabaseColumnElement> exportedEntities = this.context.findDatabaseColumns(link.getExportedColumnQualifiedName(), 1, 100);
+                    List<DatabaseColumnElement> exportedEntities = this.getContext().findDatabaseColumns(link.getExportedColumnQualifiedName(), startFrom, pageSize);
 
                     if( exportedEntities != null )
                     {
@@ -894,12 +1236,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
 
-                    //TODO HUH ?
+
                     for( String str : importedGuids )
                     {
                         DatabaseForeignKeyProperties linkProps = new DatabaseForeignKeyProperties();
                         for( String s : exportedGuids )
-                            this.context.addForeignKeyRelationship(str, s, linkProps);
+                            this.getContext().addForeignKeyRelationship(str, s, linkProps);
                     }
 
                 }
@@ -913,7 +1255,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_FOREIGN_KEYS.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -1003,15 +1345,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 viewProps.setDisplayName(view.getTable_name());
                 viewProps.setQualifiedName(view.getQualifiedName());
                 viewProps.setAdditionalProperties( view.getProperties());
-
-                String tableGUID = this.context.createDatabaseView(schemaGUID, viewProps);
-
-                /* TODO add links to exisitng columns ??*/
-                addColumnsForTable( view, tableGUID );
+                String tableGUID = this.getContext().createDatabaseView(schemaGUID, viewProps);
+                addColumns( view, tableGUID );
             }
 
 
-        } catch (InvalidParameterException error)
+        }
+        catch (InvalidParameterException error)
         {
             if (this.auditLog != null)
             {
@@ -1020,7 +1360,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -1035,7 +1375,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_VIEWS.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -1050,7 +1390,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -1072,9 +1412,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         } catch (ConnectorCheckedException error)
         {
-            // already handled , so just propogate up
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
             throw error;
-        } catch (Throwable error)
+        }
+        catch (Exception error)
         {
 
             if (this.auditLog != null)
@@ -1084,7 +1431,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -1100,10 +1447,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param tableGUID the GUID of the owning table
      * @throws ConnectorCheckedException thrown by the JDBC Driver
      */
-    private void addColumnsForTable(PostgresTable table, String tableGUID) throws ConnectorCheckedException
+    private void addColumns(PostgresTable table, String tableGUID) throws ConnectorCheckedException
     {
-        String methodName = "addColumnsForTable";
-
+        String methodName = "addColumns";
         PostgresSourceDatabase source = new PostgresSourceDatabase( this.connectionProperties);
         try
         {
@@ -1116,20 +1462,32 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 colProps.setDisplayName(col.getColumn_name());
                 colProps.setQualifiedName(col.getQualifiedName());
                 colProps.setAdditionalProperties(col.getProperties());
-                String colGUID = this.context.createDatabaseColumn(tableGUID, colProps);
+                String colGUID = this.getContext().createDatabaseColumn(tableGUID, colProps);
 
                 if (primaryKeys.contains(col.getColumn_name()))
                 {
                     DatabasePrimaryKeyProperties keyProps = new DatabasePrimaryKeyProperties();
                     keyProps.setName(col.getColumn_name());
-                    //TODO
-                    //this.context.setPrimaryKeyOnColumn(colGUID, keyProps);
+                    getContext().setPrimaryKeyOnColumn(colGUID, keyProps);
                 }
             }
-        } catch (InvalidParameterException e)
+        }
+        catch (InvalidParameterException error)
         {
-            e.printStackTrace();
-        } catch (SQLException error)
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (SQLException error)
         {
             if (this.auditLog != null)
             {
@@ -1138,12 +1496,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_COLUMNS.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
 
-        } catch (PropertyServerException error)
+        }
+        catch (PropertyServerException error)
         {
             if (this.auditLog != null)
             {
@@ -1152,12 +1511,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
 
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
             if (this.auditLog != null)
             {
@@ -1166,7 +1526,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         error);
             }
 
-            throw new ConnectorCheckedException(PostgresConnectorErrorCode.ERROR_READING_DATABASES.getMessageDefinition(error.getClass().getName(),
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
                     error.getMessage()),
                     this.getClass().getName(),
                     methodName,error);
@@ -1190,20 +1550,104 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     }
 
-    private void addColumn( PostgresColumn col, String guid, List<String> primaryKeys ) throws InvalidParameterException, PropertyServerException, UserNotAuthorizedException
+    /**
+     * mapping function that reads tables, columns and primmary keys
+     * for a schema from postgres and adds the data to egeria
+     *
+     * @param col     the postgrews attributes of the column
+     * @param guid the GUID of the owning table
+     * @param primaryKeys a list of the attributes for each primary key
+     * @throws ConnectorCheckedException
+     */
+    private void addColumn( PostgresColumn col, String guid, List<String> primaryKeys ) throws ConnectorCheckedException
     {
-        DatabaseColumnProperties colProps = new DatabaseColumnProperties();
-        colProps.setDisplayName(col.getColumn_name());
-        colProps.setQualifiedName(col.getQualifiedName());
-        colProps.setAdditionalProperties(col.getProperties());
-
-        String colGUID = this.context.createDatabaseColumn(guid, colProps);
-
-        if (primaryKeys.contains(col.getColumn_name()))
+        String methodName= "addColumn";
+        try
         {
-            DatabasePrimaryKeyProperties keyProps = new DatabasePrimaryKeyProperties();
-            keyProps.setName(col.getColumn_name());
-            this.context.setPrimaryKeyOnColumn(colGUID, keyProps);
+            DatabaseColumnProperties colProps = new DatabaseColumnProperties();
+            colProps.setDisplayName(col.getColumn_name());
+            colProps.setQualifiedName(col.getQualifiedName());
+            colProps.setAdditionalProperties(col.getProperties());
+
+            String colGUID = this.getContext().createDatabaseColumn(guid, colProps);
+
+            if (primaryKeys.contains(col.getColumn_name()))
+            {
+                DatabasePrimaryKeyProperties keyProps = new DatabasePrimaryKeyProperties();
+                keyProps.setName(col.getColumn_name());
+                this.getContext().setPrimaryKeyOnColumn(colGUID, keyProps);
+            }
+        }
+        catch (InvalidParameterException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.INVALID_PARAMETER.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (PropertyServerException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (UserNotAuthorizedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
+        }
+        catch (ConnectorCheckedException error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.CONNECTOR_CHECKED.getMessageDefinition(),
+                        error);
+            }
+
+            throw error;
+        }
+        catch (Exception error)
+        {
+            if (this.auditLog != null)
+            {
+                auditLog.logException(methodName,
+                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(),
+                        error);
+            }
+
+            throw new ConnectorCheckedException(PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(error.getClass().getName(),
+                    error.getMessage()),
+                    this.getClass().getName(),
+                    methodName,error);
+
         }
 
     }

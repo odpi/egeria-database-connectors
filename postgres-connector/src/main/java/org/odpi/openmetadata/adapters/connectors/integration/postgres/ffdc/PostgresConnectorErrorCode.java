@@ -96,6 +96,12 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
             "The Egeria OMAS Server returned a Property Server Exception",
             "Verify that the Egeria OMAS server is available",
             "Verify that the Postgres database server is available."),
+
+    CONNECTOR_CHECKED( 400, "POSTGRES-CONNECTOR-400-013",
+            "The Egeria OMAS Server returned a Connector Exception",
+            "Verify that the Egeria OMAS server is available",
+            "Check the Exception details to identify the issue"),
+
     ;
 
     private final ExceptionMessageDefinition messageDefinition;
