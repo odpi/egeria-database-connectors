@@ -126,3 +126,4 @@ subprojects {
         options.failOnError = true
     }
 }
+
