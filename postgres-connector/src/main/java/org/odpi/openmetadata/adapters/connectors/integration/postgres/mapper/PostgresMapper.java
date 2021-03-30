@@ -1,8 +1,8 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.postgres.mapper;
-
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
-
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
 
@@ -43,7 +43,7 @@ public class PostgresMapper
     public DatabaseSchemaProperties mapSchemaProlperties(PostgresSchema sch)
     {
         DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties();
-        schemaProps.setDisplayName(sch.getSchema_name());
+        schemaProps.setDisplayName(sch.getQualifiedName());
         schemaProps.setQualifiedName(sch.getQualifiedName());
         schemaProps.setOwner(sch.getSchema_owner());
         schemaProps.setAdditionalProperties(sch.getProperties());
