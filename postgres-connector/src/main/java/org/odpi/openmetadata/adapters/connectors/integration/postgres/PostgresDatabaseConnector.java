@@ -51,24 +51,36 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             {
                 boolean found = false;
 
-                for( DatabaseElement base : knownDatabases )
+                /*
+                we have no databases in egeria
+                so all databases are new
+                 */
+                if( knownDatabases == null )
                 {
-                    if( base.getDatabaseProperties().getQualifiedName().equals( db.getQualifiedName()))
+                    addDatabase(db);
+                    continue;
+                }
+                else
+                {
+                    for (DatabaseElement base : knownDatabases)
                     {
+                        if (base.getDatabaseProperties().getQualifiedName().equals(db.getQualifiedName()))
+                        {
                         /*
                         we have found an exact instance to update
                          */
-                        found = true;
-                        updateDatabase(db, knownDatabases );
-                        break;
+                            found = true;
+                            updateDatabase(db, knownDatabases);
+                            break;
+                        }
                     }
-                }
                     /*
                     this is a new table so add it
                      */
-                if( found == false )
-                {
-                    addDatabase( db );
+                    if (found == false)
+                    {
+                        addDatabase(db);
+                    }
                 }
             }
         }
@@ -870,6 +882,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "addDatabase";
         String guid = null;
+
+        System.out.println("***** ADDING DATABASE : " +db.getName() + "******");
         try
         {
          /*
@@ -939,6 +953,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
 
         String methodName = "addSchemas";
+
         try
         {
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
@@ -977,6 +992,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addSchema(PostgresSchema sch, String dbGuidd) throws ConnectorCheckedException
     {
         String methodName = "addSchema";
+
+        System.out.println("***** ADDING Schema : " +sch.getSchema_name() + "******");
         try
         {
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
@@ -1116,6 +1133,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addTable(PostgresTable table, String schemaGUID) throws ConnectorCheckedException
     {
         String methodName = "addTable";
+
+        System.out.println("***** ADDING TABLE : " + table.getTable_name() + " ******");
+
         try
         {
             DatabaseTableProperties props = new DatabaseTableProperties();
@@ -1562,6 +1582,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addColumn( PostgresColumn col, String guid, List<String> primaryKeys ) throws ConnectorCheckedException
     {
         String methodName= "addColumn";
+
+        System.out.println("***** ADDING COLUMN : " + col.getColumn_name() + " ******");
+
         try
         {
             DatabaseColumnProperties colProps = new DatabaseColumnProperties();
