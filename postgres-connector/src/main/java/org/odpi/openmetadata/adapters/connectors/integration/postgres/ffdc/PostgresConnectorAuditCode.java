@@ -45,13 +45,13 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "Review the user's privileges"),
     PROPERTY_SERVER_EXCEPTION("POSTGRES-CONNECTOR-0005",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "The user is not autoized to perform that operation",
+            "The user is not authorized to perform that operation",
             "Operation refused",
             "Review the user's privileges"),
 
     INVALID_PARAMETER("POSTGRES-CONNECTOR-0006",
             OMRSAuditLogRecordSeverity.ERROR,
-            "An invalid paramter was passed to Egeria.",
+            "An invalid parameter was passed to Egeria.",
             "The request has been rejected.",
             "This problem must be fixed before the Postgres Connector can exchange metadata."),
 
@@ -79,7 +79,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "Ensure that the source Postgres database is available.",
             "Verify that the source Postgres database is available."),
 
-    ERROR_READING_FOREGIN_KEYS("POSTGRES-CONNECTOR-0011",
+    ERROR_READING_FOREIGN_KEYS("POSTGRES-CONNECTOR-0011",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The Postgres Connector experienced an error reading the database foregin keys.",
             "Ensure that the source Postgres database is available.",

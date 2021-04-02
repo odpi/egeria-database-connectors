@@ -102,6 +102,11 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
             "Verify that the Egeria OMAS server is available",
             "Check the Exception details to identify the issue"),
 
+    ALREADY_HANDLED_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-014",
+            "Passing a handled exception to the connector",
+            "Check the nested exception for root cause",
+            "Check the nested exception user action for resolution"),
+
     ;
 
     private final ExceptionMessageDefinition messageDefinition;

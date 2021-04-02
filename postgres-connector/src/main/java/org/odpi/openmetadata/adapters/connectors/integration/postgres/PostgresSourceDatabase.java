@@ -300,24 +300,24 @@ public class PostgresSourceDatabase
 
     /**
      * Wrapper function which lists the postgres attributes for views for a given schema
-     * @param schema the name of the database to find the schemas
+     * @param schemaName the name of the database to find the schemas
      * @return A list of schemas for the given database
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresTable> getViews(PostgresSchema schema) throws SQLException {
+    public List<PostgresTable> getViews(String schemaName) throws SQLException {
 
-        return getTablesAttributes(schema.getSchema_name(), "VIEW");
+        return getTablesAttributes(schemaName, "VIEW");
 
     }
 
     /**
      * Wrapper function which lists the postgres attributes for tables for a given schema
-     * @param schema the name of the database to find the schemas
+     * @param schemaName the name of the database to find the schemas
      * @return A list of tables for the given database
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresTable> getTables(PostgresSchema schema) throws SQLException {
-        return getTablesAttributes(schema.getSchema_name(), "BASE TABLE");
+    public List<PostgresTable> getTables(String schemaName) throws SQLException {
+        return getTablesAttributes(schemaName, "BASE TABLE");
 
     }
 
