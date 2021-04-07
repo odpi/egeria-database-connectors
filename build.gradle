@@ -18,7 +18,7 @@ buildscript {
 
     dependencies {
         classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:3.0.1'
-    } 
+    }
 }
 
 /*
@@ -75,16 +75,19 @@ subprojects {
     // As we've migrated from maven - we'll assume all submodules publish directly to maven
     apply plugin: 'maven-publish'
 
+    ext {
+        egeriaVersion = '2.9-SNAPSHOT'
+    }
     // Dependency Management - to fix versions. Pick up maven build settings for now
     dependencies {
         constraints
                 {
-                    implementation 'org.postgresql:postgresql:42.2.19'
-                    implementation 'org.slf4j:slf4j-api:latest.integration'
-                    implementation 'org.odpi.egeria:data-manager-client:2.9-SNAPSHOT'
-                    implementation 'org.odpi.egeria:data-manager-api:2.9-SNAPSHOT'
-                    implementation 'org.odpi.egeria:database-integrator-api:2.9-SNAPSHOT'
-                    implementation 'org.odpi.egeria:open-connector-framework:2.9-SNAPSHOT'
+                    implementation "org.postgresql:postgresql:42.2.19"
+                    implementation "org.slf4j:slf4j-api:1.7.30"
+                    implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
+                    implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
+                    implementation "org.odpi.egeria:database-integrator-api:${egeriaVersion}"
+                    implementation "org.odpi.egeria:open-connector-framework:${egeriaVersion}"
                 }
         test {
             useJUnitPlatform {
