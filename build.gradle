@@ -77,6 +77,15 @@ subprojects {
 
     // Dependency Management - to fix versions. Pick up maven build settings for now
     dependencies {
+        constraints
+                {
+                    implementation 'org.postgresql:postgresql:42.2.19'
+                    implementation 'org.slf4j:slf4j-api:latest.integration'
+                    implementation 'org.odpi.egeria:data-manager-client:2.8-SNAPSHOT'
+                    implementation 'org.odpi.egeria:data-manager-api:2.8-SNAPSHOT'
+                    implementation 'org.odpi.egeria:database-integrator-api:2.8-SNAPSHOT'
+                    implementation 'org.odpi.egeria:open-connector-framework:2.8-SNAPSHOT'
+                }
         test {
             useJUnitPlatform {
                 includeEngines 'junit-jupiter'
