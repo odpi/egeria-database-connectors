@@ -43,50 +43,68 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "The user is not autoized to perform that operation",
             "Operation refused",
             "Review the user's privileges"),
+    PROPERTY_SERVER_EXCEPTION("POSTGRES-CONNECTOR-0005",
+            OMRSAuditLogRecordSeverity.EXCEPTION,
+            "The user is not authorized to perform that operation",
+            "Operation refused",
+            "Review the user's privileges"),
 
-    INVALID_PARAMETER("POSTGRES-CONNECTOR-0005",
+    INVALID_PARAMETER("POSTGRES-CONNECTOR-0006",
             OMRSAuditLogRecordSeverity.ERROR,
-            "An invalid paramter was passed to Egeria.",
+            "An invalid parameter was passed to Egeria.",
             "The request has been rejected.",
             "This problem must be fixed before the Postgres Connector can exchange metadata."),
 
-    INVALID_PROPERTY("POSTGRES-CONNECTOR-0006",
+    INVALID_PROPERTY("POSTGRES-CONNECTOR-0007",
             OMRSAuditLogRecordSeverity.ERROR,
             "An invalid property was passed to Egeria",
             "Egeria was passed an invalid property",
             "This problem must be fixed before the server can exchange metadata."),
 
-    ERROR_READING_TABLES("POSTGRES-CONNECTOR-0007",
+    ERROR_READING_TABLES("POSTGRES-CONNECTOR-0008",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The Postgres Connector experienced an error reading the database tables.",
             "Ensure that the source Postgres database is available.",
             "Verify that the source Postgres database is available."),
 
-    UNEXPECTTED_ERROR("POSTGRES-CONNECTOR-0008",
+    UNEXPECTTED_ERROR("POSTGRES-CONNECTOR-0009",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The Postgres Connector experienced an unexpected exception.",
             "Examine the system logs to identify the issue.",
             "Use the information in the event and the exception message, along with other messages to determine the source of the error."),
 
-    ERROR_READING_VIEWS("POSTGRES-CONNECTOR-0009",
+    ERROR_READING_VIEWS("POSTGRES-CONNECTOR-00010",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The Postgres Connector experienced an error reading the database views.",
             "Ensure that the source Postgres database is available.",
             "Verify that the source Postgres database is available."),
 
-    ERROR_READING_FOREGIN_KEYS("POSTGRES-CONNECTOR-0010",
+    ERROR_READING_FOREIGN_KEYS("POSTGRES-CONNECTOR-0011",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The Postgres Connector experienced an error reading the database foregin keys.",
             "Ensure that the source Postgres database is available.",
             "Verify that the source Postgres database is available."),
 
-    ERROR_READING_COLUMNS("POSTGRES-CONNECTOR-0011",
+    ERROR_READING_COLUMNS("POSTGRES-CONNECTOR-0012",
             OMRSAuditLogRecordSeverity.SHUTDOWN,
             "The Postgres Connector experienced a problem reading the table columns.",
             "Ensure that the Postgres database server is available.",
             "Ensure that the Postgres database server is available."),
 
+    ERROR_REMOVING_DATABASES("POSTGRES-CONNECTOR-0013",
+            OMRSAuditLogRecordSeverity.SHUTDOWN,
+            "The Postgres Connector experienced a problem while trying to remove a database from Egeria.",
+            "Ensure that the OMAS server is availabale and is responsive",
+            "Ensure that the OMAS server is availabale and is responsive."),
+
+    CONNECTOR_CHECKED("POSTGRES-CONNECTOR-0013",
+            OMRSAuditLogRecordSeverity.SHUTDOWN,
+            "The Egeria omas server returned a connector checked exception",
+            "Ensure that the OMAS server is availabale and is responsive",
+            "Check exception details to rectify the problem"),
     ;
+
+
 
     private final AuditLogMessageDefinition messageDefinition;
 

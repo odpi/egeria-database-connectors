@@ -43,10 +43,12 @@ allprojects {
     version = '2.5-SNAPSHOT'
 
     repositories {
-//         jcenter()
-//         mavenCentral()
+         jcenter()
+         mavenCentral()
          // snapshots of egeria core ie -SNAPSHOT
+         //TODO BELOW ISN'T WORKING
          maven { url("https://odpi.jfrog.io/odpi/egeria-snapshot") }
+         maven { url("https://oss.sonatype.org/content/repositories/snapshots")}
     }
 
 
@@ -73,15 +75,6 @@ subprojects {
 
     // Dependency Management - to fix versions. Pick up maven build settings for now
     dependencies {
-        constraints {
-            implementation("org.slf4j:slf4j-api:1.7.30")
-            implementation 'org.odpi.egeria:data-manager-client:2.5-SNAPSHOT'
-            implementation 'org.odpi.egeria:data-manager-api:2.5-SNAPSHOT'
-            implementation 'org.odpi.egeria:database-integrator-api:2.5-SNAPSHOT'
-            implementation 'org.odpi.egeria:open-connector-framework:2.5-SNAPSHOT'
-            implementation 'org.slf4j:slf4j-api'
-        }
-
         test {
             useJUnitPlatform {
                 includeEngines 'junit-jupiter'
@@ -133,3 +126,4 @@ subprojects {
         options.failOnError = true
     }
 }
+

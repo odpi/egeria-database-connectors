@@ -300,24 +300,24 @@ public class PostgresSourceDatabase
 
     /**
      * Wrapper function which lists the postgres attributes for views for a given schema
-     * @param schema the name of the database to find the schemas
+     * @param schemaName the name of the database to find the schemas
      * @return A list of schemas for the given database
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresTable> getViews(PostgresSchema schema) throws SQLException {
+    public List<PostgresTable> getViews(String schemaName) throws SQLException {
 
-        return getTablesAttributes(schema.getSchema_name(), "VIEW");
+        return getTablesAttributes(schemaName, "VIEW");
 
     }
 
     /**
      * Wrapper function which lists the postgres attributes for tables for a given schema
-     * @param schema the name of the database to find the schemas
+     * @param schemaName the name of the database to find the schemas
      * @return A list of tables for the given database
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresTable> getTables(PostgresSchema schema) throws SQLException {
-        return getTablesAttributes(schema.getSchema_name(), "BASE TABLE");
+    public List<PostgresTable> getTables(String schemaName) throws SQLException {
+        return getTablesAttributes(schemaName, "BASE TABLE");
 
     }
 
@@ -352,9 +352,7 @@ public class PostgresSourceDatabase
         List<String> names = new ArrayList<>();
 
         String sql = "SELECT c.column_name AS name FROM information_schema.table_constraints tc JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name) JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name WHERE constraint_type = '%s' and tc.table_name = '%s';";
-
         sql = String.format(sql, type, tableName);
-
 
         try (
                 Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
@@ -385,9 +383,9 @@ public class PostgresSourceDatabase
                 "    tc.constraint_name, \n" +
                 "    tc.table_name, \n" +
                 "    kcu.column_name, \n" +
-                "    ccu.table_schema AS foreign_table_schema,\n" +
-                "    ccu.table_name AS foreign_table_name,\n" +
-                "    ccu.column_name AS foreign_column_name \n" +
+                "    ccu.table_schema AS ftschema,\n" +
+                "    ccu.table_name AS ftname,\n" +
+                "    ccu.column_name AS fcolumn \n" +
                 "FROM \n" +
                 "    information_schema.table_constraints AS tc \n" +
                 "    JOIN information_schema.key_column_usage AS kcu\n" +
@@ -415,9 +413,9 @@ public class PostgresSourceDatabase
                         rs.getString("constraint_name"),
                         rs.getString("table_name"),
                         rs.getString("column_name"),
-                        rs.getString("foregin_table_schema"),
-                        rs.getString("foregin_table_name"),
-                        rs.getString("foregin_column_name"));
+                        rs.getString("ftschema"),
+                        rs.getString("ftname"),
+                        rs.getString("fcolumn"));
 
                 results.add(link);
             }

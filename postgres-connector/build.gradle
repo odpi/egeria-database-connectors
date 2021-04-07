@@ -15,11 +15,14 @@ apply plugin: 'java'
 }
 
 dependencies {
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
-//    implementation 'org.postgresql:postgresql'
-    implementation 'org.odpi.egeria:data-manager-client'
-    implementation 'org.odpi.egeria:database-integrator-api'
+            implementation 'org.postgresql:postgresql:latest.integration'
+            implementation 'org.slf4j:slf4j-api:latest.integration'
+            implementation 'org.odpi.egeria:data-manager-client:2.8-SNAPSHOT'
+            implementation 'org.odpi.egeria:data-manager-api:2.8-SNAPSHOT'
+            implementation 'org.odpi.egeria:database-integrator-api:2.8-SNAPSHOT'
+            implementation 'org.odpi.egeria:open-connector-framework:2.8-SNAPSHOT'
   }
+
 
 
 description = 'Postgres Connector'
@@ -35,12 +38,13 @@ java {
 
 jar {
 
-// manifest {
-//        attributes(
-//                'Class-Path': configurations.compile.files.collect { "libs/$it.name" }.join(' ')
-//        )
-//    }
-
+/*
+ manifest {
+        attributes(
+                'Class-Path': configurations.compile.files.collect { "libs/$it.name" }.join(' ')
+        )
+    }
+*/
     task copyJarToBin {
         copy {
             from 'build/libs/postgres-connector-2.5-SNAPSHOT.jar'
