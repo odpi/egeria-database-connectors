@@ -9,8 +9,11 @@
 */
 
 buildscript {
-    repositories { 
-        maven { url("https://odpi.jfrog.io/odpi/egeria-snapshot") }
+    repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
     }
 
     dependencies {
@@ -43,13 +46,12 @@ allprojects {
     version = '2.8-SNAPSHOT'
 
     repositories {
-         jcenter()
          mavenCentral()
          // snapshots of egeria core ie -SNAPSHOT
-         //TODO BELOW ISN'T WORKING
-         maven { url("https://odpi.jfrog.io/odpi/egeria-snapshot") }
-         maven { url("https://oss.sonatype.org/content/repositories/snapshots")}
-    }
+         maven {
+             url "https://oss.sonatype.org/content/repositories/snapshots"
+             }
+         }
 
 
     // This enforces version checking but is slow to process
