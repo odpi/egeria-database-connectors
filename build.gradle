@@ -78,7 +78,13 @@ subprojects {
     ext {
         egeriaVersion = '2.9-SNAPSHOT'
     }
-    // Dependency Management - to fix versions. Pick up maven build settings for now
+
+    // ensures we pick up the very latest snapshots when built
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
     dependencies {
         constraints
                 {
