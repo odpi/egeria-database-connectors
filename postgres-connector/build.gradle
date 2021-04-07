@@ -15,12 +15,12 @@ apply plugin: 'java'
 }
 
 dependencies {
-            implementation 'org.postgresql:postgresql:42.2.19'
-            implementation 'org.slf4j:slf4j-api:latest.integration'
-            implementation 'org.odpi.egeria:data-manager-client:2.8-SNAPSHOT'
-            implementation 'org.odpi.egeria:data-manager-api:2.8-SNAPSHOT'
-            implementation 'org.odpi.egeria:database-integrator-api:2.8-SNAPSHOT'
-            implementation 'org.odpi.egeria:open-connector-framework:2.8-SNAPSHOT'
+            implementation 'org.postgresql:postgresql'
+            implementation 'org.slf4j:slf4j-api'
+            implementation 'org.odpi.egeria:data-manager-client'
+            implementation 'org.odpi.egeria:data-manager-api'
+            implementation 'org.odpi.egeria:database-integrator-api'
+            implementation 'org.odpi.egeria:open-connector-framework'
   }
 
 
@@ -47,7 +47,7 @@ jar {
 */
     task copyJarToBin {
         copy {
-            from 'build/libs/postgres-connector-2.5-SNAPSHOT.jar'
+            from 'build/libs/postgres-connector-${version}.jar'
             into "libs"
         }
 }
