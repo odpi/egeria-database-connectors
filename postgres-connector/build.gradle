@@ -15,7 +15,7 @@ apply plugin: 'java'
 }
 
 dependencies {
-            implementation 'org.postgresql:postgresql:latest.integration'
+            implementation 'org.postgresql:postgresql:42.2.19'
             implementation 'org.slf4j:slf4j-api:latest.integration'
             implementation 'org.odpi.egeria:data-manager-client:2.8-SNAPSHOT'
             implementation 'org.odpi.egeria:data-manager-api:2.8-SNAPSHOT'
