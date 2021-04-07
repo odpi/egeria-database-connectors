@@ -47,7 +47,7 @@ jar {
 */
     task copyJarToBin {
         copy {
-            from 'build/libs/postgres-connector-2.5-SNAPSHOT.jar'
+            from 'build/libs/postgres-connector-2.9-SNAPSHOT.jar'
             into "libs"
         }
 }
