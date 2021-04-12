@@ -86,7 +86,7 @@ public class PostgresSourceDatabase
 
      */
 
-    public List<PostgresDatabase> getDabaseNames( ) throws SQLException, ClassNotFoundException
+    public List<PostgresDatabase> getDabases( ) throws SQLException
     {
         ArrayList<PostgresDatabase> databaseNames = new ArrayList();
         /*
@@ -189,12 +189,12 @@ public class PostgresSourceDatabase
      * @return A list of tables for the given schema
      * @throws SQLException thrown by the JDBC Driver
      */
-    private List<PostgresTable> getTablesAttributes(String schemaName, String type) throws SQLException {
+    private List<PostgresTable> getTables(String schemaName, String type) throws SQLException {
         String sql = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '%s'" +
                 " AND table_type = '%s';";
 
         sql = String.format(sql, schemaName, type);
-        List<PostgresTable> attributes = new ArrayList<PostgresTable>();
+        List<PostgresTable> attributes = new ArrayList<>();
 
         try (
                 Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
@@ -230,7 +230,7 @@ public class PostgresSourceDatabase
      * @return A list of columns for the given table
      * @throws SQLException thrown by the JDBC Driver
      */
-    List<PostgresColumn> getColumnAttributes(String tableName) throws SQLException {
+    List<PostgresColumn> getColumns(String tableName) throws SQLException {
         String sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s';";
         sql = String.format(sql, tableName);
         List<PostgresColumn> cols = new ArrayList<PostgresColumn>();
@@ -306,7 +306,7 @@ public class PostgresSourceDatabase
      */
     public List<PostgresTable> getViews(String schemaName) throws SQLException {
 
-        return getTablesAttributes(schemaName, "VIEW");
+        return getTables(schemaName, "VIEW");
 
     }
 
@@ -317,7 +317,7 @@ public class PostgresSourceDatabase
      * @throws SQLException thrown by the JDBC Driver
      */
     public List<PostgresTable> getTables(String schemaName) throws SQLException {
-        return getTablesAttributes(schemaName, "BASE TABLE");
+        return getTables(schemaName, "BASE TABLE");
 
     }
 

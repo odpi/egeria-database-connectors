@@ -38,7 +38,6 @@ public class PostgresMapper
             dbProps.setAdditionalProperties(db.getProperties());
 
             return dbProps;
-
     }
 
     /**

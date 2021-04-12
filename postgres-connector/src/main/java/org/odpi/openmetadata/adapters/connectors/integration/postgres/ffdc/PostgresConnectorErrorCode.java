@@ -57,7 +57,7 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
             "Ensure that the Postgres database is reachable"),
 
     INVALID_PARAMETER( 400, "POSTGRES-CONNECTOR-400-007",
-            "An Invalid parameter was passed to Egeria",
+            "The Method {1} received an Invalid parameter exception from the OMAS server",
             "Review the paramaters passed to Egeria",
             "Review the paramaters passed to Egeria"),
 

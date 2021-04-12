@@ -4,10 +4,10 @@ import org.odpi.openmetadata.commonservices.ffdc.exceptions.OMAGCheckedException
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.AuditLogMessageDefinition;
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDefinition;
 
-public class AlreadyHanledException extends OMAGCheckedExceptionBase
+public class AlreadyHandledException extends OMAGCheckedExceptionBase
 {
 
-    public AlreadyHanledException(ExceptionMessageDefinition messageDefinition, String name, String methodName, Exception error)
+    public AlreadyHandledException(ExceptionMessageDefinition messageDefinition, String name, String methodName, Exception error)
     {
         super(messageDefinition, name, methodName, error);
     }

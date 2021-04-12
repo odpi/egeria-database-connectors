@@ -16,10 +16,10 @@ public class ExceptionHandler
      @param error        the exception to be logged
      @param auditCodeMsg the audit message
      @param errorCodeMsg the error message
-     @throws AlreadyHanledException an exception letting caller methods to know
+     @throws AlreadyHandledException an exception letting caller methods to know
      **/
     public static void handleException(AuditLog logger, String className, String methodName, Exception error, AuditLogMessageDefinition auditCodeMsg, ExceptionMessageDefinition errorCodeMsg )
-            throws AlreadyHanledException
+            throws AlreadyHandledException
     {
         if( logger != null )
         {
@@ -28,6 +28,6 @@ public class ExceptionHandler
                     error);
         }
 
-        throw new AlreadyHanledException(errorCodeMsg, className, methodName,error);
+        throw new AlreadyHandledException(errorCodeMsg, className, methodName,error);
     }
 }

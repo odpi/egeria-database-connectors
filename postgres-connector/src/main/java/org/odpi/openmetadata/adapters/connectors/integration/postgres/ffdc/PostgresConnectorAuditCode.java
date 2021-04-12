@@ -51,7 +51,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
 
     INVALID_PARAMETER("POSTGRES-CONNECTOR-0006",
             OMRSAuditLogRecordSeverity.ERROR,
-            "An invalid parameter was passed to Egeria.",
+            "The Method {1} received an Invalid parameter exception from the OMAS server",
             "The request has been rejected.",
             "This problem must be fixed before the Postgres Connector can exchange metadata."),
 
@@ -99,7 +99,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
 
     CONNECTOR_CHECKED("POSTGRES-CONNECTOR-0013",
             OMRSAuditLogRecordSeverity.SHUTDOWN,
-            "The Egeria omas server returned a connector checked exception",
+            "Method {0} received a connector checked exception from the OMAS server",
             "Ensure that the OMAS server is availabale and is responsive",
             "Check exception details to rectify the problem"),
     ;
