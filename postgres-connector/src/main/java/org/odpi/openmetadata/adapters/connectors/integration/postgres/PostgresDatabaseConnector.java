@@ -805,7 +805,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             if( egeriaColumns != null )
             {
-                deleteColumns(postgresColumns, egeriaColumns);
+                deleteTableColumns(postgresColumns, egeriaColumns);
 
                 for (PostgresColumn postgresColumn : postgresColumns)
                 {
@@ -922,7 +922,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             if( egeriaColumns != null )
             {
-                deleteColumns(postgresColumns, egeriaColumns);
+                //deleteColumns(postgresColumns, egeriaColumns);
 
 
                 for (PostgresColumn postgresColumn : postgresColumns)
@@ -1591,87 +1591,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
 
-    /**
-     * Checks if any database tables need to be removed from egeria
-     *
-     * @param postgresColumns              a list of the bean properties of a Postgres Database Tables
-     * @param egeriaColumns                a list of the Databases Tables already known to egeria
-     * @throws AlreadyHandledException
-     */
-    private void deleteColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
-    {
-
-        String methodName = "deleteColumns";
-        System.out.println("***** Method : " + methodName);
-
-        int startFrom = 0;
-        int pageSize = 100;
-
-        try
-        {
-            if (egeriaColumns != null)
-            {
-                /*
-                for each datbase already known to egeria
-                 */
-                for (DatabaseColumnElement element : egeriaColumns)
-                {
-                    String knownName = element.getDatabaseColumnProperties().getQualifiedName();
-                    /*
-                    check that the database column  is still present in postgres
-                     */
-                    for (PostgresColumn col : postgresColumns)
-                    {
-                        String sourceName = col.getQualifiedName();
-                        if (sourceName.equals(knownName))
-                        {
-                            /*
-                            if found then check the next databsee
-                             */
-                            break;
-                        }
-                        /*
-                        not found in postgres , so delete the datase table from egeria
-                         */
-                        getContext().removeDatabaseColumn(element.getElementHeader().getGUID(), knownName);
-                    }
-                }
-            }
-        }
-        catch (InvalidParameterException error)
-        {
-            ExceptionHandler.handleException(auditLog,
-                    this.getClass().getName(),
-                    methodName, error,
-                    PostgresConnectorAuditCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName),
-                    PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName()));
-        }
-        catch (PropertyServerException error)
-        {
-            ExceptionHandler.handleException(auditLog,
-                    this.getClass().getName(),
-                    methodName, error,
-                    PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName),
-                    PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName()));
-        }
-        catch (UserNotAuthorizedException error)
-        {
-            ExceptionHandler.handleException(auditLog,
-                    this.getClass().getName(),
-                    methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName),
-                    PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName()));
-
-        }
-        catch (ConnectorCheckedException error)
-        {
-            ExceptionHandler.handleException(auditLog,
-                    this.getClass().getName(),
-                    methodName, error,
-                    PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName),
-                    PostgresConnectorErrorCode.CONNECTOR_CHECKED.getMessageDefinition(error.getClass().getName()));
-        }
-    }
 
     /**
      * Checks if any databases need to be removed from egeria
