@@ -4,12 +4,6 @@
  */
 apply plugin: 'java'
 
-//repositories {
-  //  maven {
-    //    url("https://mvnrepository.com/artifact/org.postgresql/postgresql")
-      //  }
-  //}
-
  configurations {
     releaseJars
 }
@@ -17,10 +11,10 @@ apply plugin: 'java'
 dependencies {
             implementation 'org.postgresql:postgresql:latest.integration'
             implementation 'org.slf4j:slf4j-api:latest.integration'
-            implementation 'org.odpi.egeria:data-manager-client:2.8-SNAPSHOT'
-            implementation 'org.odpi.egeria:data-manager-api:2.8-SNAPSHOT'
-            implementation 'org.odpi.egeria:database-integrator-api:2.8-SNAPSHOT'
-            implementation 'org.odpi.egeria:open-connector-framework:2.8-SNAPSHOT'
+            implementation 'org.odpi.egeria:data-manager-client:2.9-SNAPSHOT'
+            implementation 'org.odpi.egeria:data-manager-api:2.9-SNAPSHOT'
+            implementation 'org.odpi.egeria:database-integrator-api:2.9-SNAPSHOT'
+            implementation 'org.odpi.egeria:open-connector-framework:2.9-SNAPSHOT'
   }
 
 
