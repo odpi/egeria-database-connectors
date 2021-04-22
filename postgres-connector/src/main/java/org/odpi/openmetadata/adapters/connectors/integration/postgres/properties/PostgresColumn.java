@@ -2,6 +2,8 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.postgres.properties;
 
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -426,4 +428,16 @@ public class PostgresColumn
 
         return getTable_catalog () + "::" + getTable_schema () + "::" + getTable_name () + "::" + getColumn_name ();
     }
+
+    public boolean equals(DatabaseColumnElement element)
+    {
+        boolean result = false;
+        Map<String, String> props = element.getDatabaseColumnProperties().getAdditionalProperties();
+        if ( props.equals( this.getProperties()))
+        {
+            result = true;
+        }
+        return result;
+    }
+
 }

@@ -3,6 +3,8 @@
 
 package org.odpi.openmetadata.adapters.connectors.integration.postgres.properties;
 
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,5 +84,16 @@ public class PostgresSchema {
     public String getQualifiedName ( )
     {
         return getSchema_owner() + "::" + catalog_name + "::" + schema_name;
+    }
+
+    public boolean equals(DatabaseSchemaElement element)
+    {
+        boolean result = false;
+        Map<String, String> props = element.getDatabaseSchemaProperties().getAdditionalProperties();
+        if ( props.equals( this.getProperties()))
+        {
+            result = true;
+        }
+        return result;
     }
 }

@@ -16,7 +16,7 @@ import org.odpi.openmetadata.adapters.connectors.integration.postgres.ffdc.Postg
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.mapper.PostgresMapper;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
-import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeignKeyLinks;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresTable;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
@@ -399,7 +399,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         System.out.println("****************  Updating Schema ********************");
         try
         {
-            if (postgresSchema.getQualifiedName().equals(egeriaSchema.getDatabaseSchemaProperties().getQualifiedName()))
+            if ( !postgresSchema.equals(egeriaSchema) )
             {
                 DatabaseSchemaProperties props = PostgresMapper.getSchemaProperties(postgresSchema);
                 getContext().updateDatabaseSchema(egeriaSchema.getElementHeader().getGUID(), props);
@@ -559,14 +559,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateTable(PostgresTable postgresTable, DatabaseTableElement egeriaTable) throws AlreadyHandledException
     {
         String methodName = "updateTable";
-        int startFrom = 0;
-        int pageSize = 100;
-
         System.out.println("***** Method : " + methodName);
 
         try
         {
-            if( postgresTable.getQualifiedName().equals( egeriaTable.getDatabaseTableProperties().getQualifiedName()))
+            if( postgresTable.equals( egeriaTable) )
             {
                 DatabaseTableProperties props = PostgresMapper.getTableProperties(postgresTable);
                 getContext().updateDatabaseTable(egeriaTable.getElementHeader().getGUID(), props);
@@ -729,14 +726,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateView(PostgresTable postgresTable, DatabaseViewElement egeriaView) throws AlreadyHandledException
     {
         String methodName = "updateTable";
-        int startFrom = 0;
-        int pageSize = 100;
 
         System.out.println("***** Method : " + methodName);
 
         try
         {
-            if( postgresTable.getQualifiedName().equals( egeriaView.getDatabaseViewProperties().getQualifiedName()))
+            if( !postgresTable.equals( egeriaView) )
             {
                 DatabaseViewProperties props = PostgresMapper.getViewProperties(postgresTable);
                 getContext().updateDatabaseView(egeriaView.getElementHeader().getGUID(), props);
@@ -795,13 +790,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         int pageSize = 100;
 
         System.out.println("***** Method : " + methodName);
-
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
-        String guid = egeriaTable.getElementHeader().getGUID();
+        String tableGuid = egeriaTable.getElementHeader().getGUID();
         try
         {
             List<PostgresColumn> postgresColumns = source.getColumns(postgresTable.getTable_name());
-            List<DatabaseColumnElement> egeriaColumns = getContext().getColumnsForDatabaseTable(egeriaTable.getElementHeader().getGUID(), startFrom, pageSize);
+            List<DatabaseColumnElement> egeriaColumns = getContext().getColumnsForDatabaseTable(tableGuid, startFrom, pageSize);
 
             if( egeriaColumns != null )
             {
@@ -811,13 +805,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 {
                     boolean found = false;
                     /*
-                    we have no tables in egeria
-                    so all tables are new
+                    we have no columns in egeria
+                    so all columns are new
                      */
                     if (egeriaColumns == null)
                     {
-                        //TODO
-                    //    addColumn(postgresColumn, guid);
+                        addColumn(postgresColumn, tableGuid);
                     }
                     else
                     {
@@ -843,8 +836,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                          */
                         if (!found)
                         {
-                            //TODO
-                           // addColumn(postgresColumn, guid);
+                           addColumn(postgresColumn, tableGuid);
                         }
                     }
                 }
@@ -1385,11 +1377,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<PostgresTable> tables = source.getTables(schema.getSchema_name());
             for (PostgresTable table : tables)
             {
-                List<PostgresForeginKeyLinks> foreginKeys = source.getForeginKeyLinksForTable(table.getTable_name());
+                List<PostgresForeignKeyLinks> foreginKeys = source.getForeginKeyLinksForTable(table.getTable_name());
                 List<String> importedGuids = new ArrayList<>();
                 List<String> exportedGuids = new ArrayList<>();
 
-                for (PostgresForeginKeyLinks link : foreginKeys)
+                for (PostgresForeignKeyLinks link : foreginKeys)
                 {
                     List<DatabaseColumnElement> importedEntities = getContext().findDatabaseColumns(link.getImportedColumnQualifiedName(), startFrom, pageSize);
 

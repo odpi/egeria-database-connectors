@@ -5,7 +5,7 @@ package org.odpi.openmetadata.adapters.connectors.integration.postgres;
 
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
-import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeignKeyLinks;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresTable;
 import org.odpi.openmetadata.frameworks.connectors.properties.ConnectionProperties;
@@ -376,7 +376,7 @@ public class PostgresSourceDatabase
      * @return A list of foregin key links attributes for the given table
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresForeginKeyLinks> getForeginKeyLinksForTable(String tableName) throws SQLException {
+    public List<PostgresForeignKeyLinks> getForeginKeyLinksForTable(String tableName) throws SQLException {
 
         String sql = "SELECT\n" +
                 "    tc.table_schema, \n" +
@@ -399,7 +399,7 @@ public class PostgresSourceDatabase
 
         sql = String.format(sql, tableName);
 
-        List<PostgresForeginKeyLinks> results = new ArrayList<>();
+        List<PostgresForeignKeyLinks> results = new ArrayList<>();
 
         try (
                 Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
@@ -408,7 +408,7 @@ public class PostgresSourceDatabase
         )
         {
             while (rs.next()) {
-                PostgresForeginKeyLinks link = new PostgresForeginKeyLinks(
+                PostgresForeignKeyLinks link = new PostgresForeignKeyLinks(
                         rs.getString("table_schema"),
                         rs.getString("constraint_name"),
                         rs.getString("table_name"),
