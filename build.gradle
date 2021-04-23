@@ -9,16 +9,16 @@
 */
 
 buildscript {
-    repositories { 
+
+    repositories {
          jcenter()
          maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
          mavenCentral()
          mavenLocal()
-     }
-
+    }
     dependencies {
         classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:3.0.1'
-    } 
+    }
 }
 
 /*
@@ -43,14 +43,14 @@ apply plugin: 'nebula-aggregate-javadocs'
 allprojects {
 
     group = 'org.odpi.egeria'
-    version = '2.5-SNAPSHOT'
+    version = '2.9-SNAPSHOT'
 
     repositories {
          jcenter()
         mavenCentral()
          mavenLocal()
          maven { url("https://oss.sonatype.org/content/repositories/snapshots")}
-    }
+         }
 
 
     // This enforces version checking but is slow to process
@@ -74,8 +74,26 @@ subprojects {
     // As we've migrated from maven - we'll assume all submodules publish directly to maven
     apply plugin: 'maven-publish'
 
-    // Dependency Management - to fix versions. Pick up maven build settings for now
+    ext {
+        egeriaVersion = '2.9-SNAPSHOT'
+    }
+
+    // ensures we pick up the very latest snapshots when built
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
     dependencies {
+        constraints
+                {
+                    implementation "org.postgresql:postgresql:42.2.19"
+                    implementation "org.slf4j:slf4j-api:1.7.30"
+                    implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
+                    implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
+                    implementation "org.odpi.egeria:database-integrator-api:${egeriaVersion}"
+                    implementation "org.odpi.egeria:open-connector-framework:${egeriaVersion}"
+                }
         test {
             useJUnitPlatform {
                 includeEngines 'junit-jupiter'
@@ -94,8 +112,8 @@ subprojects {
     test {
         useJUnitPlatform()
         dependencies {
-            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
         }
 
         testLogging {
