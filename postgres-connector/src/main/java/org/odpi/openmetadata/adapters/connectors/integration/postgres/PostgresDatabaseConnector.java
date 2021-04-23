@@ -41,8 +41,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         int startFrom = 0;
         int pageSize = 100;
 
-        System.out.println("***** Method : " + methodName);
-
         PostgresSourceDatabase source = new PostgresSourceDatabase(connectionProperties);
         try
         {
@@ -88,7 +86,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         we have found an exact instance to update
                          */
                             found = true;
-                            updateDatabase(postgresDatabase, egeriaDatabase);
+                            //TODO uncomment
+                            // updateDatabase(postgresDatabase, egeriaDatabase);
                             break;
                         }
                     }
@@ -210,8 +209,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "updateDatabase";
 
-        System.out.println("***** Method : " + methodName);
-
         try
         {
             if (egeriaDatabase != null)
@@ -284,25 +281,28 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
 
-        System.out.println("***** Method : " + methodName);
-
         try
         {
                /*
             get a list of databases schema currently hosted in postgres
             and remove any databases schemas that have been dropped since the last refresh
              */
-            List<PostgresSchema> schemas = source.getDatabaseSchema(name);
-            List<DatabaseSchemaElement> knownSchemas = getContext().getSchemasForDatabase(databaseGUID, startFrom, pageSize);
+            List<PostgresSchema> postgresSchemas = source.getDatabaseSchema(name);
+            List<DatabaseSchemaElement> egeriaSchemas = getContext().getSchemasForDatabase(databaseGUID, startFrom, pageSize);
 
-            for (PostgresSchema postgresSchema : schemas)
+            if( egeriaSchemas != null )
+            {
+                deleteSchemas( postgresSchemas, egeriaSchemas);
+            }
+
+            for (PostgresSchema postgresSchema : postgresSchemas)
             {
                 boolean found = false;
                 /*
                 we have no schemas in egeria
                 so all schemas are new
                  */
-                if (knownSchemas == null)
+                if (egeriaSchemas == null)
                 {
                     addSchemas(name, databaseGUID);
                 }
@@ -312,7 +312,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     check if the schema is known to egeria
                     and needs to be updated
                      */
-                    for (DatabaseSchemaElement egeriaSchema : knownSchemas)
+                    for (DatabaseSchemaElement egeriaSchema : egeriaSchemas)
                     {
                         if (egeriaSchema.getDatabaseSchemaProperties().getQualifiedName().equals(postgresSchema.getQualifiedName()))
                         {
@@ -394,9 +394,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateSchema( PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
     {
         String methodName = "updateSchema";
-        System.out.println("***** Method : " + methodName);
-
-        System.out.println("****************  Updating Schema ********************");
         try
         {
             if ( !postgresSchema.equals(egeriaSchema) )
@@ -452,7 +449,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
 
         final String methodName = "updateTables";
-        System.out.println("***** Method : " + methodName);
         int startFrom = 0;
         int pageSize = 100;
 
@@ -559,7 +555,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateTable(PostgresTable postgresTable, DatabaseTableElement egeriaTable) throws AlreadyHandledException
     {
         String methodName = "updateTable";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -619,8 +614,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         final String methodName = "updateTables";
         int startFrom = 0;
         int pageSize = 100;
-
-        System.out.println("***** Method : " + methodName);
 
         String schemaGuid = egeriaSchema.getElementHeader().getGUID();
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
@@ -726,8 +719,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "updateTable";
 
-        System.out.println("***** Method : " + methodName);
-
         try
         {
             if( !postgresTable.equals( egeriaView) )
@@ -736,7 +727,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 getContext().updateDatabaseView(egeriaView.getElementHeader().getGUID(), props);
             }
 
-            //updateViewColumns(postgresTable, egeriaView);
+            updateViewColumns(postgresTable, egeriaView);
         }
         catch (InvalidParameterException error)
         {
@@ -787,8 +778,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         final String methodName = "updateTableColumns";
         int startFrom = 0;
         int pageSize = 100;
-
-        System.out.println("***** Method : " + methodName);
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
         String tableGuid = egeriaTable.getElementHeader().getGUID();
         try
@@ -919,8 +908,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         int startFrom = 0;
         int pageSize = 100;
 
-        System.out.println("***** Method : " + methodName);
-
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
         String guid = egeriaTable.getElementHeader().getGUID();
         try
@@ -930,7 +917,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             if( egeriaColumns != null )
             {
-                //deleteColumns(postgresColumns, egeriaColumns);
+                deleteViewColumns(postgresColumns, egeriaColumns);
             }
 
             for (PostgresColumn postgresColumn : postgresColumns)
@@ -1033,8 +1020,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "updateColumn";
 
-        System.out.println("***** Method : " + methodName);
-
         try
         {
             if( !postgresCol.equals( egeriaCol))
@@ -1091,7 +1076,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addDatabase(PostgresDatabase db) throws AlreadyHandledException
     {
         String methodName = "addDatabase";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1151,8 +1135,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         String methodName = "addSchemas";
 
-        System.out.println("***** Method : " + methodName);
-
         try
         {
             PostgresSourceDatabase sourceDB = new PostgresSourceDatabase(this.connectionProperties);
@@ -1184,7 +1166,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addSchema(PostgresSchema sch, String dbGuidd) throws AlreadyHandledException
     {
         String methodName = "addSchema";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1242,7 +1223,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addTables(String schemaName, String schemaGUID) throws AlreadyHandledException
     {
         String methodName = "addTables";
-        System.out.println("***** Method : " + methodName);
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
 
@@ -1277,8 +1257,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addTable(PostgresTable table, String schemaGUID) throws AlreadyHandledException
     {
         String methodName = "addTable";
-
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1334,7 +1312,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addView(PostgresTable view, String schemaGUID) throws AlreadyHandledException
     {
         String methodName = "addTable";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1388,7 +1365,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         String methodName = "addForeignKeys";
         int startFrom = 0;
         int pageSize = 100;
-        System.out.println("***** Method : " + methodName);
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
 
@@ -1491,7 +1467,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addViews(String schemaName, String schemaGUID) throws AlreadyHandledException
     {
         String methodName = "addViews";
-        System.out.println("***** Method : " + methodName);
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
 
@@ -1527,7 +1502,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addColumns(String tableName, String tableGUID) throws AlreadyHandledException
     {
         String methodName = "addColumns";
-        System.out.println("***** Method : " + methodName);
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
         try
@@ -1561,7 +1535,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addColumn(PostgresColumn col, String guid) throws AlreadyHandledException
     {
         String methodName = "addColumn";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1615,7 +1588,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void deleteDatabases(List<PostgresDatabase> postgresDatabases, List<DatabaseElement> egeriaDatabases) throws AlreadyHandledException
     {
         String methodName = "deleteDatabases";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1698,7 +1670,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void deleteSchemas(List<PostgresSchema> postgresSchemas, List<DatabaseSchemaElement> egeriaSchemas) throws AlreadyHandledException
     {
         String methodName = "deleteSchemas";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1782,7 +1753,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void deleteTables(List<PostgresTable> postgresTables, List<DatabaseTableElement> egeriaTables) throws AlreadyHandledException
     {
         String methodName = "deleteTables";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
@@ -1866,14 +1836,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void deleteViews(List<PostgresTable> postgresViews, List<DatabaseViewElement> egeriaViews) throws AlreadyHandledException
     {
         String methodName = "deleteViews";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
             if (egeriaViews != null)
             {
                 /*
-                for each datbase already known to egeria
+                for each view already known to egeria
                  */
                 for (Iterator<DatabaseViewElement> itr = egeriaViews.iterator(); itr.hasNext();)
                 {
@@ -1890,7 +1859,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         if (sourceName.equals(knownName))
                         {
                             /*
-                            if found then check the next databsee
+                            if found then check the next table
                              */
                             found = true;
                             break;
@@ -1951,14 +1920,13 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void deleteTableColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
     {
         String methodName = "deleteTableColumns";
-        System.out.println("***** Method : " + methodName);
 
         try
         {
             if (egeriaColumns != null)
             {
                 /*
-                for each datbase already known to egeria
+                for each column already known to egeria
                  */
                 for (Iterator<DatabaseColumnElement> itr = egeriaColumns.iterator(); itr.hasNext();)
                 {
@@ -1975,7 +1943,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         if (sourceName.equals(knownName))
                         {
                             /*
-                            if found then check the next databsee
+                            if found then check the next column
                              */
                             found = true;
                             break;
@@ -2026,4 +1994,86 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
 
+    /**
+     * Checks if any columns need to be removed from egeria
+     *
+     * @param postgresColumns            a list of the bean properties of a Postgres cols
+     * @param egeriaColumns               a list of the  cols already known to egeria
+     * @throws AlreadyHandledException
+     */
+    private void deleteViewColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
+    {
+        String methodName = "deleteViewColumns";
+
+        try
+        {
+            if (egeriaColumns != null)
+            {
+                /*
+                for each column already known to egeria
+                 */
+                for (Iterator<DatabaseColumnElement> itr = egeriaColumns.iterator(); itr.hasNext();)
+                {
+                    boolean found = false;
+                    DatabaseColumnElement egeriaColumn = itr.next();
+
+                    String knownName = egeriaColumn.getDatabaseColumnProperties().getQualifiedName();
+                    /*
+                    check that the database is still present in postgres
+                     */
+                    for (PostgresColumn postgresColumn : postgresColumns)
+                    {
+                        String sourceName = postgresColumn.getQualifiedName();
+                        if (sourceName.equals(knownName))
+                        {
+                            /*
+                            if found then check the next column
+                             */
+                            found = true;
+                            break;
+                        }
+                    }
+                        /*
+                        not found in postgres , so delete the table from egeria
+                         */
+                    if( !found)
+                    {
+                        getContext().removeDatabaseView(egeriaColumn.getElementHeader().getGUID(), knownName);
+                        itr.remove();
+                    }
+
+                }
+            }
+        }
+        catch (InvalidParameterException error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName),
+                    PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName()));
+        } catch (PropertyServerException error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName),
+                    PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName()));
+        } catch (UserNotAuthorizedException error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName),
+                    PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName()));
+
+        } catch (ConnectorCheckedException error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName),
+                    PostgresConnectorErrorCode.CONNECTOR_CHECKED.getMessageDefinition(error.getClass().getName()));
+        }
+    }
 }
