@@ -103,6 +103,12 @@ public class PostgresMapper
         DatabaseColumnProperties colProps = new DatabaseColumnProperties();
         colProps.setDisplayName(col.getTable_name());
         colProps.setQualifiedName(col.getQualifiedName());
+
+        colProps.setDataType(col.getData_type());
+
+        if( col.getMaximum_cardinality() != null )
+            colProps.setMaxCardinality(Integer.parseInt(col.getMaximum_cardinality()));
+
         colProps.setAdditionalProperties(col.getProperties());
 
         return colProps;

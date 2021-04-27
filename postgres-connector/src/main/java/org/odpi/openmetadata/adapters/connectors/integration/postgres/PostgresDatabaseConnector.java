@@ -86,8 +86,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         we have found an exact instance to update
                          */
                             found = true;
-                            //TODO uncomment
-                            // updateDatabase(postgresDatabase, egeriaDatabase);
+                            updateDatabase(postgresDatabase, egeriaDatabase);
                             break;
                         }
                     }
@@ -1077,6 +1076,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "addDatabase";
 
+        System.out.println("***** Adding Database ********");
         try
         {
          /*
@@ -1541,7 +1541,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             DatabaseColumnProperties colProps = PostgresMapper.getColumnProperties(col);
             this.getContext().createDatabaseColumn(guid, colProps);
 
-        } catch (InvalidParameterException error)
+        }
+        catch (InvalidParameterException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1549,7 +1550,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName),
                     PostgresConnectorErrorCode.INVALID_PARAMETER.getMessageDefinition(error.getClass().getName()));
 
-        } catch (PropertyServerException error)
+        }
+        catch (PropertyServerException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1557,14 +1559,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName),
                     PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(error.getClass().getName()));
 
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED.getMessageDefinition(error.getClass().getName()));
-        } catch (ConnectorCheckedException error)
+        }
+        catch (ConnectorCheckedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
