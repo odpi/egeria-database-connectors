@@ -400,7 +400,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 getContext().updateDatabaseSchema(egeriaSchema.getElementHeader().getGUID(), props);
             }
             updateTables(postgresSchema, egeriaSchema);
-            updateViews( postgresSchema, egeriaSchema);
+
         }
         catch (InvalidParameterException error)
         {
