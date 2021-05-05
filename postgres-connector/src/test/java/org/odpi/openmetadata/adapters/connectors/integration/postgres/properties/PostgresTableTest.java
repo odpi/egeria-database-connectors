@@ -287,7 +287,7 @@ class PostgresTableTest {
 
         String qName = new StringBuilder().append(table.getTable_catalog()).append(".")
                                             .append(table.getTable_schema()).append(".")
-                                            .append(table.getTable_type()).append(".")
+                                            .append(table.getTable_type().substring(0,4)).append(".")
                                             .append(table.getTable_name()).toString();
 
         assertEquals( table.getQualifiedName(), qName);

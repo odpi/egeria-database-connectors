@@ -9,18 +9,21 @@
 */
 
 buildscript {
-    repositories { 
-         jcenter()
-         maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
-         mavenCentral()
-         mavenLocal()
-     }
+    repositories {
+        jcenter()
+        maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
+        mavenCentral()
+        mavenLocal()
+    }
 
     dependencies {
         classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:3.0.1'
-    } 
-}
-
+    }
+    tasks.withType(JavaCompile) {
+        configure(options) {
+            options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked' // examples
+        }
+    }}
 /*
  * Plugins for this parent module only - so just high level project related
  */

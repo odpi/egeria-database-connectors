@@ -32,21 +32,20 @@ import java.util.List;
 
 public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 {
+    final int startFrom = 0;
+    final int pageSize = 0;
 
     @Override
     public void refresh() throws ConnectorCheckedException
     {
-
         String methodName = "PostgresConnector.refresh";
-        int startFrom = 0;
-        int pageSize = 100;
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(connectionProperties);
         try
         {
             /*
             get a list of databases currently hosted in postgres
-            and remove any databases that have been removed since the last refresh
+            and a list of databases already known by egeria
              */
             List<PostgresDatabase> postgresDatabases = source.getDabases();
             List<DatabaseElement> egeriaDatabases = getContext().getMyDatabases(startFrom, pageSize);
@@ -59,12 +58,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             for (PostgresDatabase postgresDatabase : postgresDatabases)
             {
                 boolean found = false;
-                if (egeriaDatabases == null)
+                if (egeriaDatabases == null && postgresDatabases.size() > 0 )
                 {
                 /*
                 we have no databases in egeria
-                so all databases are new OR
-                there's been a failure and we are rebuilding
+                so all databases are new
                  */
                     addDatabase(postgresDatabase);
                 }
@@ -275,9 +273,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateSchemas(String databaseGUID, String name) throws AlreadyHandledException
     {
         String methodName = "updateSchemas";
-        int startFrom = 0;
-        int pageSize = 100;
-
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
 
         try
@@ -301,8 +296,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no schemas in egeria
                 so all schemas are new
                  */
-                if (egeriaSchemas == null)
+                if (egeriaSchemas == null && postgresSchemas.size() > 0)
                 {
+                    System.out.println(methodName + " is calling addSchema" );
                     addSchemas(name, databaseGUID);
                 }
                 else
@@ -319,6 +315,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         we have found an exact instance to update
                          */
                             found = true;
+                            System.out.println(methodName + " is calling updateSchema" );
                             updateSchema(postgresSchema, egeriaSchema);
                             break;
                         }
@@ -328,6 +325,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                      */
                     if (!found)
                     {
+                        System.out.println(methodName + " is calling addSchema 2nd " );
                         addSchema(postgresSchema, databaseGUID);
                     }
                 }
@@ -398,6 +396,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if ( !postgresSchema.equals(egeriaSchema) )
             {
                 DatabaseSchemaProperties props = PostgresMapper.getSchemaProperties(postgresSchema);
+                System.out.println("Calling context.updateDatabaseSchema");
                 getContext().updateDatabaseSchema(egeriaSchema.getElementHeader().getGUID(), props);
             }
             updateTables(postgresSchema, egeriaSchema);
@@ -448,8 +447,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
 
         final String methodName = "updateTables";
-        int startFrom = 0;
-        int pageSize = 100;
 
         String schemaGuid = egeriaSchema.getElementHeader().getGUID();
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
@@ -463,15 +460,24 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<PostgresTable> postgresTables = source.getTables(postgresSchema.getSchema_name());
             List<DatabaseTableElement> egeriaTables = getContext().getTablesForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
+
+        if(egeriaTables != null )
+        {
+            for (DatabaseTableElement elem : egeriaTables)
+            {
+                System.out.println("Element : " + elem.getDatabaseTableProperties().getQualifiedName());
+            }
+        }
             for (PostgresTable postgresTable : postgresTables)
             {
                 boolean found = false;
                 /*
-                we have no tables in egeria
+                we have no tables in egeria but we do have tables in postgres
                 so all tables are new
                  */
-                if (egeriaTables == null)
+                if (egeriaTables == null && postgresTables.size() > 0 )
                 {
+                    System.out.println("**** adding table all new ******");
                     addTable(postgresTable, schemaGuid);
                 }
                 else
@@ -497,6 +503,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                      */
                     if (!found)
                     {
+                        System.out.println("**** adding table all new ******");
                         addTable(postgresTable, schemaGuid);
                     }
                 }
@@ -603,16 +610,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     }
 
+
     /**
      * @param postgresSchema the postgres schema bean
      * @param egeriaSchema   the egeria schema bean
      * @throws AlreadyHandledException
      */
+
     private void updateViews(PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
     {
-        final String methodName = "updateTables";
-        int startFrom = 0;
-        int pageSize = 100;
+        final String methodName = "updateViews";
 
         String schemaGuid = egeriaSchema.getElementHeader().getGUID();
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
@@ -633,7 +640,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no views in egeria
                 so all views are new
                  */
-                if (egeriaTables == null)
+                if (egeriaTables == null && postgresTables.size() > 0)
                 {
                     addView(postgresTable, schemaGuid);
                 }
@@ -775,8 +782,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateTableColumns(PostgresTable postgresTable, DatabaseTableElement egeriaTable) throws AlreadyHandledException
     {
         final String methodName = "updateTableColumns";
-        int startFrom = 0;
-        int pageSize = 100;
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
         String tableGuid = egeriaTable.getElementHeader().getGUID();
         try
@@ -785,7 +790,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<DatabaseColumnElement> egeriaColumns = getContext().getColumnsForDatabaseTable(tableGuid, startFrom, pageSize);
             List<String> primarykeys = source.getPrimaryKeyColumnNamesForTable( postgresTable.getTable_name());
 
-                if( egeriaColumns != null )
+                if( egeriaColumns != null && postgresColumns.size() > 0)
                 {
                     deleteTableColumns(postgresColumns, egeriaColumns);
                 }
@@ -797,7 +802,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     we have no columns in egeria
                     so all columns are new
                      */
-                    if (egeriaColumns == null)
+                    if (egeriaColumns == null && postgresColumns.size() > 0)
                     {
                         addColumn(postgresColumn, tableGuid);
                     }
@@ -822,13 +827,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                             if( primarykeys.contains(egeriaColumn.getDatabaseColumnProperties().getDisplayName() ))
                             {
-                                //so this column is a primary key
-                                if( egeriaColumn.getPrimaryKeyProperties() == null )
-                                {
-                                    //new primary key so add to egeria
-                                    DatabasePrimaryKeyProperties props = new DatabasePrimaryKeyProperties();
-                                    getContext().setPrimaryKeyOnColumn(egeriaColumn.getElementHeader().getGUID(), props);
-                                }
+                                DatabasePrimaryKeyProperties props = new DatabasePrimaryKeyProperties();
+                                getContext().setPrimaryKeyOnColumn(egeriaColumn.getElementHeader().getGUID(), props);
                             }
                             else
                             {
@@ -904,8 +904,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void updateViewColumns(PostgresTable postgresTable, DatabaseViewElement egeriaTable) throws AlreadyHandledException
     {
         final String methodName = "updateViewColumns";
-        int startFrom = 0;
-        int pageSize = 100;
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
         String guid = egeriaTable.getElementHeader().getGUID();
@@ -926,7 +924,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no tables in egeria
                 so all tables are new
                  */
-                if (egeriaColumns == null)
+                if (egeriaColumns == null && postgresColumns.size() > 0 )
                 {
                     addColumn(postgresColumn, guid);
                 }
@@ -956,7 +954,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     {
                         addColumn(postgresColumn, guid);
                     }
-
 
                 }
 
@@ -1260,12 +1257,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
+            if( table.getQualifiedName().equals("dvdrentals.pg_cataglog.BASE_TABLE.pg_authid"))
+                System.out.println( "adding table " + table.getQualifiedName());
             DatabaseTableProperties props = PostgresMapper.getTableProperties(table);
             String tableGUID = this.getContext().createDatabaseTable(schemaGUID, props);
             addColumns(table.getTable_name(), tableGUID);
         }
         catch (InvalidParameterException error)
         {
+            System.out.println("******   EXCEPTION Table being added : " + table.getQualifiedName());
+
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
@@ -1363,8 +1364,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void addForeignKeys(PostgresSchema schema) throws AlreadyHandledException
     {
         String methodName = "addForeignKeys";
-        int startFrom = 0;
-        int pageSize = 100;
 
         PostgresSourceDatabase source = new PostgresSourceDatabase(this.connectionProperties);
 

@@ -190,8 +190,7 @@ public class PostgresSourceDatabase
      * @throws SQLException thrown by the JDBC Driver
      */
     private List<PostgresTable> getTables(String schemaName, String type) throws SQLException {
-        String sql = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '%s'" +
-                " AND table_type = '%s';";
+        String sql = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '%s' AND table_type = '%s';";
 
         sql = String.format(sql, schemaName, type);
         List<PostgresTable> attributes = new ArrayList<>();
