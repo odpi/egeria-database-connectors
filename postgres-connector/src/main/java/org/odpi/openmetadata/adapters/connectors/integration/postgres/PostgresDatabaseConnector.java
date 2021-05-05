@@ -214,7 +214,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 /*
                 have the properties of the database entity changed
                  */
-                if (!postgresDatabase.equals(egeriaDatabase))
+                if (!postgresDatabase.isEquivalent(egeriaDatabase))
                 {
                     /*
                     then we need to update the entity properties
@@ -393,7 +393,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         String methodName = "updateSchema";
         try
         {
-            if ( !postgresSchema.equals(egeriaSchema) )
+            if ( !postgresSchema.isEquivalent(egeriaSchema) )
             {
                 DatabaseSchemaProperties props = PostgresMapper.getSchemaProperties(postgresSchema);
                 System.out.println("Calling context.updateDatabaseSchema");
@@ -564,7 +564,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
-            if( postgresTable.equals( egeriaTable) )
+            if( postgresTable.isEquivalent( egeriaTable) )
             {
                 DatabaseTableProperties props = PostgresMapper.getTableProperties(postgresTable);
                 getContext().updateDatabaseTable(egeriaTable.getElementHeader().getGUID(), props);
@@ -727,7 +727,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
-            if( !postgresTable.equals( egeriaView) )
+            if( !postgresTable.isEquivalent( egeriaView) )
             {
                 DatabaseViewProperties props = PostgresMapper.getViewProperties(postgresTable);
                 getContext().updateDatabaseView(egeriaView.getElementHeader().getGUID(), props);
@@ -1018,7 +1018,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
-            if( !postgresCol.equals( egeriaCol))
+            if( !postgresCol.isEquivalent( egeriaCol))
             {
                 DatabaseColumnProperties props = PostgresMapper.getColumnProperties( postgresCol );
                 getContext().updateDatabaseColumn(egeriaCol.getElementHeader().getGUID(), props);

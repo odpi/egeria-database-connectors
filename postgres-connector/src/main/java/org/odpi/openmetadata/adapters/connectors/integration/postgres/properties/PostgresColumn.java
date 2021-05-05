@@ -429,7 +429,7 @@ public class PostgresColumn
         return getTable_catalog () + "::" + getTable_schema () + "::" + getTable_name () + "::" + getColumn_name ();
     }
 
-    public boolean equals(DatabaseColumnElement element)
+    public boolean isEquivalent(DatabaseColumnElement element)
     {
         boolean result = false;
         Map<String, String> props = element.getDatabaseColumnProperties().getAdditionalProperties();

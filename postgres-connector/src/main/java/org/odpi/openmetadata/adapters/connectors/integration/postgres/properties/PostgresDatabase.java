@@ -86,7 +86,7 @@ public class PostgresDatabase
         return getName();
     }
 
-    public boolean equals(DatabaseElement element)
+    public boolean isEquivalent(DatabaseElement element)
     {
         boolean result = false;
         Map<String, String> props = element.getDatabaseProperties().getAdditionalProperties();

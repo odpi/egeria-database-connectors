@@ -110,7 +110,7 @@ public class PostgresTable {
         return table_catalog + "." + table_schema + "." + table_type.substring(0,4) + "." + table_name;
     }
 
-    public boolean equals(DatabaseTableElement element)
+    public boolean isEquivalent(DatabaseTableElement element)
     {
         boolean result = false;
         Map<String, String> props = element.getDatabaseTableProperties().getAdditionalProperties();
@@ -122,7 +122,7 @@ public class PostgresTable {
     }
 
 
-    public boolean equals(DatabaseViewElement element)
+    public boolean isEquivalent(DatabaseViewElement element)
     {
         boolean result = false;
         Map<String, String> props = element.getDatabaseViewProperties().getAdditionalProperties();

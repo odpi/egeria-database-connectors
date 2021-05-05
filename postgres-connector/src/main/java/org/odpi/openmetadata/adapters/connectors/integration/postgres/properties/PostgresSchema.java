@@ -86,7 +86,7 @@ public class PostgresSchema {
         return getSchema_owner() + "::" + catalog_name + "::" + schema_name;
     }
 
-    public boolean equals(DatabaseSchemaElement element)
+    public boolean isEquivalent(DatabaseSchemaElement element)
     {
         boolean result = false;
         Map<String, String> props = element.getDatabaseSchemaProperties().getAdditionalProperties();
