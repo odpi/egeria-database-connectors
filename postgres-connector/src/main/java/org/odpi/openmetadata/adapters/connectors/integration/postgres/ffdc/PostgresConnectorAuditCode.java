@@ -22,13 +22,13 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
 {
     ERROR_READING_POSTGRES("POSTGRES-CONNECTOR-0001",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "An SQL Exception was received by method {0} from the postgres server",
+            "An SQL Exception was received by method {0} from the postgres server. The exception name {1} exception message {2}",
             "Verify that the postgres database is available",
             "If the postres database is available then contact the egeria team for support"),
 
     USER_NOT_AUTORIZED_EXCEPTION("POSTGRES-CONNECTOR-0002",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "The method {0} generated a UserNotAuthorized ",
+            "The method {0} generated a UserNotAuthorized. {1} {2} ",
             "Operation refused",
             "Review the user's privileges"),
     PROPERTY_SERVER_EXCEPTION("POSTGRES-CONNECTOR-0003",
@@ -39,20 +39,20 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
 
     INVALID_PARAMETER_EXCEPTION("POSTGRES-CONNECTOR-0004",
             OMRSAuditLogRecordSeverity.ERROR,
-            "The Method {0} generated an InvalidParameterException from the OMAS server",
+            "The Method {0} generated an InvalidParameterException from the OMAS server. {1} {2}",
             "The request has been rejected.",
             "This problem must be fixed before the Postgres Connector can exchange metadata."),
 
 
     CONNECTOR_CHECKED_EXCEPTION("POSTGRES-CONNECTOR-0005",
             OMRSAuditLogRecordSeverity.SHUTDOWN,
-            "Method {0} received a connector checked exception from the OMAS server",
+            "Method {0} received a connector checked exception from the OMAS server. {1} {2}",
             "Ensure that the OMAS server is availabale and is responsive",
             "Check exception details to rectify the problem"),
 
     UNEXPECTTED_ERROR("POSTGRES-CONNECTOR-0006",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "The method {0} encountered an unexpected error",
+            "The method {0} encountered an unexpected error. {1} {2}",
             "Examine the system logs to identify the issue.",
             "Use the information in the event and the exception message, along with other messages to determine the source of the error."),
 
