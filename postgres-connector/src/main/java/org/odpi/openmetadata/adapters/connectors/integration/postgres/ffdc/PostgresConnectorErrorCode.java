@@ -27,53 +27,37 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
 {
 
     ERROR_READING_FROM_POSTGRES(400, "POSTGRES-CONNECTOR-400-001",
-                "An exception was caught by method {0} while while trying to read from the postgres server. The exception {1}.  The message {2}",
+                "An exception was caught by method {0} while while trying to read from the postgres server.",
                 "Verify that the connector can connect to the postgres server",
                 "Enable connection to the postgres server and restart the connector"),
 
-    ERROR_ADDING_SCHEMAS( 400, "POSTGRES-CONNECTOR-400-003",
-            "Adding a database schema to Egeria caused an invalid parameter error",
-            "Ensure Egeria is available",
-            "Ensure Egeria is available"),
-
-    USER_NOT_AUTHORIZED( 400, "POSTGRES-CONNECTOR-400-004",
+    USER_NOT_AUTHORIZED_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-002",
             "The user is not authorized to perform action",
             "Review the user access privlidges",
             "Review the user access privlidges"),
 
-    INVALID_PARAMETER( 400, "POSTGRES-CONNECTOR-400-007",
-            "The Method {0} received an Invalid parameter exception from the OMAS server with exception name {1} and exception description {2}",
+    INVALID_PARAMETER_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-003",
+            "The Method {0} received an Invalid parameter exception from the OMAS server.",
             "Review the paramaters passed to Egeria ",
             "Review the paramaters passed to Egeria"),
 
-    UNEXPECTED_ERROR( 400, "POSTGRES-CONNECTOR-400-008",
-            "The Postgres Connector experienced an unexpected error.",
+    UNEXPECTED_ERROR( 400, "POSTGRES-CONNECTOR-400-004",
+            "The Postgres Connector experienced an unexpected error in method (0).",
             "Review the system logs to identify and resolve the issue.",
             "Review the system logs to identify and resolve the issue."),
 
 
-    ERROR_REMOVING_COLUMNS( 400, "POSTGRES-CONNECTOR-400-011",
-            "The Postgres Connector experienced an exception while trying to remove a database entity from Egeria.",
-            "Ensure that the Postgres database server is available.",
-            "Verify that the Postgres database server is available."),
-
-
-    ERROR_REMOVING_DATABASES( 400, "POSTGRES-CONNECTOR-400-011",
-            "The Postgres Connector experienced an exception while trying to remove a database entity from Egeria.",
-            "Ensure that the Postgres database server is available.",
-            "Verify that the Postgres database server is available."),
-
-    PROPERTY_SERVER_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-012",
-            "The Egeria OMAS Server returned a Property Server Exception",
+    PROPERTY_SERVER_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-005",
+            "The Egeria OMAS Server returned a Property Server Exception to method {0}",
             "Verify that the Egeria OMAS server is available",
             "Verify that the Postgres database server is available."),
 
-    CONNECTOR_CHECKED( 400, "POSTGRES-CONNECTOR-400-013",
-            "The Egeria OMAS Server returned a Connector Exception",
+    CONNECTOR_CHECKED_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-006",
+            "The Egeria OMAS Server returned a Connector Exception to method {0}",
             "Verify that the Egeria OMAS server is available",
             "Check the Exception details to identify the issue"),
 
-    ALREADY_HANDLED_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-014",
+    ALREADY_HANDLED_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-007",
             "Passing a handled exception to the connector",
             "Check the nested exception for root cause",
             "Check the nested exception user action for resolution"),
