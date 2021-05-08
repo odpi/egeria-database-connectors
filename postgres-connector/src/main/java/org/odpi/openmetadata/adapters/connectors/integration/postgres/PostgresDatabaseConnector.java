@@ -58,13 +58,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             for (PostgresDatabase postgresDatabase : postgresDatabases)
             {
                 boolean found = false;
-                if (egeriaDatabases == null && postgresDatabases.size() > 0 )
+                if (egeriaDatabases == null  )
                 {
-                /*
-                we have no databases in egeria
-                so all databases are new
-                 */
-                    addDatabase(postgresDatabase);
+                    if( postgresDatabases.size() > 0 )
+                    {
+                        /*
+                    we have no databases in egeria
+                    so all databases are new
+                     */
+                        addDatabase(postgresDatabase);
+                    }
                 }
                 else
                 {
@@ -285,9 +288,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no schemas in egeria
                 so all schemas are new
                  */
-                if (egeriaSchemas == null && postgresSchemas.size() > 0)
+                if (egeriaSchemas == null)
                 {
-                    addSchemas(name, databaseGUID);
+                    if( postgresSchemas.size() > 0 )
+                    {
+                        addSchemas(name, databaseGUID);
+                    }
                 }
                 else
                 {
@@ -303,7 +309,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         we have found an exact instance to update
                          */
                             found = true;
-                           updateSchema(postgresSchema, egeriaSchema);
+                            updateSchema(postgresSchema, egeriaSchema);
                             break;
                         }
                     }
@@ -452,9 +458,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no tables in egeria but we do have tables in postgres
                 so all tables are new
                  */
-                if (egeriaTables == null && postgresTables.size() > 0 )
+                if (egeriaTables == null)
                 {
-                    addTable(postgresTable, schemaGuid);
+                    if( postgresTables.size() > 0 )
+                    {
+                        addTable(postgresTable, schemaGuid);
+                    }
                 }
                 else
                 {
@@ -615,9 +624,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no views in egeria
                 so all views are new
                  */
-                if (egeriaTables == null && postgresTables.size() > 0)
+                if (egeriaTables == null)
                 {
-                    addView(postgresTable, schemaGuid);
+                    if( postgresTables.size() > 0)
+                    {
+                        addView(postgresTable, schemaGuid);
+                    }
                 }
                 else
                 {
@@ -777,9 +789,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     we have no columns in egeria
                     so all columns are new
                      */
-                    if (egeriaColumns == null && postgresColumns.size() > 0)
+                    if (egeriaColumns == null)
                     {
-                        addColumn(postgresColumn, tableGuid);
+                        if( postgresColumns.size() > 0 )
+                        {
+                            addColumn(postgresColumn, tableGuid);
+                        }
                     }
                     else
                     {
@@ -899,9 +914,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 we have no tables in egeria
                 so all tables are new
                  */
-                if (egeriaColumns == null && postgresColumns.size() > 0 )
+                if (egeriaColumns == null)
                 {
-                    addColumn(postgresColumn, guid);
+                    if(postgresColumns.size() > 0 )
+                    {
+                        addColumn(postgresColumn, guid);
+                    }
                 }
                 else
                 {
