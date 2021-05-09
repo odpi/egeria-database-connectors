@@ -188,7 +188,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresDatabase the bean properties of a Postgres Database
      * @param egeriaDatabase   the egeria database
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateDatabase(PostgresDatabase postgresDatabase, DatabaseElement egeriaDatabase) throws AlreadyHandledException
     {
@@ -260,7 +260,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * iterates over the database schemas updating where necessary
      *
      * @param databaseGUID   the egeria database
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateSchemas(String databaseGUID, String name) throws AlreadyHandledException
     {
@@ -378,7 +378,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresSchema            the Postgres Schema properties
      * @param egeriaSchema          the egeria schema
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateSchema( PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
     {
@@ -431,7 +431,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresSchema the postgres schema bean
      * @param egeriaSchema   the egeria schema bean
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateTables(PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
     {
@@ -450,6 +450,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<PostgresTable> postgresTables = source.getTables(postgresSchema.getSchema_name());
             List<DatabaseTableElement> egeriaTables = getContext().getTablesForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
+
+            deleteTables( postgresTables, egeriaTables);
 
             for (PostgresTable postgresTable : postgresTables)
             {
@@ -540,7 +542,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresTable  the postgres table attributes to be added
      * @param egeriaTable    the GUID of the schema to which the table will be linked
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateTable(PostgresTable postgresTable, DatabaseTableElement egeriaTable) throws AlreadyHandledException
     {
@@ -598,7 +600,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresSchema the postgres schema bean
      * @param egeriaSchema   the egeria schema bean
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
 
     private void updateViews(PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
@@ -706,7 +708,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresTable         the postgres table attributes to be added
      * @param egeriaView    te GUID of the schema to which the table will be linked
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateView(PostgresTable postgresTable, DatabaseViewElement egeriaView) throws AlreadyHandledException
     {
@@ -764,7 +766,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresTable         the postgres table which contains the columns to be updates
      * @param  egeriaTable  the column data from egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateTableColumns(PostgresTable postgresTable, DatabaseTableElement egeriaTable) throws AlreadyHandledException
     {
@@ -889,7 +891,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresTable         the postgres table which contains the columns to be updates
      * @param  egeriaTable  the column data from egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateViewColumns(PostgresTable postgresTable, DatabaseViewElement egeriaTable) throws AlreadyHandledException
     {
@@ -1003,7 +1005,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * @param postgresCol           the postgres column
      * @param  egeriaCol            the column data from egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateColumn(PostgresColumn postgresCol, DatabaseColumnElement egeriaCol ) throws AlreadyHandledException
     {
@@ -1056,11 +1058,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * mapping function that reads tables, columns and primmary keys
+     * mapping function that reads tables, columns and primary keys
      * for a schema from postgres and adds the data to egeria
      *
      * @param db the postgres attributes of the database
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addDatabase(PostgresDatabase db) throws AlreadyHandledException
     {
@@ -1116,7 +1118,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param dbName the name of the database
      * @param dbGUID the GUID of the database entity to attach the schemas
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addSchemas(String dbName, String dbGUID) throws AlreadyHandledException
     {
@@ -1143,12 +1145,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * mapping function that reads tables, columns and primmary keys
+     * mapping function that reads tables, columns and primary keys
      * for a schema from postgres and adds the data to egeria
      *
      * @param sch     the postgres schema attributes to be
      * @param dbGuidd the egeria GUID of the database
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addSchema(PostgresSchema sch, String dbGuidd) throws AlreadyHandledException
     {
@@ -1199,12 +1201,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * mapping function that reads tables, columns and primmary keys
+     * mapping function that reads tables, columns and primary keys
      * for a schema from postgres and adds the data to egeria
      *
      * @param schemaName the attributes of the schema which owns the tables
      * @param schemaGUID the GUID of the owning schema
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addTables(String schemaName, String schemaGUID) throws AlreadyHandledException
     {
@@ -1238,7 +1240,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param table      the postgres schema attributes to be
      * @param schemaGUID the egeria GUID of the schema
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addTable(PostgresTable table, String schemaGUID) throws AlreadyHandledException
     {
@@ -1293,7 +1295,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param view       the postgres view properties
      * @param schemaGUID the egeria GUID of the schema
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addView(PostgresTable view, String schemaGUID) throws AlreadyHandledException
     {
@@ -1340,11 +1342,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * add the foregin keys to egeria
+     * add the foreign keys to egeria
      * for a schema from postgres and adds the data to egeria
      *
      * @param schema the attributes of the schema which owns the tables
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addForeignKeys(PostgresSchema schema) throws AlreadyHandledException
     {
@@ -1358,11 +1360,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<PostgresTable> tables = source.getTables(schema.getSchema_name());
             for (PostgresTable table : tables)
             {
-                List<PostgresForeignKeyLinks> foreginKeys = source.getForeginKeyLinksForTable(table.getTable_name());
+                List<PostgresForeignKeyLinks> foreignKeys = source.getForeginKeyLinksForTable(table.getTable_name());
                 List<String> importedGuids = new ArrayList<>();
                 List<String> exportedGuids = new ArrayList<>();
 
-                for (PostgresForeignKeyLinks link : foreginKeys)
+                for (PostgresForeignKeyLinks link : foreignKeys)
                 {
                     List<DatabaseColumnElement> importedEntities = getContext().findDatabaseColumns(link.getImportedColumnQualifiedName(), startFrom, pageSize);
 
@@ -1441,12 +1443,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * mapping function that reads tables, columns and primmary keys
+     * mapping function that reads tables, columns and primary keys
      * for a schema from postgres and adds the data to egeria
      *
      * @param schemaName the attributes of the schema which owns the tables
      * @param schemaGUID the GUID of the owning schema
-     * @throws AlreadyHandledException thrown by the JDBC Driver
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addViews(String schemaName, String schemaGUID) throws AlreadyHandledException
     {
@@ -1476,12 +1478,12 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * mapping function that reads tables, columns and primmary keys
+     * mapping function that reads tables, columns and primary keys
      * for a schema from postgres and adds the data to egeria
      *
      * @param tableName the name of the parent table
      * @param tableGUID the GUID of the owning table
-     * @throws AlreadyHandledException thrown by the JDBC Driver
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void addColumns(String tableName, String tableGUID) throws AlreadyHandledException
     {
@@ -1509,10 +1511,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * mapping function that reads columns and primmary keys
+     * mapping function that reads columns and primary keys
      * for a schema from postgres and creates
      *
-     * @param col         the postgrews attributes of the column
+     * @param col         the postgres attributes of the column
      * @param guid        the GUID of the owning table
      * @throws AlreadyHandledException allows the exception to be passed up the stack, without additional handling
      */
@@ -1570,7 +1572,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresDatabases            a list of the bean properties of a Postgres Database
      * @param egeriaDatabases    a list of the Databases already known to egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void deleteDatabases(List<PostgresDatabase> postgresDatabases, List<DatabaseElement> egeriaDatabases) throws AlreadyHandledException
     {
@@ -1581,7 +1583,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaDatabases != null)
             {
                 /*
-                for each datbase already known to egeria
+                for each database already known to egeria
                  */
                 for (Iterator<DatabaseElement> itr = egeriaDatabases.iterator(); itr.hasNext();)
                 {
@@ -1597,14 +1599,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         if (sourceName.equals(knownName))
                         {
                             /*
-                            if found then check the next databsee
+                            if found then check the next database
                              */
                             found = true;
                             break;
                         }
                     }
                         /*
-                        not found in postgres , so delete the datase from egeria
+                        not found in postgres , so delete the database from egeria
                          */
                     if( !found)
                     {
@@ -1652,7 +1654,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresSchemas            a list of the bean properties of a Postgres schemas
      * @param egeriaSchemas    a list of the Databases already known to egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void deleteSchemas(List<PostgresSchema> postgresSchemas, List<DatabaseSchemaElement> egeriaSchemas) throws AlreadyHandledException
     {
@@ -1663,7 +1665,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaSchemas != null)
             {
                 /*
-                for each datbase already known to egeria
+                for each schema already known to egeria
                  */
                 for (Iterator<DatabaseSchemaElement> itr = egeriaSchemas.iterator(); itr.hasNext();)
                 {
@@ -1680,14 +1682,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         if (sourceName.equals(knownName))
                         {
                             /*
-                            if found then check the next databsee
+                            if found then check the next schema
                              */
                             found = true;
                             break;
                         }
                     }
                         /*
-                        not found in postgres , so delete the datase from egeria
+                        not found in postgres , so delete the schema from egeria
                          */
                     if( !found)
                     {
@@ -1735,7 +1737,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresTables            a list of the bean properties of a Postgres schemas
      * @param egeriaTables    a list of the Databases already known to egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void deleteTables(List<PostgresTable> postgresTables, List<DatabaseTableElement> egeriaTables) throws AlreadyHandledException
     {
@@ -1746,7 +1748,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaTables != null)
             {
                 /*
-                for each datbase already known to egeria
+                for each table already known to egeria
                  */
                 for (Iterator<DatabaseTableElement> itr = egeriaTables.iterator(); itr.hasNext();)
                 {
@@ -1763,7 +1765,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         if (sourceName.equals(knownName))
                         {
                             /*
-                            if found then check the next databsee
+                            if found then check the next table
                              */
                             found = true;
                             break;
@@ -1821,7 +1823,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresViews            a list of the bean properties of a Postgres views
      * @param egeriaViews               a list of the  views already known to egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void deleteViews(List<PostgresTable> postgresViews, List<DatabaseViewElement> egeriaViews) throws AlreadyHandledException
     {
@@ -1906,7 +1908,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresColumns            a list of the bean properties of a Postgres cols
      * @param egeriaColumns               a list of the  cols already known to egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void deleteTableColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
     {
@@ -1990,7 +1992,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      *
      * @param postgresColumns            a list of the bean properties of a Postgres cols
      * @param egeriaColumns               a list of the  cols already known to egeria
-     * @throws AlreadyHandledException
+     * @throws AlreadyHandledException this exception has already been logged
      */
     private void deleteViewColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
     {

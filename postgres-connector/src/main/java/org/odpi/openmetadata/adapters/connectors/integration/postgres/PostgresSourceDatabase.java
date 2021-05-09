@@ -88,7 +88,7 @@ public class PostgresSourceDatabase
 
     public List<PostgresDatabase> getDabases( ) throws SQLException
     {
-        ArrayList<PostgresDatabase> databaseNames = new ArrayList();
+        ArrayList<PostgresDatabase> databaseNames = new ArrayList<PostgresDatabase>();
         /*
          */
         String sql = "SELECT VERSION(), * FROM pg_database WHERE datistemplate = false;";
