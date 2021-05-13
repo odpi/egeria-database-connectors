@@ -391,6 +391,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 getContext().updateDatabaseSchema(egeriaSchema.getElementHeader().getGUID(), props);
             }
             updateTables(postgresSchema, egeriaSchema);
+            updateViews(postgresSchema, egeriaSchema);
 
         }
         catch (InvalidParameterException error)
@@ -451,7 +452,27 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<DatabaseTableElement> egeriaTables = getContext().getTablesForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
 
-            deleteTables( postgresTables, egeriaTables);
+            if( postgresTables != null)
+            {
+                for( PostgresTable table : postgresTables)
+                {
+                    System.out.println("postgres table : " + table.getQualifiedName() );
+                }
+            }
+
+            if( egeriaTables != null)
+            {
+                for( DatabaseTableElement et : egeriaTables)
+                {
+                    System.out.println("egeria table : " + et.getDatabaseTableProperties().getQualifiedName() );
+                }
+            }
+
+
+            /*
+            remove tables from egeria that are no longer needed
+             */
+ //           deleteTables( postgresTables, egeriaTables);
 
             for (PostgresTable postgresTable : postgresTables)
             {
@@ -490,6 +511,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                      */
                     if (!found)
                     {
+                        System.out.println("adding ");
                        addTable(postgresTable, schemaGuid);
                     }
                 }
@@ -616,21 +638,22 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             get a list of databases views currently hosted in postgres
             and remove any tables that have been dropped since the last refresh
              */
-            List<PostgresTable> postgresTables = source.getViews(postgresSchema.getSchema_name());
-            List<DatabaseViewElement> egeriaTables = getContext().getViewsForDatabaseSchema(schemaGuid, startFrom, pageSize);
+            List<PostgresTable> postgresViews = source.getViews(postgresSchema.getSchema_name());
+            List<DatabaseViewElement> egeriaViews = getContext().getViewsForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
-            for (PostgresTable postgresTable : postgresTables)
+            deleteViews( postgresViews, egeriaViews);
+            for (PostgresTable postgresView : postgresViews)
             {
                 boolean found = false;
                 /*
                 we have no views in egeria
                 so all views are new
                  */
-                if (egeriaTables == null)
+                if (egeriaViews == null)
                 {
-                    if( postgresTables.size() > 0)
+                    if( postgresViews.size() > 0)
                     {
-                        addView(postgresTable, schemaGuid);
+                        addView(postgresView, schemaGuid);
                     }
                 }
                 else
@@ -639,15 +662,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     check if the database table is known to egeria
                     and needs to be updated
                      */
-                    for (DatabaseViewElement egeriaView : egeriaTables)
+                    for (DatabaseViewElement egeriaView : egeriaViews)
                     {
-                        if (egeriaView.getDatabaseViewProperties().getQualifiedName().equals(postgresTable.getQualifiedName()))
+                        if (egeriaView.getDatabaseViewProperties().getQualifiedName().equals(postgresView.getQualifiedName()))
                         {
                         /*
                         we have found an exact instance to update
                          */
                             found = true;
-                            updateView(postgresTable, egeriaView);
+                            updateView(postgresView, egeriaView);
                             break;
                         }
                     }
@@ -656,7 +679,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                      */
                     if (!found)
                     {
-                        addView(postgresTable, schemaGuid);
+                        addView(postgresView, schemaGuid);
                     }
                 }
             }
@@ -712,7 +735,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      */
     private void updateView(PostgresTable postgresTable, DatabaseViewElement egeriaView) throws AlreadyHandledException
     {
-        String methodName = "updateTable";
+        String methodName = "updateView";
 
         try
         {
@@ -1162,6 +1185,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             String schemaGUID = getContext().createDatabaseSchema(dbGuidd, schemaProps);
             addTables(sch.getSchema_name(), schemaGUID);
+            addViews( sch.getSchema_name(), schemaGUID);
             addForeignKeys(sch);
         }
         catch (InvalidParameterException error)
@@ -1303,8 +1327,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
-            DatabaseTableProperties props = PostgresMapper.getTableProperties(view);
-            String tableGUID = this.getContext().createDatabaseTable(schemaGUID, props);
+            DatabaseViewProperties props = PostgresMapper.getViewProperties(view);
+            String tableGUID = this.getContext().createDatabaseView(schemaGUID, props);
             addColumns(view.getTable_name(), tableGUID);
         } catch (InvalidParameterException error)
         {
@@ -1743,6 +1767,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     {
         String methodName = "deleteTables";
 
+        System.out.println("***** deleting tables *****");
         try
         {
             if (egeriaTables != null)
@@ -1776,6 +1801,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                          */
                     if( !found)
                     {
+                        System.out.println("***** deleting tables *****");
                         getContext().removeDatabaseTable(egeriaTable.getElementHeader().getGUID(), knownName);
                         itr.remove();
                     }
