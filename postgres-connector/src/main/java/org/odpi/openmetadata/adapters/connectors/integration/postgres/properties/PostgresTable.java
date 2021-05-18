@@ -113,8 +113,10 @@ public class PostgresTable {
     public boolean isEquivalent(DatabaseTableElement element)
     {
         boolean result = false;
-        Map<String, String> props = element.getDatabaseTableProperties().getAdditionalProperties();
-        if ( props.equals( this.getProperties()))
+        Map<String, String> postgresProps = this.getProperties();
+        Map<String, String> egeriaProps = element.getDatabaseTableProperties().getAdditionalProperties();
+
+        if ( egeriaProps.equals( postgresProps))
         {
             result = true;
         }
@@ -125,8 +127,10 @@ public class PostgresTable {
     public boolean isEquivalent(DatabaseViewElement element)
     {
         boolean result = false;
-        Map<String, String> props = element.getDatabaseViewProperties().getAdditionalProperties();
-        if ( props.equals( this.getProperties()))
+        Map<String, String> postgresProps = this.getProperties();
+        Map<String, String> egeriaProps = element.getDatabaseViewProperties().getAdditionalProperties();
+
+        if ( egeriaProps.equals( postgresProps))
         {
             result = true;
         }

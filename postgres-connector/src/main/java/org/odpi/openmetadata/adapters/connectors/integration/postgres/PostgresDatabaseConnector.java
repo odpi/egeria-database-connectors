@@ -451,28 +451,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<PostgresTable> postgresTables = source.getTables(postgresSchema.getSchema_name());
             List<DatabaseTableElement> egeriaTables = getContext().getTablesForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
-
-            if( postgresTables != null)
-            {
-                for( PostgresTable table : postgresTables)
-                {
-                    System.out.println("postgres table : " + table.getQualifiedName() );
-                }
-            }
-
-            if( egeriaTables != null)
-            {
-                for( DatabaseTableElement et : egeriaTables)
-                {
-                    System.out.println("egeria table : " + et.getDatabaseTableProperties().getQualifiedName() );
-                }
-            }
-
-
             /*
             remove tables from egeria that are no longer needed
              */
- //           deleteTables( postgresTables, egeriaTables);
+            deleteTables( postgresTables, egeriaTables);
 
             for (PostgresTable postgresTable : postgresTables)
             {
@@ -511,7 +493,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                      */
                     if (!found)
                     {
-                        System.out.println("adding ");
                        addTable(postgresTable, schemaGuid);
                     }
                 }
@@ -1766,8 +1747,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     private void deleteTables(List<PostgresTable> postgresTables, List<DatabaseTableElement> egeriaTables) throws AlreadyHandledException
     {
         String methodName = "deleteTables";
-
-        System.out.println("***** deleting tables *****");
         try
         {
             if (egeriaTables != null)
@@ -1779,7 +1758,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 {
                     boolean found = false;
                     DatabaseTableElement egeriaTable = itr.next();
-
                     String knownName = egeriaTable.getDatabaseTableProperties().getQualifiedName();
                     /*
                     check that the database is still present in postgres
@@ -1801,7 +1779,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                          */
                     if( !found)
                     {
-                        System.out.println("***** deleting tables *****");
                         getContext().removeDatabaseTable(egeriaTable.getElementHeader().getGUID(), knownName);
                         itr.remove();
                     }
