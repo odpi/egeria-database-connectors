@@ -65,9 +65,10 @@ allprojects {
 /*
  * Configuration for sub projects only
  */
-apply plugin: 'java-library'
 
 subprojects {
+
+    apply plugin: 'java-library'
 
     // Mostly java, so default to this for now
     apply plugin: 'java'
