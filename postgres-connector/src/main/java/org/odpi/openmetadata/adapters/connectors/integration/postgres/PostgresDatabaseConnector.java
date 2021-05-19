@@ -53,7 +53,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             /*
             first we remove any egeria databases that are no longer present in postgres
              */
-            deleteDatabases( postgresDatabases, egeriaDatabases );
+            egeriaDatabases = deleteDatabases( postgresDatabases, egeriaDatabases );
 
             for (PostgresDatabase postgresDatabase : postgresDatabases)
             {
@@ -278,7 +278,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             if( egeriaSchemas != null )
             {
-                deleteSchemas( postgresSchemas, egeriaSchemas);
+                egeriaSchemas = deleteSchemas( postgresSchemas, egeriaSchemas);
             }
 
             for (PostgresSchema postgresSchema : postgresSchemas)
@@ -454,7 +454,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             /*
             remove tables from egeria that are no longer needed
              */
-            deleteTables( postgresTables, egeriaTables);
+            egeriaTables = deleteTables( postgresTables, egeriaTables);
 
             for (PostgresTable postgresTable : postgresTables)
             {
@@ -622,7 +622,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             List<PostgresTable> postgresViews = source.getViews(postgresSchema.getSchema_name());
             List<DatabaseViewElement> egeriaViews = getContext().getViewsForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
-            deleteViews( postgresViews, egeriaViews);
+            egeriaViews = deleteViews( postgresViews, egeriaViews);
             for (PostgresTable postgresView : postgresViews)
             {
                 boolean found = false;
@@ -785,7 +785,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                 if( egeriaColumns != null && postgresColumns.size() > 0)
                 {
-                    deleteTableColumns(postgresColumns, egeriaColumns);
+                    egeriaColumns = deleteTableColumns(postgresColumns, egeriaColumns);
                 }
 
                 for (PostgresColumn postgresColumn : postgresColumns)
@@ -910,7 +910,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
             if( egeriaColumns != null )
             {
-                deleteViewColumns(postgresColumns, egeriaColumns);
+                egeriaColumns= deleteViewColumns(postgresColumns, egeriaColumns);
             }
 
             for (PostgresColumn postgresColumn : postgresColumns)
@@ -1579,7 +1579,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param egeriaDatabases    a list of the Databases already known to egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
-    private void deleteDatabases(List<PostgresDatabase> postgresDatabases, List<DatabaseElement> egeriaDatabases) throws AlreadyHandledException
+    private  List<DatabaseElement> deleteDatabases(List<PostgresDatabase> postgresDatabases, List<DatabaseElement> egeriaDatabases) throws AlreadyHandledException
     {
         String methodName = "deleteDatabases";
 
@@ -1621,6 +1621,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                 }
             }
+
         }
         catch (InvalidParameterException error)
         {
@@ -1652,6 +1653,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+
+        return egeriaDatabases;
     }
 
     /**
@@ -1661,7 +1664,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param egeriaSchemas    a list of the Databases already known to egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
-    private void deleteSchemas(List<PostgresSchema> postgresSchemas, List<DatabaseSchemaElement> egeriaSchemas) throws AlreadyHandledException
+    private List<DatabaseSchemaElement> deleteSchemas(List<PostgresSchema> postgresSchemas, List<DatabaseSchemaElement> egeriaSchemas) throws AlreadyHandledException
     {
         String methodName = "deleteSchemas";
 
@@ -1735,6 +1738,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+
+        return egeriaSchemas;
     }
 
     /**
@@ -1744,7 +1749,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param egeriaTables    a list of the Databases already known to egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
-    private void deleteTables(List<PostgresTable> postgresTables, List<DatabaseTableElement> egeriaTables) throws AlreadyHandledException
+    private List<DatabaseTableElement> deleteTables(List<PostgresTable> postgresTables, List<DatabaseTableElement> egeriaTables) throws AlreadyHandledException
     {
         String methodName = "deleteTables";
         try
@@ -1819,6 +1824,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+
+        return egeriaTables;
     }
 
     /**
@@ -1828,7 +1835,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param egeriaViews               a list of the  views already known to egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
-    private void deleteViews(List<PostgresTable> postgresViews, List<DatabaseViewElement> egeriaViews) throws AlreadyHandledException
+    private List<DatabaseViewElement> deleteViews(List<PostgresTable> postgresViews, List<DatabaseViewElement> egeriaViews) throws AlreadyHandledException
     {
         String methodName = "deleteViews";
 
@@ -1903,6 +1910,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+
+        return egeriaViews;
     }
 
 
@@ -1913,7 +1922,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param egeriaColumns               a list of the  cols already known to egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
-    private void deleteTableColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
+    private List<DatabaseColumnElement> deleteTableColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
     {
         String methodName = "deleteTableColumns";
 
@@ -1964,14 +1973,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (PropertyServerException error)
+        }
+        catch (PropertyServerException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1979,7 +1990,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
-        } catch (ConnectorCheckedException error)
+        }
+        catch (ConnectorCheckedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1987,6 +1999,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+
+        return egeriaColumns;
     }
 
 
@@ -1997,7 +2011,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * @param egeriaColumns               a list of the  cols already known to egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
-    private void deleteViewColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
+    private List<DatabaseColumnElement> deleteViewColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
     {
         String methodName = "deleteViewColumns";
 
@@ -2074,5 +2088,6 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        return egeriaColumns;
     }
 }
