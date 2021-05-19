@@ -13,6 +13,6 @@ pluginManagement {
         //id 'maven-publish' version
     }
 }
-rootProject.name = 'egeria'
+rootProject.name = 'egeria-database-connectors'
 
 include(':postgres-connector')
