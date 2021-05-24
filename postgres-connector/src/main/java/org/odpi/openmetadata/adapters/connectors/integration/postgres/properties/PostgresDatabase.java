@@ -63,19 +63,10 @@ public class PostgresDatabase
     {
         Map<String, String> props = new HashMap<>();
 
-        if (getName() != null)
             props.put("name", getName());
-
-        if (getEncoding() != null)
             props.put("encoding", getEncoding());
-
-        if (getCollate() != null)
             props.put("collate", getCollate());
-
-        if (getCtype() != null)
             props.put("ctype", getCtype());
-
-        if (getVersion() != null)
             props.put("version", getVersion());
 
         return props;

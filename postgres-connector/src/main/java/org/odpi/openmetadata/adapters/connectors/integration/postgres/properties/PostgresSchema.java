@@ -56,26 +56,12 @@ public class PostgresSchema {
     {
         Map<String,String> props = new HashMap<>();
 
-
-        if( getCatalog_name() != null )
             props.put("catalog_name", getCatalog_name());
-
-        if( getSchema_name() != null )
             props.put("schema_name", getSchema_name());
-
-        if( getSchema_owner() != null )
             props.put("schema_owner", getSchema_owner());
-
-        if( getDefault_character_set_catalog() != null )
             props.put("default_character_set_catalog", getDefault_character_set_catalog());
-
-        if( getDefault_character_set_schema() != null )
             props.put("default_character_set_schema", getDefault_character_set_schema());
-
-        if( getDefault_character_set_name() != null )
             props.put("default_character_set_name", getDefault_character_set_name());
-
-        if( getSql_path() != null )
             props.put("sql_path", getSql_path());
 
         return props;
