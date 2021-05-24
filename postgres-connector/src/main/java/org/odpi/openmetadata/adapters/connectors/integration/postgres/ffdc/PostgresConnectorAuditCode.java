@@ -50,7 +50,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "Ensure that the OMAS server is availabale and is responsive",
             "Check exception details to rectify the problem"),
 
-    UNEXPECTTED_ERROR("POSTGRES-CONNECTOR-0006",
+    UNEXPECTED_ERROR("POSTGRES-CONNECTOR-0006",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The method {0} encountered an unexpected error. {1} {2}",
             "Examine the system logs to identify the issue.",

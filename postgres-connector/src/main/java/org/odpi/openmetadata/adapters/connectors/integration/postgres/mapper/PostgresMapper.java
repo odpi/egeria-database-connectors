@@ -107,7 +107,18 @@ public class PostgresMapper
         colProps.setDataType(col.getData_type());
 
         if( col.getMaximum_cardinality() != null )
-            colProps.setMaxCardinality(Integer.parseInt(col.getMaximum_cardinality()));
+        {
+            try
+            {
+                colProps.setMaxCardinality(Integer.valueOf(col.getMaximum_cardinality()));
+            }
+            catch (NumberFormatException error)
+            {
+                //if we can't make an Integer out of it
+                //just leave the property unset
+
+            }
+        }
 
         colProps.setAdditionalProperties(col.getProperties());
 

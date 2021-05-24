@@ -170,7 +170,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.UNEXPECTTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                        PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                         error);
             }
 
@@ -187,7 +187,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
      * Trawls through a database updating a database where necessary
      *
      * @param postgresDatabase the bean properties of a Postgres Database
-     * @param egeriaDatabase   the egeria database
+     * @param egeriaDatabase   the Egeria database
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateDatabase(PostgresDatabase postgresDatabase, DatabaseElement egeriaDatabase) throws AlreadyHandledException
@@ -720,12 +720,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
         try
         {
-            if( !postgresTable.isEquivalent( egeriaView) )
+            if( !postgresTable.isEquivalent(egeriaView) )
             {
                 DatabaseViewProperties props = PostgresMapper.getViewProperties(postgresTable);
                 getContext().updateDatabaseView(egeriaView.getElementHeader().getGUID(), props);
             }
-
             updateViewColumns(postgresTable, egeriaView);
         }
         catch (InvalidParameterException error)
