@@ -253,6 +253,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
 
     }
 
@@ -371,6 +380,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName));
 
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
+
     }
 
     /**
@@ -427,6 +446,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
+
     }
 
     /**
@@ -540,6 +569,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
     }
 
     /**
@@ -595,6 +633,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(error.getClass().getName()));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
     }
@@ -707,6 +754,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
     }
 
     /**
@@ -761,6 +817,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(error.getClass().getName()));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
     }
@@ -888,6 +953,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
 
     }
 
@@ -1001,6 +1075,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
 
     }
 
@@ -1056,6 +1139,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
     }
@@ -1114,6 +1206,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+      catch (Exception error)
+      {
+          ExceptionHandler.handleException(auditLog,
+                  this.getClass().getName(),
+                  methodName, error,
+                  PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                  PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+      }
     }
 
     /**
@@ -1202,6 +1303,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
     }
 
     /**
@@ -1234,6 +1344,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.ERROR_READING_POSTGRES.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.ERROR_READING_FROM_POSTGRES.getMessageDefinition(methodName));
+
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
 
         }
 
@@ -1290,6 +1409,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
 
     }
 
@@ -1340,6 +1468,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
     }
@@ -1444,6 +1581,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
     }
 
     /**
@@ -1479,6 +1625,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorErrorCode.ERROR_READING_FROM_POSTGRES.getMessageDefinition(methodName));
 
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
     }
 
     /**
@@ -1509,6 +1664,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.ERROR_READING_POSTGRES.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.ERROR_READING_FROM_POSTGRES.getMessageDefinition(methodName));
+
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
 
         }
 
@@ -1564,6 +1728,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
     }
 
@@ -1629,14 +1802,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (PropertyServerException error)
+        }
+        catch (PropertyServerException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1644,13 +1819,23 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
-        } catch (ConnectorCheckedException error)
+        }
+        catch (ConnectorCheckedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
         return egeriaDatabases;
@@ -1714,14 +1899,16 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.INVALID_PARAMETER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (PropertyServerException error)
+        }
+        catch (PropertyServerException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1729,13 +1916,23 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
-        } catch (ConnectorCheckedException error)
+        }
+        catch (ConnectorCheckedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
         return egeriaSchemas;
@@ -1823,6 +2020,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
 
         return egeriaTables;
     }
@@ -1893,7 +2099,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.PROPERTY_SERVER_EXCEPTION.getMessageDefinition(methodName));
-        } catch (UserNotAuthorizedException error)
+        }
+        catch (UserNotAuthorizedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
@@ -1901,13 +2108,23 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
-        } catch (ConnectorCheckedException error)
+        }
+        catch (ConnectorCheckedException error)
         {
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
 
         return egeriaViews;
@@ -1998,6 +2215,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
         }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
+        }
 
         return egeriaColumns;
     }
@@ -2086,6 +2312,15 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     methodName, error,
                     PostgresConnectorAuditCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.CONNECTOR_CHECKED_EXCEPTION.getMessageDefinition(methodName));
+        }
+        catch (Exception error)
+        {
+            ExceptionHandler.handleException(auditLog,
+                    this.getClass().getName(),
+                    methodName, error,
+                    PostgresConnectorAuditCode.UNEXPECTED_ERROR.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorErrorCode.UNEXPECTED_ERROR.getMessageDefinition(methodName));
+
         }
         return egeriaColumns;
     }
