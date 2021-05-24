@@ -10,7 +10,6 @@
 
 buildscript {
     repositories {
-        jcenter()
         maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
         mavenCentral()
         mavenLocal()
@@ -51,8 +50,7 @@ allprojects {
     version = '2.9-SNAPSHOT'
 
     repositories {
-         jcenter()
-        mavenCentral()
+         mavenCentral()
          mavenLocal()
          maven { url("https://oss.sonatype.org/content/repositories/snapshots")}
     }
@@ -80,7 +78,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     ext {
-        egeriaVersion = '2.9-SNAPSHOT'
+        egeriaVersion = '2.10-SNAPSHOT'
     }
 
     // ensures we pick up the very latest snapshots when built
