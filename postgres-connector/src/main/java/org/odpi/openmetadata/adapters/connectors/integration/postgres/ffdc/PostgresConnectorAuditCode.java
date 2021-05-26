@@ -22,9 +22,9 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
 {
     ERROR_READING_POSTGRES("POSTGRES-CONNECTOR-0001",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "An SQL Exception was received by method {0} from the postgres server. The exception name {1} exception message {2}",
-            "Verify that the postgres database is available",
-            "If the postres database is available then contact the egeria team for support"),
+            "An SQL Exception was received by method {0} from the Postgres server. The exception name {1} exception message {2}",
+            "Verify that the Postgres database is available",
+            "If the postres database is available then contact the Egeria team for support"),
 
     USER_NOT_AUTORIZED_EXCEPTION("POSTGRES-CONNECTOR-0002",
             OMRSAuditLogRecordSeverity.EXCEPTION,

@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Properties;
 
 /*
-This class holds the the attributes of a postgres database
+This class holds the the attributes of a Postgres database
 It's not a true mapping to the database entity and includes data needed
-to build the egeria entity ( Fields such as Version have been added
+to build the Egeria entity ( Fields such as Version have been added
 The class is immutable
  */
 public class PostgresDatabase

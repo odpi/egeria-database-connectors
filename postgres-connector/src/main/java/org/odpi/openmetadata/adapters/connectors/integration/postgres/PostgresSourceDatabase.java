@@ -183,9 +183,9 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Lists the postgres attributes for all tables for a given schema
+     * Lists the Postgres attributes for all tables for a given schema
      * @param schemaName the name of the database to find the schemas
-     * @param type in postgres views and tables are treated the same type = "VIEW" or "BASE TABLE"
+     * @param type in Postgres views and tables are treated the same type = "VIEW" or "BASE TABLE"
      * @return A list of tables for the given schema
      * @throws SQLException thrown by the JDBC Driver
      */
@@ -223,7 +223,7 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Lists the postgres column attributes for a given table
+     * Lists the Postgres column attributes for a given table
      * @param tableName the name of the database to find the schemas
      * @return A list of columns for the given table
      * @throws SQLException thrown by the JDBC Driver
@@ -297,7 +297,7 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Wrapper function which lists the postgres attributes for views for a given schema
+     * Wrapper function which lists the Postgres attributes for views for a given schema
      * @param schemaName the name of the database to find the schemas
      * @return A list of schemas for the given database
      * @throws SQLException thrown by the JDBC Driver
@@ -309,7 +309,7 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Wrapper function which lists the postgres attributes for tables for a given schema
+     * Wrapper function which lists the Postgres attributes for tables for a given schema
      * @param schemaName the name of the database to find the schemas
      * @return A list of tables for the given database
      * @throws SQLException thrown by the JDBC Driver
@@ -320,7 +320,7 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Wrapper function which lists the postgres primary key attributes for a given table name
+     * Wrapper function which lists the Postgres primary key attributes for a given table name
      * @param tableName the name of the database to find the schemas
      * @return A list of primary keys for the given database
      * @throws SQLException thrown by the JDBC Driver
@@ -330,7 +330,7 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Wrapper function which lists the postgres foreign key attributes for views for a given table
+     * Wrapper function which lists the Postgres foreign key attributes for views for a given table
      * @param tableName the name of the table
      * @return A list of foreign keys for the given table
      * @throws SQLException thrown by the JDBC Driver
@@ -340,7 +340,7 @@ public class PostgresSourceDatabase
     }
 
     /**
-     * Primary keys and foregin keys are treated the same in postgres
+     * Primary keys and foregin keys are treated the same in Postgres
      * @param tableName the name of the database to find the schemas
      * @param type "PRIMARY KEY" or "FOREGIN KEY"
      * @return A list of keys for the given table

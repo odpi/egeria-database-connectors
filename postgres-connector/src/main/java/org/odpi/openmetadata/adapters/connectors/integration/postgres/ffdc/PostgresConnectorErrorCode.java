@@ -27,9 +27,9 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
 {
 
     ERROR_READING_FROM_POSTGRES(400, "POSTGRES-CONNECTOR-400-001",
-                "An exception was caught by method {0} while while trying to read from the postgres server.",
-                "Verify that the connector can connect to the postgres server",
-                "Enable connection to the postgres server and restart the connector"),
+                "An exception was caught by method {0} while while trying to read from the Postgres server.",
+                "Verify that the connector can connect to the Postgres server",
+                "Enable connection to the Postgres server and restart the connector"),
 
     USER_NOT_AUTHORIZED_EXCEPTION( 400, "POSTGRES-CONNECTOR-400-002",
             "The user is not authorized to perform action",
