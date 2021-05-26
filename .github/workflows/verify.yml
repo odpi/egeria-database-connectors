@@ -1,23 +1,21 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright Contributors to the ODPi Egeria project.
-name: "Gradle"
+name: "PR Verification"
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, release-*, feature-*]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: "Gradle Java 11"
+    name: "PR Verification"
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v2.1.0
         with:
-          java-version: 11
+          java-version: 8
           distribution: 'zulu'
       - name: Cache Gradle packages
         uses: actions/cache@v2.1.5
@@ -25,5 +23,12 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      - name: Build with Gradle
+      - name: Build
         run: ./gradlew build
+      # --
+      - name: Upload Connector
+        uses: actions/upload-artifact@v2
+        with:
+          name: Postgres Connector
+          path: postgres-connector/build/libs/*.jar
+
