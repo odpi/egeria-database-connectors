@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-java@v2.1.0
         with:
           java-version: 11
+          distribution: 'zulu'
       - name: Cache Gradle packages
         uses: actions/cache@v2.1.5
         with:
