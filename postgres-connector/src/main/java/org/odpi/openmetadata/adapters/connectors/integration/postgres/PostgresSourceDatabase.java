@@ -5,7 +5,7 @@ package org.odpi.openmetadata.adapters.connectors.integration.postgres;
 
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresColumn;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresDatabase;
-import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeginKeyLinks;
+import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresForeignKeyLinks;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresSchema;
 import org.odpi.openmetadata.adapters.connectors.integration.postgres.properties.PostgresTable;
 import org.odpi.openmetadata.frameworks.connectors.properties.ConnectionProperties;
@@ -86,9 +86,9 @@ public class PostgresSourceDatabase
 
      */
 
-    public List<PostgresDatabase> getDabaseNames( ) throws SQLException, ClassNotFoundException
+    public List<PostgresDatabase> getDabases( ) throws SQLException
     {
-        ArrayList<PostgresDatabase> databaseNames = new ArrayList();
+        ArrayList<PostgresDatabase> databaseNames = new ArrayList<PostgresDatabase>();
         /*
          */
         String sql = "SELECT VERSION(), * FROM pg_database WHERE datistemplate = false;";
@@ -189,12 +189,10 @@ public class PostgresSourceDatabase
      * @return A list of tables for the given schema
      * @throws SQLException thrown by the JDBC Driver
      */
-    private List<PostgresTable> getTablesAttributes(String schemaName, String type) throws SQLException {
-        String sql = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '%s'" +
-                " AND table_type = '%s';";
-
-        sql = String.format(sql, schemaName, type);
-        List<PostgresTable> attributes = new ArrayList<PostgresTable>();
+    private List<PostgresTable> getTables(String schemaName, String type) throws SQLException {
+        String sql = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '%s' AND table_type = '%s';";
+        sql = String.format(sql, schemaName,type);
+        List<PostgresTable> attributes = new ArrayList<>();
 
         try (
                 Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
@@ -230,7 +228,7 @@ public class PostgresSourceDatabase
      * @return A list of columns for the given table
      * @throws SQLException thrown by the JDBC Driver
      */
-    List<PostgresColumn> getColumnAttributes(String tableName) throws SQLException {
+    List<PostgresColumn> getColumns(String tableName) throws SQLException {
         String sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s';";
         sql = String.format(sql, tableName);
         List<PostgresColumn> cols = new ArrayList<PostgresColumn>();
@@ -306,7 +304,7 @@ public class PostgresSourceDatabase
      */
     public List<PostgresTable> getViews(String schemaName) throws SQLException {
 
-        return getTablesAttributes(schemaName, "VIEW");
+        return getTables(schemaName, "VIEW");
 
     }
 
@@ -317,7 +315,7 @@ public class PostgresSourceDatabase
      * @throws SQLException thrown by the JDBC Driver
      */
     public List<PostgresTable> getTables(String schemaName) throws SQLException {
-        return getTablesAttributes(schemaName, "BASE TABLE");
+        return getTables(schemaName, "BASE TABLE");
 
     }
 
@@ -376,7 +374,7 @@ public class PostgresSourceDatabase
      * @return A list of foregin key links attributes for the given table
      * @throws SQLException thrown by the JDBC Driver
      */
-    public List<PostgresForeginKeyLinks> getForeginKeyLinksForTable(String tableName) throws SQLException {
+    public List<PostgresForeignKeyLinks> getForeginKeyLinksForTable(String tableName) throws SQLException {
 
         String sql = "SELECT\n" +
                 "    tc.table_schema, \n" +
@@ -399,7 +397,7 @@ public class PostgresSourceDatabase
 
         sql = String.format(sql, tableName);
 
-        List<PostgresForeginKeyLinks> results = new ArrayList<>();
+        List<PostgresForeignKeyLinks> results = new ArrayList<>();
 
         try (
                 Connection conn = DriverManager.getConnection(postgresProps.getProperty("url"), postgresProps);
@@ -408,7 +406,7 @@ public class PostgresSourceDatabase
         )
         {
             while (rs.next()) {
-                PostgresForeginKeyLinks link = new PostgresForeginKeyLinks(
+                PostgresForeignKeyLinks link = new PostgresForeignKeyLinks(
                         rs.getString("table_schema"),
                         rs.getString("constraint_name"),
                         rs.getString("table_name"),

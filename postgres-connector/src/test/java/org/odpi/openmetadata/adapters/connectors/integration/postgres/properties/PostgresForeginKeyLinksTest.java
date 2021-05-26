@@ -11,7 +11,7 @@ class PostgresForeginKeyLinksTest {
     @Test
     void getImportedColumnQualifiedName() {
 
-        PostgresForeginKeyLinks link = new PostgresForeginKeyLinks(     "table_schema",
+        PostgresForeignKeyLinks link = new PostgresForeignKeyLinks(     "table_schema",
                                                                     "constraint_name",
                                                                         "table_name",
                                                                         "column_name",
@@ -27,7 +27,7 @@ class PostgresForeginKeyLinksTest {
     @Test
     void getExportedColumnQualifiedName() {
 
-        PostgresForeginKeyLinks link = new PostgresForeginKeyLinks(     "table_schema",
+        PostgresForeignKeyLinks link = new PostgresForeignKeyLinks(     "table_schema",
                 "constraint_name",
                 "table_name",
                 "column_name",

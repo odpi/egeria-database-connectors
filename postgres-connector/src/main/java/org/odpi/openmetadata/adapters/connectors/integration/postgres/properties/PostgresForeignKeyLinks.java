@@ -6,7 +6,8 @@ package org.odpi.openmetadata.adapters.connectors.integration.postgres.propertie
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostgresForeginKeyLinks {
+public class PostgresForeignKeyLinks
+{
 
     private final String table_schema;
     private final String constraint_name;
@@ -16,7 +17,7 @@ public class PostgresForeginKeyLinks {
     private final String foreign_table_name;
     private final String foreign_column_name;
 
-    public PostgresForeginKeyLinks(String table_schema, String constraint_name, String table_name, String column_name, String foreign_table_schema, String foreign_table_name, String foreign_column_name)
+    public PostgresForeignKeyLinks(String table_schema, String constraint_name, String table_name, String column_name, String foreign_table_schema, String foreign_table_name, String foreign_column_name)
     {
         this.table_schema = table_schema;
         this.constraint_name = constraint_name;
@@ -45,26 +46,13 @@ public class PostgresForeginKeyLinks {
     {
         Map<String, String> props = new HashMap<>();
 
-        if( table_schema != null )
-            props.put("name", table_schema );
-
-        if( constraint_name != null )
-            props.put("owner", constraint_name );
-
-        if( table_name != null )
-            props.put("encoding", table_name );
-
-        if( column_name != null )
-            props.put("collate", column_name );
-
-        if( foreign_table_name != null )
-            props.put("ctype", foreign_table_name );
-
-        if( foreign_table_schema != null )
-            props.put("accessPrivileges", foreign_table_schema );
-
-        if( foreign_column_name != null )
-            props.put("version", foreign_column_name );
+        props.put("name", table_schema );
+        props.put("owner", constraint_name );
+        props.put("encoding", table_name );
+        props.put("collate", column_name );
+        props.put("ctype", foreign_table_name );
+        props.put("accessPrivileges", foreign_table_schema );
+        props.put("version", foreign_column_name );
 
         return props;
     }

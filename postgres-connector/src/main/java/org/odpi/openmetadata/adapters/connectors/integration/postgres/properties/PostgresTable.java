@@ -2,6 +2,9 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.postgres.properties;
 
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseViewElement;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +89,7 @@ public class PostgresTable {
 
     public Map<String,String> getProperties()
     {
-        Map props = new HashMap();
+        HashMap<String,String> props = new HashMap<>();
         props.put("table_catalog", this.table_catalog);
         props.put("table_schema", this.table_schema);
         props.put("table_name", table_name);
@@ -104,6 +107,34 @@ public class PostgresTable {
     }
 
     public String getQualifiedName ( ) {
-        return table_catalog + "." + table_schema + "." + table_type + "." + table_name;
+        return table_catalog + "." + table_schema + "." + table_type.substring(0,4) + "." + table_name;
     }
+
+    public boolean isEquivalent(DatabaseTableElement element)
+    {
+        boolean result = false;
+        Map<String, String> postgresProps = this.getProperties();
+        Map<String, String> egeriaProps = element.getDatabaseTableProperties().getAdditionalProperties();
+
+        if ( egeriaProps.equals( postgresProps))
+        {
+            result = true;
+        }
+        return result;
+    }
+
+
+    public boolean isEquivalent(DatabaseViewElement element)
+    {
+        boolean result = false;
+        Map<String, String> postgresProps = this.getProperties();
+        Map<String, String> egeriaProps = element.getDatabaseViewProperties().getAdditionalProperties();
+
+        if ( egeriaProps.equals( postgresProps))
+        {
+            result = true;
+        }
+        return result;
+    }
+
 }
