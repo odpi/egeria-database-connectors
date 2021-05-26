@@ -44,14 +44,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         try
         {
             /*
-            get a list of databases currently hosted in postgres
-            and a list of databases already known by egeria
+            get a list of databases currently hosted in Postgres
+            and a list of databases already known by Egeria
              */
             List<PostgresDatabase> postgresDatabases = source.getDabases();
             List<DatabaseElement> egeriaDatabases = getContext().getMyDatabases(startFrom, pageSize);
 
             /*
-            first we remove any egeria databases that are no longer present in postgres
+            first we remove any Egeria databases that are no longer present in Postgres
              */
             egeriaDatabases = deleteDatabases( postgresDatabases, egeriaDatabases );
 
@@ -63,7 +63,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     if( postgresDatabases.size() > 0 )
                     {
                         /*
-                    we have no databases in egeria
+                    we have no databases in Egeria
                     so all databases are new
                      */
                         addDatabase(postgresDatabase);
@@ -72,7 +72,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 else
                 {
                     /*
-                    check if the database is known to egeria
+                    check if the database is known to Egeria
                     and needs to be updated
                      */
                     for (DatabaseElement egeriaDatabase : egeriaDatabases)
@@ -137,7 +137,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                        PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                         error);
             }
 
@@ -233,7 +233,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -268,7 +268,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     /**
      * iterates over the database schemas updating where necessary
      *
-     * @param databaseGUID   the egeria database
+     * @param databaseGUID   the Egeria database
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateSchemas(String databaseGUID, String name) throws AlreadyHandledException
@@ -279,7 +279,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         try
         {
                /*
-            get a list of databases schema currently hosted in postgres
+            get a list of databases schema currently hosted in Postgres
             and remove any databases schemas that have been dropped since the last refresh
              */
             List<PostgresSchema> postgresSchemas = source.getDatabaseSchema(name);
@@ -294,7 +294,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             {
                 boolean found = false;
                 /*
-                we have no schemas in egeria
+                we have no schemas in Egeria
                 so all schemas are new
                  */
                 if (egeriaSchemas == null)
@@ -307,7 +307,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 else
                 {
                     /*
-                    check if the schema is known to egeria
+                    check if the schema is known to Egeria
                     and needs to be updated
                      */
                     for (DatabaseSchemaElement egeriaSchema : egeriaSchemas)
@@ -366,7 +366,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -393,10 +393,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * Changes the properties of an egeria schema entity
+     * Changes the properties of an Egeria schema entity
      *
      * @param postgresSchema            the Postgres Schema properties
-     * @param egeriaSchema          the egeria schema
+     * @param egeriaSchema          the Egeria schema
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateSchema( PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
@@ -435,7 +435,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -459,8 +459,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * @param postgresSchema the postgres schema bean
-     * @param egeriaSchema   the egeria schema bean
+     * @param postgresSchema the Postgres schema bean
+     * @param egeriaSchema   the Egeria schema bean
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateTables(PostgresSchema postgresSchema, DatabaseSchemaElement egeriaSchema) throws AlreadyHandledException
@@ -474,14 +474,14 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         try
         {
             /*
-            get a list of databases tables currently hosted in postgres
+            get a list of databases tables currently hosted in Postgres
             and remove any tables that have been dropped since the last refresh
              */
             List<PostgresTable> postgresTables = source.getTables(postgresSchema.getSchema_name());
             List<DatabaseTableElement> egeriaTables = getContext().getTablesForDatabaseSchema(schemaGuid, startFrom, pageSize);
 
             /*
-            remove tables from egeria that are no longer needed
+            remove tables from Egeria that are no longer needed
              */
             egeriaTables = deleteTables( postgresTables, egeriaTables);
 
@@ -489,7 +489,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             {
                 boolean found = false;
                 /*
-                we have no tables in egeria but we do have tables in postgres
+                we have no tables in Egeria but we do have tables in Postgres
                 so all tables are new
                  */
                 if (egeriaTables == null)
@@ -502,7 +502,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 else
                 {
                     /*
-                    check if the database table is known to egeria
+                    check if the database table is known to Egeria
                     and needs to be updated
                      */
                     for (DatabaseTableElement egeriaTable : egeriaTables)
@@ -549,7 +549,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -581,7 +581,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * @param postgresTable  the postgres table attributes to be added
+     * @param postgresTable  the Postgres table attributes to be added
      * @param egeriaTable    the GUID of the schema to which the table will be linked
      * @throws AlreadyHandledException this exception has already been logged
      */
@@ -622,7 +622,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -648,8 +648,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * @param postgresSchema the postgres schema bean
-     * @param egeriaSchema   the egeria schema bean
+     * @param postgresSchema the Postgres schema bean
+     * @param egeriaSchema   the Egeria schema bean
      * @throws AlreadyHandledException this exception has already been logged
      */
 
@@ -663,7 +663,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
         try
         {
             /*
-            get a list of databases views currently hosted in postgres
+            get a list of databases views currently hosted in Postgres
             and remove any tables that have been dropped since the last refresh
              */
             List<PostgresTable> postgresViews = source.getViews(postgresSchema.getSchema_name());
@@ -674,7 +674,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             {
                 boolean found = false;
                 /*
-                we have no views in egeria
+                we have no views in Egeria
                 so all views are new
                  */
                 if (egeriaViews == null)
@@ -687,7 +687,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 else
                 {
                     /*
-                    check if the database table is known to egeria
+                    check if the database table is known to Egeria
                     and needs to be updated
                      */
                     for (DatabaseViewElement egeriaView : egeriaViews)
@@ -734,7 +734,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -766,7 +766,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * @param postgresTable         the postgres table attributes to be added
+     * @param postgresTable         the Postgres table attributes to be added
      * @param egeriaView    te GUID of the schema to which the table will be linked
      * @throws AlreadyHandledException this exception has already been logged
      */
@@ -806,7 +806,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -832,8 +832,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * @param postgresTable         the postgres table which contains the columns to be updates
-     * @param  egeriaTable  the column data from egeria
+     * @param postgresTable         the Postgres table which contains the columns to be updates
+     * @param  egeriaTable  the column data from Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateTableColumns(PostgresTable postgresTable, DatabaseTableElement egeriaTable) throws AlreadyHandledException
@@ -856,7 +856,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 {
                     boolean found = false;
                     /*
-                    we have no columns in egeria
+                    we have no columns in Egeria
                     so all columns are new
                      */
                     if (egeriaColumns == null)
@@ -869,7 +869,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     else
                     {
                         /*
-                        check if the database table is known to egeria
+                        check if the database table is known to Egeria
                         and needs to be updated
                          */
                         for (DatabaseColumnElement egeriaColumn : egeriaColumns)
@@ -934,7 +934,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -966,8 +966,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * @param postgresTable         the postgres table which contains the columns to be updates
-     * @param  egeriaTable  the column data from egeria
+     * @param postgresTable         the Postgres table which contains the columns to be updates
+     * @param  egeriaTable  the column data from Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateViewColumns(PostgresTable postgresTable, DatabaseViewElement egeriaTable) throws AlreadyHandledException
@@ -990,7 +990,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             {
                 boolean found = false;
                 /*
-                we have no tables in egeria
+                we have no tables in Egeria
                 so all tables are new
                  */
                 if (egeriaColumns == null)
@@ -1003,7 +1003,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                 else
                 {
                     /*
-                    check if the database table is known to egeria
+                    check if the database table is known to Egeria
                     and needs to be updated
                      */
                     for (DatabaseColumnElement egeriaColumn : egeriaColumns)
@@ -1056,7 +1056,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -1089,8 +1089,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * @param postgresCol           the postgres column
-     * @param  egeriaCol            the column data from egeria
+     * @param postgresCol           the Postgres column
+     * @param  egeriaCol            the column data from Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void updateColumn(PostgresColumn postgresCol, DatabaseColumnElement egeriaCol ) throws AlreadyHandledException
@@ -1128,7 +1128,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -1154,9 +1154,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     /**
      * mapping function that reads tables, columns and primary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param db the postgres attributes of the database
+     * @param db the Postgres attributes of the database
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void addDatabase(PostgresDatabase db) throws AlreadyHandledException
@@ -1165,7 +1165,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
       try
         {
          /*
-         new database so build the database in egeria
+         new database so build the database in Egeria
          */
             DatabaseProperties dbProps = PostgresMapper.getDatabaseProperties(db);
             String guid = this.getContext().createDatabase(dbProps);
@@ -1195,7 +1195,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1218,7 +1218,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * Adds schema entities to egeria for a given database
+     * Adds schema entities to Egeria for a given database
      *
      * @param dbName the name of the database
      * @param dbGUID the GUID of the database entity to attach the schemas
@@ -1250,10 +1250,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     /**
      * mapping function that reads tables, columns and primary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param sch     the postgres schema attributes to be
-     * @param dbGuidd the egeria GUID of the database
+     * @param sch     the Postgres schema attributes to be
+     * @param dbGuidd the Egeria GUID of the database
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void addSchema(PostgresSchema sch, String dbGuidd) throws AlreadyHandledException
@@ -1292,7 +1292,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1316,7 +1316,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     /**
      * mapping function that reads tables, columns and primary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
      * @param schemaName the attributes of the schema which owns the tables
      * @param schemaGUID the GUID of the owning schema
@@ -1359,10 +1359,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * creates an egeria DatabaseTable entity for a given Postgres Table
+     * creates an Egeria DatabaseTable entity for a given Postgres Table
      *
-     * @param table      the postgres schema attributes to be
-     * @param schemaGUID the egeria GUID of the schema
+     * @param table      the Postgres schema attributes to be
+     * @param schemaGUID the Egeria GUID of the schema
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void addTable(PostgresTable table, String schemaGUID) throws AlreadyHandledException
@@ -1398,7 +1398,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1422,11 +1422,11 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * creates an egeria DatabaseView entity for a given Postgres Table
-     * in postgres views are tables
+     * creates an Egeria DatabaseView entity for a given Postgres Table
+     * in Postgres views are tables
      *
-     * @param view       the postgres view properties
-     * @param schemaGUID the egeria GUID of the schema
+     * @param view       the Postgres view properties
+     * @param schemaGUID the Egeria GUID of the schema
      * @throws AlreadyHandledException this exception has already been logged
      */
     private void addView(PostgresTable view, String schemaGUID) throws AlreadyHandledException
@@ -1459,7 +1459,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         } catch (ConnectorCheckedException error)
         {
@@ -1483,8 +1483,8 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * add the foreign keys to egeria
-     * for a schema from postgres and adds the data to egeria
+     * add the foreign keys to Egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
      * @param schema the attributes of the schema which owns the tables
      * @throws AlreadyHandledException this exception has already been logged
@@ -1570,7 +1570,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1594,7 +1594,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     /**
      * mapping function that reads tables, columns and primary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
      * @param schemaName the attributes of the schema which owns the tables
      * @param schemaGUID the GUID of the owning schema
@@ -1638,7 +1638,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     /**
      * mapping function that reads tables, columns and primary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
      * @param tableName the name of the parent table
      * @param tableGUID the GUID of the owning table
@@ -1680,9 +1680,9 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
     /**
      * mapping function that reads columns and primary keys
-     * for a schema from postgres and creates
+     * for a schema from Postgres and creates
      *
-     * @param col         the postgres attributes of the column
+     * @param col         the Postgres attributes of the column
      * @param guid        the GUID of the owning table
      * @throws AlreadyHandledException allows the exception to be passed up the stack, without additional handling
      */
@@ -1718,7 +1718,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1745,10 +1745,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * Checks if any databases need to be removed from egeria
+     * Checks if any databases need to be removed from Egeria
      *
      * @param postgresDatabases            a list of the bean properties of a Postgres Database
-     * @param egeriaDatabases    a list of the Databases already known to egeria
+     * @param egeriaDatabases    a list of the Databases already known to Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private  List<DatabaseElement> deleteDatabases(List<PostgresDatabase> postgresDatabases, List<DatabaseElement> egeriaDatabases) throws AlreadyHandledException
@@ -1760,7 +1760,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaDatabases != null)
             {
                 /*
-                for each database already known to egeria
+                for each database already known to Egeria
                  */
                 for (Iterator<DatabaseElement> itr = egeriaDatabases.iterator(); itr.hasNext();)
                 {
@@ -1768,7 +1768,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     DatabaseElement egeriaDatabase = itr.next();
                     String knownName = egeriaDatabase.getDatabaseProperties().getQualifiedName();
                     /*
-                    check that the database is still present in postgres
+                    check that the database is still present in Postgres
                      */
                     for (PostgresDatabase postgresDatabase : postgresDatabases)
                     {
@@ -1783,7 +1783,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
                         /*
-                        not found in postgres , so delete the database from egeria
+                        not found in Postgres , so delete the database from Egeria
                          */
                     if( !found)
                     {
@@ -1816,7 +1816,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -1842,10 +1842,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * Checks if any schemas need to be removed from egeria
+     * Checks if any schemas need to be removed from Egeria
      *
      * @param postgresSchemas            a list of the bean properties of a Postgres schemas
-     * @param egeriaSchemas    a list of the Databases already known to egeria
+     * @param egeriaSchemas    a list of the Databases already known to Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private List<DatabaseSchemaElement> deleteSchemas(List<PostgresSchema> postgresSchemas, List<DatabaseSchemaElement> egeriaSchemas) throws AlreadyHandledException
@@ -1857,7 +1857,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaSchemas != null)
             {
                 /*
-                for each schema already known to egeria
+                for each schema already known to Egeria
                  */
                 for (Iterator<DatabaseSchemaElement> itr = egeriaSchemas.iterator(); itr.hasNext();)
                 {
@@ -1866,7 +1866,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                     String knownName = egeriaSchema.getDatabaseSchemaProperties().getQualifiedName();
                     /*
-                    check that the database is still present in postgres
+                    check that the database is still present in Postgres
                      */
                     for (PostgresSchema postgresSchema : postgresSchemas)
                     {
@@ -1881,7 +1881,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
                         /*
-                        not found in postgres , so delete the schema from egeria
+                        not found in Postgres , so delete the schema from Egeria
                          */
                     if( !found)
                     {
@@ -1913,7 +1913,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -1939,10 +1939,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * Checks if any schemas need to be removed from egeria
+     * Checks if any schemas need to be removed from Egeria
      *
      * @param postgresTables            a list of the bean properties of a Postgres schemas
-     * @param egeriaTables    a list of the Databases already known to egeria
+     * @param egeriaTables    a list of the Databases already known to Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private List<DatabaseTableElement> deleteTables(List<PostgresTable> postgresTables, List<DatabaseTableElement> egeriaTables) throws AlreadyHandledException
@@ -1953,7 +1953,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaTables != null)
             {
                 /*
-                for each table already known to egeria
+                for each table already known to Egeria
                  */
                 for (Iterator<DatabaseTableElement> itr = egeriaTables.iterator(); itr.hasNext();)
                 {
@@ -1961,7 +1961,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                     DatabaseTableElement egeriaTable = itr.next();
                     String knownName = egeriaTable.getDatabaseTableProperties().getQualifiedName();
                     /*
-                    check that the database is still present in postgres
+                    check that the database is still present in Postgres
                      */
                     for (PostgresTable postgresTable : postgresTables)
                     {
@@ -1976,7 +1976,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
                         /*
-                        not found in postgres , so delete the table from egeria
+                        not found in Postgres , so delete the table from Egeria
                          */
                     if( !found)
                     {
@@ -2008,7 +2008,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2034,10 +2034,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
     }
 
     /**
-     * Checks if any views need to be removed from egeria
+     * Checks if any views need to be removed from Egeria
      *
      * @param postgresViews            a list of the bean properties of a Postgres views
-     * @param egeriaViews               a list of the  views already known to egeria
+     * @param egeriaViews               a list of the  views already known to Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private List<DatabaseViewElement> deleteViews(List<PostgresTable> postgresViews, List<DatabaseViewElement> egeriaViews) throws AlreadyHandledException
@@ -2049,7 +2049,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaViews != null)
             {
                 /*
-                for each view already known to egeria
+                for each view already known to Egeria
                  */
                 for (Iterator<DatabaseViewElement> itr = egeriaViews.iterator(); itr.hasNext();)
                 {
@@ -2058,7 +2058,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                     String knownName = egeriaView.getDatabaseViewProperties().getQualifiedName();
                     /*
-                    check that the database is still present in postgres
+                    check that the database is still present in Postgres
                      */
                     for (PostgresTable postgresView : postgresViews)
                     {
@@ -2073,7 +2073,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
                         /*
-                        not found in postgres , so delete the table from egeria
+                        not found in Postgres , so delete the table from Egeria
                          */
                     if( !found)
                     {
@@ -2105,7 +2105,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2132,10 +2132,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * Checks if any columns need to be removed from egeria
+     * Checks if any columns need to be removed from Egeria
      *
      * @param postgresColumns            a list of the bean properties of a Postgres cols
-     * @param egeriaColumns               a list of the  cols already known to egeria
+     * @param egeriaColumns               a list of the  cols already known to Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private List<DatabaseColumnElement> deleteTableColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
@@ -2147,7 +2147,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaColumns != null)
             {
                 /*
-                for each column already known to egeria
+                for each column already known to Egeria
                  */
                 for (Iterator<DatabaseColumnElement> itr = egeriaColumns.iterator(); itr.hasNext();)
                 {
@@ -2156,7 +2156,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                     String knownName = egeriaColumn.getDatabaseColumnProperties().getQualifiedName();
                     /*
-                    check that the database is still present in postgres
+                    check that the database is still present in Postgres
                      */
                     for (PostgresColumn postgresColumn : postgresColumns)
                     {
@@ -2171,7 +2171,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
                         /*
-                        not found in postgres , so delete the table from egeria
+                        not found in Postgres , so delete the table from Egeria
                          */
                     if( !found)
                     {
@@ -2203,7 +2203,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2230,10 +2230,10 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
 
     /**
-     * Checks if any columns need to be removed from egeria
+     * Checks if any columns need to be removed from Egeria
      *
      * @param postgresColumns            a list of the bean properties of a Postgres cols
-     * @param egeriaColumns               a list of the  cols already known to egeria
+     * @param egeriaColumns               a list of the  cols already known to Egeria
      * @throws AlreadyHandledException this exception has already been logged
      */
     private List<DatabaseColumnElement> deleteViewColumns(List<PostgresColumn> postgresColumns, List<DatabaseColumnElement> egeriaColumns) throws AlreadyHandledException
@@ -2245,7 +2245,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (egeriaColumns != null)
             {
                 /*
-                for each column already known to egeria
+                for each column already known to Egeria
                  */
                 for (Iterator<DatabaseColumnElement> itr = egeriaColumns.iterator(); itr.hasNext();)
                 {
@@ -2254,7 +2254,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
 
                     String knownName = egeriaColumn.getDatabaseColumnProperties().getQualifiedName();
                     /*
-                    check that the database is still present in postgres
+                    check that the database is still present in Postgres
                      */
                     for (PostgresColumn postgresColumn : postgresColumns)
                     {
@@ -2269,7 +2269,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
                         }
                     }
                         /*
-                        not found in postgres , so delete the table from egeria
+                        not found in Postgres , so delete the table from Egeria
                          */
                     if( !found)
                     {
@@ -2301,7 +2301,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }

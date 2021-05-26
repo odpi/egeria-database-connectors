@@ -4,19 +4,18 @@
  */
 apply plugin: 'java'
 
- configurations {
+configurations {
     releaseJars
 }
 
 dependencies {
-            implementation 'org.postgresql:postgresql:latest.integration'
-            implementation 'org.slf4j:slf4j-api:latest.integration'
-            implementation 'org.odpi.egeria:data-manager-client:2.9-SNAPSHOT'
-            implementation 'org.odpi.egeria:data-manager-api:2.9-SNAPSHOT'
-            implementation 'org.odpi.egeria:database-integrator-api:2.9-SNAPSHOT'
-            implementation 'org.odpi.egeria:open-connector-framework:2.9-SNAPSHOT'
-  }
-
+    implementation 'org.postgresql:postgresql'
+    implementation 'org.slf4j:slf4j-api'
+    implementation 'org.odpi.egeria:data-manager-client'
+    implementation 'org.odpi.egeria:data-manager-api'
+    implementation 'org.odpi.egeria:database-integrator-api'
+    implementation 'org.odpi.egeria:open-connector-framework'
+}
 
 
 description = 'Postgres Connector'
@@ -43,6 +42,6 @@ jar {
             from 'build/libs/postgres-connector-${version}.jar'
             into "libs"
         }
-}
+    }
 }
 
