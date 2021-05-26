@@ -91,7 +91,7 @@ subprojects {
     dependencies {
         constraints
                 {
-                    implementation "org.postgresql:postgresql:42.2.19"
+                    implementation "org.postgresql:postgresql:42.2.20"
                     implementation "org.slf4j:slf4j-api:1.7.30"
                     implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
@@ -116,8 +116,8 @@ subprojects {
     test {
         useJUnitPlatform()
         dependencies {
-            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
-            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
         }
 
         testLogging {
