@@ -63,10 +63,10 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
 
 
     /**
-     * The constructor for KafkaOpenMetadataTopicConnectorAuditCode expects to be passed one of the enumeration rows defined in
-     * KafkaOpenMetadataTopicConnectorAuditCode above.   For example:
+     * The constructor for PostgresConnectorAuditCode expects to be passed one of the enumeration rows defined in
+     * postgresConnectorAuditCode above.   For example:
      *
-     *     KafkaOpenMetadataTopicConnectorAuditCode   auditCode = KafkaOpenMetadataTopicConnectorAuditCode.EXCEPTION_COMMITTING_OFFSETS;
+     *     PostgresConnectorAuditCode   auditCode = PostgresConnectorAuditCode.EXCEPTION_COMMITTING_OFFSETS;
      *
      * This will expand out to the 4 parameters shown below.
      *

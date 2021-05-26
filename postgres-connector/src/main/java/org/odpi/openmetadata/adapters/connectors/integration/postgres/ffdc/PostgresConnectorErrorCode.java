@@ -4,8 +4,8 @@ import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDef
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageSet;
 
 /**
- * The KafkaOpenMetadataTopicConnectorErrorCode is used to define first failure data capture (FFDC) for errors that occur when working with
- * the Apache Kafka connector.  It is used in conjunction with both Checked and Runtime (unchecked) exceptions.
+ * The PostgresConnectorErrorCode is used to define first failure data capture (FFDC) for errors that occur when working with
+ * the Postgres connector.  It is used in conjunction with both Checked and Runtime (unchecked) exceptions.
  *
  * The 5 fields in the enum are:
  * <ul>
@@ -68,10 +68,10 @@ public enum PostgresConnectorErrorCode implements ExceptionMessageSet
 
 
         /**
-         * The constructor for KafkaOpenMetadataTopicConnectorErrorCode expects to be passed one of the enumeration rows defined in
-         * KafkaOpenMetadataTopicConnectorErrorCode above.   For example:
+         * The constructor for PostgresConnectorErrorCode expects to be passed one of the enumeration rows defined in
+         * PostgresConnectorErrorCode above.   For example:
          *
-         *     KafkaOpenMetadataTopicConnectorErrorCode   errorCode = KafkaOpenMetadataTopicConnectorErrorCode.ERROR_SENDING_EVENT;
+         *     PostgresConnectorErrorCode   errorCode = PostgresConnectorErrorCode.ERROR_SENDING_EVENT;
          *
          * This will expand out to the 5 parameters shown below.
          *
