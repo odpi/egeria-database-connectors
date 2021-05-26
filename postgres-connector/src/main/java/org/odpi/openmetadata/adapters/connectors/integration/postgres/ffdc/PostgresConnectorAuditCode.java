@@ -26,7 +26,7 @@ public enum PostgresConnectorAuditCode implements AuditLogMessageSet
             "Verify that the Postgres database is available",
             "If the postres database is available then contact the Egeria team for support"),
 
-    USER_NOT_AUTORIZED_EXCEPTION("POSTGRES-CONNECTOR-0002",
+    USER_NOT_AUTHORIZED_EXCEPTION("POSTGRES-CONNECTOR-0002",
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "The method {0} generated a UserNotAuthorized. {1} {2} ",
             "Operation refused",

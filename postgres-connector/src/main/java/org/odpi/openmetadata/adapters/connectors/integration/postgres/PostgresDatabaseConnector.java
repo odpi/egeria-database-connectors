@@ -137,7 +137,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             if (this.auditLog != null)
             {
                 auditLog.logException(methodName,
-                        PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                        PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                         error);
             }
 
@@ -233,7 +233,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -366,7 +366,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -435,7 +435,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -549,7 +549,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -622,7 +622,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -734,7 +734,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -806,7 +806,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -934,7 +934,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -1056,7 +1056,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (PropertyServerException error)
@@ -1128,7 +1128,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -1195,7 +1195,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1292,7 +1292,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1398,7 +1398,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1459,7 +1459,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         } catch (ConnectorCheckedException error)
         {
@@ -1570,7 +1570,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1718,7 +1718,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
         }
         catch (ConnectorCheckedException error)
@@ -1816,7 +1816,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -1913,7 +1913,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2008,7 +2008,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2105,7 +2105,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2203,7 +2203,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
@@ -2301,7 +2301,7 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             ExceptionHandler.handleException(auditLog,
                     this.getClass().getName(),
                     methodName, error,
-                    PostgresConnectorAuditCode.USER_NOT_AUTORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
+                    PostgresConnectorAuditCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName, error.getClass().getName(), error.getMessage()),
                     PostgresConnectorErrorCode.USER_NOT_AUTHORIZED_EXCEPTION.getMessageDefinition(methodName));
 
         }
