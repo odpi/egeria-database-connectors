@@ -3,7 +3,6 @@
  * Copyright Contributors to the ODPi Egeria project.
  */
 
-
 /*
  * Used for Build scripts/plugins only
 */
@@ -38,16 +37,19 @@ plugins {
 /* run './gradlew aggregateJavadocs' at top level to build all docs & output to build/docs/javadoc */
 apply plugin: 'nebula-aggregate-javadocs'
 
-
-
 /*
  * Configuration for all projects - INCLUDING this one
  */
 
+
+
 allprojects {
 
+    // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '2.9-SNAPSHOT'
+    version = '2.10-SNAPSHOT'
+
+    apply plugin: 'idea'
 
     repositories {
          mavenCentral()
@@ -62,6 +64,7 @@ allprojects {
     //    rules = ['all-dependency'] // TODO: Change to criticalRules when ready to enforce
     //
     //}
+
 }
 
 /*
@@ -104,11 +107,33 @@ subprojects {
             }
         }
 
+        // Maven Central (technically sonatype oss) requires we distribute source and javadoc
+        java {
+            sourceCompatibility = "VERSION_1_8"
+            targetCompatibility = "VERSION_1_8"
+            withJavadocJar()
+            withSourcesJar()
+        }
+
+        // Only apply the signing plugin if we're running in the build environment since
+        // this is dependent on having access to sonatype, and suitable GPG keys
+        if (System.getenv("CI"))  {
+            apply plugin: 'signing'
+            // Artifacts need signing for maven central - supplied by GitHub secrets
+        }
+
     }
 
     // sources required to publish a legitimate maven package for distribution
     java {
         withSourcesJar()
+    }
+
+    // For later java versions this is recommended - keep conditional in case we want to build on 8
+    javadoc {
+        if(JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption('html5', true)
+        }
     }
 
     //need to decide who owns the testing infrastructure
