@@ -25,13 +25,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '8'
-      # No cache for release code
-      # - name: Cache Gradle packages
-      #  uses: actions/cache@v2.1.4
-      #  with:
-      #    path: ~/.gradle/caches
-      #    key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-      #    restore-keys: ${{ runner.os }}-gradle
       - name: Build with Gradle & Release artifacts
         # TODO: Need to extend build to make use of release repo for publishing
         run: ./gradlew publish
