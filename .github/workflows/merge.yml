@@ -47,5 +47,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Postgres Connector
-          path: postgres-connector/build/libs/*.jar
+          path: '**/build/libs/*.jar'
 
