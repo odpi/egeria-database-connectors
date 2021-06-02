@@ -52,7 +52,7 @@ public class PostgresMapper
         DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties();
         schemaProps.setDisplayName(sch.getQualifiedName());
         schemaProps.setQualifiedName(sch.getQualifiedName());
-        schemaProps.setOwner(sch.getSchema_owner());
+        //schemaProps.setOwner(sch.getSchema_owner());
         schemaProps.setAdditionalProperties(sch.getProperties());
 
         return schemaProps;
