@@ -80,7 +80,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     ext {
-        egeriaVersion = '2.10-SNAPSHOT'
+        egeriaVersion = '2.11-SNAPSHOT'
     }
 
     // ensures we pick up the very latest snapshots when built
