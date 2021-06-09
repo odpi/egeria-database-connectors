@@ -1,5 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright Contributors to the ODPi Egeria project.
 name: "Create connector test environment using KinD"
-on: [pull_request, push]
+on:
+  # Only manually for now
+  workflow_dispatch:
 
 jobs:
   kind:

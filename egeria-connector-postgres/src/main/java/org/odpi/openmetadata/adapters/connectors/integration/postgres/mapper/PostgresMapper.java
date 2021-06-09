@@ -20,10 +20,10 @@ public class PostgresMapper
 
     /**
      * mapping function that reads tables, columns and primmary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param db     the postgres database attributes to be
-     * @return       the egeria datbase propertys
+     * @param db     the Postgres database attributes to be
+     * @return       the Egeria database properties
      */
     public static DatabaseProperties getDatabaseProperties(PostgresDatabase db )
     {
@@ -42,17 +42,17 @@ public class PostgresMapper
 
     /**
      * mapping function that reads tables, columns and primmary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param sch     the postgres database attributes to be
-     * @return        the egeria schema propertys
+     * @param sch     the Postgres database attributes to be
+     * @return        the Egeria schema properties
      */
     public static DatabaseSchemaProperties getSchemaProperties(PostgresSchema sch)
     {
         DatabaseSchemaProperties schemaProps = new DatabaseSchemaProperties();
         schemaProps.setDisplayName(sch.getQualifiedName());
         schemaProps.setQualifiedName(sch.getQualifiedName());
-        schemaProps.setOwner(sch.getSchema_owner());
+        //schemaProps.setOwner(sch.getSchema_owner());
         schemaProps.setAdditionalProperties(sch.getProperties());
 
         return schemaProps;
@@ -60,10 +60,10 @@ public class PostgresMapper
 
     /**
      * mapping function that reads tables, columns and primmary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param table     the postgres table properties
-     * @return          the egeria table propertys
+     * @param table     the Postgres table properties
+     * @return          the Egeria table properties
      */
     public static DatabaseTableProperties getTableProperties(PostgresTable table)
     {
@@ -76,11 +76,11 @@ public class PostgresMapper
     }
 
     /**
-     * mapping function that reads converts a postgres table properties to an egeria DatabaseViewProperties
-     * for a schema from postgres and adds the data to egeria
+     * mapping function that reads converts a Postgres table properties to an Egeria DatabaseViewProperties
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param table     the postgres table properties
-     * @return          the egeria view properties
+     * @param table     the Postgres table properties
+     * @return          the Egeria view properties
      */
     public static DatabaseViewProperties getViewProperties(PostgresTable table)
     {
@@ -93,10 +93,10 @@ public class PostgresMapper
     }
     /**
      * mapping function that reads tables, columns and primmary keys
-     * for a schema from postgres and adds the data to egeria
+     * for a schema from Postgres and adds the data to Egeria
      *
-     * @param col    the postgres column properties
-     * @return          the egeria column propertys
+     * @param col    the Postgres column properties
+     * @return          the Egeria column properties
      */
     public static DatabaseColumnProperties getColumnProperties(PostgresColumn col)
     {
