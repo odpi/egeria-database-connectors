@@ -46,7 +46,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '2.10-SNAPSHOT'
+    version = '2.11-SNAPSHOT'
 
     apply plugin: 'idea'
 
