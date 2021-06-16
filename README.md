@@ -17,18 +17,20 @@ value from data whilst ensuring it is properly governed.
 
 # Postgres Connector
 
-This project contains the Postgres Database Integration Daemon Connector for Egeria.
+This project currently contains the Postgres Database Integration Daemon Connector for Egeria.
  
 
-#Introduction
+# Introduction
 
 
 The Postgres Database Integration Daemon Connector is an example of an Egeria Integration Daemon connector, an integration framework which is described in detail [here.](https://egeria.odpi.org/open-metadata-implementation/admin-services/docs/concepts/integration-daemon.html#:~:text=An%20Integration%20Daemon%20is%20an,Access%20Point%20or%20Metadata%20Server.)
 To support the documentation on Integration Daemons there is also a [Postman Collection](https://egeria.odpi.org/open-metadata-resources/open-metadata-tutorials/postman-tutorial/) which contains examples of the commands needed to enable the running of different types of integration daemon.
 So this readme will only discuss the specific configuration needed to run an instance of the Postgres connector, as illustrated in the following diagram.
-![alt text](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrdVMpQA6q1dlb4x3iiDP0W5OG4d3UNZUCnw&usqp=CAU "possible integration daemon configuration")
 
-#Overview
+
+![alt text](https://egeria.odpi.org/open-metadata-implementation/admin-services/docs/concepts/integration-daemon.png "possible integration daemon configuration")
+
+# Overview
 The Postgres Database Integration Daemon Connector works by periodically making a JDBC connection to a Postgres database instance running on Postgres server. It's not important which database accepts the connection as 
 this connector retrieves the applicable metadata from Postgres provided system tables as an implementation of the SQL [information schema.](https://www.Postgresql.org/docs/9.1/information-schema.html)
 so it is important that the user has the correct read permissions for this schema.
@@ -53,13 +55,21 @@ This Integration Daemon Postgres connector supports the following types of datab
 * Foreign Keys 
 
 # Starting the Egeria Platform
-Below is an example of the java commandline used to launch the Egeria platform that will host the Integration Daemon that is in turn hosting the 
-Postgres connector instance we are about to configure.
+There options when it comes to running Egeria, if using the egeria docker image see https://github.com/odpi/egeria/tree/master/open-metadata-resources/open-metadata-deployment/docker/egeria 'Extending the image' which refers to how to add additional connectors.
+
+If using the egeria-base helm chart see https://github.com/odpi/egeria/tree/master/open-metadata-resources/open-metadata-deployment/charts/egeria-base 'Using additional connectors'
+
+In this readme we will discuss running egria natively. Below is an example of the java commandline used to launch the Egeria platform that will host the Integration Daemon that is in turn hosting the 
+Postgres connector instance we are about to configure. The jar file containing the latest progress can be obtained by running the following 
+````
+mvn dependency:get  -DrepoUrl=https://oss.sonatype.org/content/repositories/snapshots/  -Dartifact=org.odpi.egeria:postgres-connector:LATEST:jar  -Dtransitive=false    -Ddest=postgres-connector.jar
+````
 The point of interest when launching a platform that will host connectors is the `-Dloader.path=/home/wbittles/egeria-database-connectors/Postgres-connector/libs` command line option.
 The option specifies a file system directory that must contain both the Postgres JDBC driver and the Postgres-connector jar file.
 ````
 java -Dloader.path=/home/wbittles/egeria-database-connectors/Postgres-connector/libs -Dserver.port=9443 -jar /home/wbittles/egeria/open-metadata-distribution/open-metadata-assemblies/target/egeria-2.10-SNAPSHOT-distribution/egeria-omag-2.10-SNAPSHOT/server/server-chassis-spring-2.10-SNAPSHOT.jar`
 ````
+
 
 # Postgres Connection Details
 After creating the Egeria Integration Daemon server that will host the Postgres connector, the next step is to configure the connector. 
