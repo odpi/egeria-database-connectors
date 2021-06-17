@@ -33,3 +33,9 @@ LABEL org.opencontainers.image.description = "Egeria with Postgres connector" \
 COPY egeria-connector-postgres/build/libs/egeria-connector-postgres-${connectorversion}.jar /deployments/server/lib
 # get the postgres driver hardcoded version)
 ADD ${postgresurl} /deployments/server/lib
+# correct permissions from file download - we can only do this as root, and ADD doesn't have an option for chmod (only chown)
+# so to maintain consistency (owned by root, globally readable) we fix here
+USER root
+RUN chmod -R guo+r /deployments/server/lib
+# And return to the original user for security
+USER jboss
