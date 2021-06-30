@@ -46,7 +46,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '2.11-SNAPSHOT'
+    version = '3.0-SNAPSHOT'
 
     apply plugin: 'idea'
 
@@ -80,7 +80,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     ext {
-        egeriaVersion = '2.11-SNAPSHOT'
+        egeriaVersion = '3.0-SNAPSHOT'
     }
 
     // ensures we pick up the very latest snapshots when built
