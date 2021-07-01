@@ -46,7 +46,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '2.10-SNAPSHOT'
+    version = '3.0-SNAPSHOT'
 
     apply plugin: 'idea'
 
@@ -80,7 +80,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     ext {
-        egeriaVersion = '2.11-SNAPSHOT'
+        egeriaVersion = '3.0-SNAPSHOT'
     }
 
     // ensures we pick up the very latest snapshots when built
@@ -107,8 +107,8 @@ subprojects {
 
         // Maven Central (technically sonatype oss) requires we distribute source and javadoc
         java {
-            sourceCompatibility = "VERSION_1_8"
-            targetCompatibility = "VERSION_1_8"
+            sourceCompatibility = "VERSION_11"
+            targetCompatibility = "VERSION_11"
             withJavadocJar()
             withSourcesJar()
         }
@@ -165,8 +165,8 @@ subprojects {
     // Java language settings
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
         options.incremental = true
         options.fork = true
         options.failOnError = true

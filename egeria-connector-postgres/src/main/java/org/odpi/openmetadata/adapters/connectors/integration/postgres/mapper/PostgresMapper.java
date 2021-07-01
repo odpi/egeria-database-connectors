@@ -101,7 +101,7 @@ public class PostgresMapper
     public static DatabaseColumnProperties getColumnProperties(PostgresColumn col)
     {
         DatabaseColumnProperties colProps = new DatabaseColumnProperties();
-        colProps.setDisplayName(col.getTable_name());
+        colProps.setDisplayName(col.getColumn_name());
         colProps.setQualifiedName(col.getQualifiedName());
 
         colProps.setDataType(col.getData_type());
