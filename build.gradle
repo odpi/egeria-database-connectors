@@ -93,7 +93,7 @@ subprojects {
         constraints
                 {
                     implementation "org.postgresql:postgresql:42.2.20"
-                    implementation "org.slf4j:slf4j-api:1.7.30"
+                    implementation "org.slf4j:slf4j-api:1.7.31"
                     implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
                     implementation "org.odpi.egeria:database-integrator-api:${egeriaVersion}"
