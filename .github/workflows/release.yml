@@ -23,8 +23,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
-          java-version: '8'
+          distribution: 'adopt'
+          java-version: '11'
       # No cache for release code
       # - name: Cache Gradle packages
       #  uses: actions/cache@v2.1.4
