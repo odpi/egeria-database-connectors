@@ -17,7 +17,7 @@ ARG baseimage=odpi/egeria
 FROM ${baseimage}:${egeriaversion}
 
 ARG connectorversion=2.11-SNAPSHOT
-ARG postgresurl=https://jdbc.postgresql.org/download/postgresql-42.2.21.jar
+ARG postgresurl=https://jdbc.postgresql.org/download/postgresql-42.2.22.jar
 
 #ENV connectorversion ${connectorversion}
 #ENV egeriaversion ${egeriaversion}
