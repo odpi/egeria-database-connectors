@@ -125,3 +125,54 @@ jar {
     }
 }
 
+// We only have a single artifact for now - this additional metadata is
+// required for publishing to maven central. As above, only if we're running in a build pipeline
+// Environment variables are sourced from GitHub secrets in the CI pipeline
+if (System.getenv("CI")) {
+    publishing {
+        publications {
+            // definining a publication called 'connector'
+            connector(MavenPublication) {
+                // Pick up the standard java artifacts
+                from components.java
+                // by default, gradle's groupId, artifactId, version are used for the maven coordinates
+                // but we need additional metadata to align with Egeria (more may need to be added)
+                pom {
+                    description = 'Postgres Connector for Egeria'
+                    url = 'http://egeria.odpi.org'
+                    // No additional properties for now
+                    //properties = [
+                    //        propname: "propvalue"
+                    //]
+                    licenses {
+                        // Code
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                        // Docs
+                        license {
+                            name = 'Creative Commons Attribution 4.0 International (CC BY 4.0)'
+                            url = 'https://creativecommons.org/licenses/by/4.0'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'planetf1'
+                            name = 'Nigel Jones'
+                            email = 'nigel.l.jones+git@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/odpi/egeria-database-connectors.git'
+                        developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria-database-connectors.git'
+                        url = 'http://github.com/odpi/egeria-database-connectors/'
+                    }
+
+                }
+            }
+
+        }
+    }
+}
+

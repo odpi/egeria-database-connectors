@@ -79,6 +79,11 @@ subprojects {
     // As we've migrated from maven - we'll assume all submodules publish directly to maven
     apply plugin: 'maven-publish'
 
+    if (System.getenv("CI"))  {
+        apply plugin: 'signing'
+        // Artifacts need signing for maven central - supplied by GitHub secrets
+    }
+
     ext {
         egeriaVersion = '2.11'
     }
@@ -161,6 +166,7 @@ subprojects {
             }
         }
     }
+
 
     // Java language settings
     tasks.withType(JavaCompile) {
