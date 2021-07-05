@@ -5,7 +5,8 @@
 
 // Artifact names are taken from the directory by default, but clearer if we are explicit here
 
-def description = 'Postgres Connector'
+def name = 'Postgres Connector'
+def description = 'Postgres Connector for Egeria'
 def artifact = 'egeria-connector-progress'
 
 dependencies {
@@ -25,6 +26,7 @@ afterEvaluate {
                 pom {
                     description = "${description}"
                     artifactId = "${artifact}"
+                    name = "${name}"
                 }
             }
         }
