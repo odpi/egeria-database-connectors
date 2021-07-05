@@ -4,10 +4,9 @@
  */
 
 // Artifact names are taken from the directory by default, but clearer if we are explicit here
-ext {
-    description = 'Postgres Connector'
-    artifact = 'egeria-connector-progress'
-}
+
+def description = 'Postgres Connector'
+def artifact = 'egeria-connector-progress'
 
 dependencies {
     implementation 'org.postgresql:postgresql'
@@ -24,8 +23,8 @@ afterEvaluate {
         publications {
             connector(MavenPublication) {
                 pom {
-                    description = "${ext.description}"
-                    artifactId = "${ext.artifactId}"
+                    description = "${description}"
+                    artifactId = "${artifact}"
                 }
             }
         }
