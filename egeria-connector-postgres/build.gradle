@@ -24,8 +24,8 @@ afterEvaluate {
         publications {
             connector(MavenPublication) {
                 pom {
-                    description = '${ext.description}'
-                    artifactId = '${ext.artifactId}'
+                    description = "${ext.description}"
+                    artifactId = "${ext.artifactId}"
                 }
             }
         }
