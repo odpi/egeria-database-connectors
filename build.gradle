@@ -9,6 +9,7 @@
 
 buildscript {
     repositories {
+
         maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
         mavenCentral()
     }
@@ -27,20 +28,12 @@ buildscript {
  * Plugins for this parent module only - so just high level project related
  */
 
-
-plugins {
-        //id "nebula.lint" version "16.9.0"
-        //id "nebula-aggregate-javadocs"
-    }
-
 /* run './gradlew aggregateJavadocs' at top level to build all docs & output to build/docs/javadoc */
 apply plugin: 'nebula-aggregate-javadocs'
 
 /*
  * Configuration for all projects - INCLUDING this one
  */
-
-
 
 allprojects {
 
@@ -49,12 +42,6 @@ allprojects {
     version = '3.0-SNAPSHOT'
 
     apply plugin: 'idea'
-
-    repositories {
-         mavenCentral()
-         maven { url("https://oss.sonatype.org/content/repositories/snapshots")}
-    }
-
 
     // This enforces version checking but is slow to process
     //apply plugin: 'nebula.lint'
@@ -71,16 +58,21 @@ allprojects {
 
 subprojects {
 
-    apply plugin: 'java-library'
-
-    // Mostly java, so default to this for now
-    apply plugin: 'java'
-
-    // As we've migrated from maven - we'll assume all submodules publish directly to maven
-    apply plugin: 'maven-publish'
-
     ext {
         egeriaVersion = '3.0-SNAPSHOT'
+    }
+
+    apply plugin: 'java-library'
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    if (System.getenv("CI")) {
+        apply plugin: 'signing'
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
     }
 
     // ensures we pick up the very latest snapshots when built
@@ -104,32 +96,28 @@ subprojects {
                 includeEngines 'junit-jupiter'
             }
         }
-
-        // Maven Central (technically sonatype oss) requires we distribute source and javadoc
-        java {
-            sourceCompatibility = "VERSION_11"
-            targetCompatibility = "VERSION_11"
-            withJavadocJar()
-            withSourcesJar()
-        }
-
-        // Only apply the signing plugin if we're running in the build environment since
-        // this is dependent on having access to sonatype, and suitable GPG keys
-        if (System.getenv("CI"))  {
-            apply plugin: 'signing'
-            // Artifacts need signing for maven central - supplied by GitHub secrets
-        }
-
     }
-
-    // sources required to publish a legitimate maven package for distribution
+    // Maven Central (technically sonatype oss) requires we distribute source and javadoc
     java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        withJavadocJar()
         withSourcesJar()
+    }
+    // More Java language settings
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+        options.incremental = true
+        options.fork = true
+        options.failOnError = true
+        options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
     }
 
     // For later java versions this is recommended - keep conditional in case we want to build on 8
     javadoc {
-        if(JavaVersion.current().isJava9Compatible()) {
+        if (JavaVersion.current().isJava9Compatible()) {
             options.addBooleanOption('html5', true)
         }
     }
@@ -153,23 +141,80 @@ subprojects {
 
     }
 
-    // publish maven package
+    // We only have a single artifact for now - this additional metadata is
+    // required for publishing to maven central. Only doing signing in 'CI'
     publishing {
         publications {
-            maven(MavenPublication) {
-                from(components.java)
+            connector(MavenPublication) {
+                from components.java
+                pom {
+                    url = 'http://egeria.odpi.org'
+                    licenses {
+                        // Code
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                        // Docs
+                        license {
+                            name = 'Creative Commons Attribution 4.0 International (CC BY 4.0)'
+                            url = 'https://creativecommons.org/licenses/by/4.0'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'planetf1'
+                            name = 'Nigel Jones'
+                            email = 'nigel.l.jones+git@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/odpi/egeria-database-connectors.git'
+                        developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria-database-connectors.git'
+                        url = 'http://github.com/odpi/egeria-database-connectors/'
+                    }
+                }
+                // Override the project name & description for the pom based on properties set in the child build.gradle (hard to default & required for maven central)
+                pom.withXml {
+                    asNode().appendNode('name', "${project.ext.name}")
+                    asNode().appendNode('description', "${project.description}")
+                }
+            }
+        }
+
+        // Release versions get pushed to staging area on maven central, snapshots to snapshot repo
+        // Secrets for credentials
+        if (System.getenv("CI")) {
+            repositories {
+                maven {
+                    name = 'OSSRH'
+                    def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+                    def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+                    url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                    // User token (under profile) on oss.sonatype.org
+                    credentials {
+                        username = System.getenv("OSSRH_USERNAME")
+                        password = System.getenv("OSSRH_TOKEN")
+                    }
+                }
             }
         }
     }
 
-    // Java language settings
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-        options.incremental = true
-        options.fork = true
-        options.failOnError = true
+    // To publish to ossrh we need to sign the artifacts - only in CI
+    if (System.getenv("CI")) {
+        signing {
+            // This is the publication to sign
+            sign publishing.publications.connector
+            // gpg --export-secret-keys myemal@gmail.com | base64
+            def signingKey = System.getenv("OSSRH_GPG_PRIVATE_KEY")
+            // Passphrase for key
+            def signingPassword = System.getenv("OSSRH_GPG_PASSPHRASE")
+            // public key id (last 8 characters only) - note keys also need uploading to all the main registries
+            def signingKeyId = System.getenv("OSSRH_GPG_KEYID")
+            // We use these values from secrets rather than gradle.properties
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        }
     }
 }
 
