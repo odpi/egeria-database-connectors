@@ -3,12 +3,12 @@
  * Copyright Contributors to the ODPi Egeria project.
  */
 
-// Artifact names are taken from the directory by default, but clearer if we are explicit here
-
+// Artifact names are taken from the directory by default, set in settings.gradle to override
+// The 'name' for the maven artifact, and description are set here
 ext.name = 'Postgres Connector'
 description = 'Postgres Connector for Egeria'
-ext.artifact = 'egeria-connector-progress'
 
+// Dependencies for this project. Versions set in constraints in root project.
 dependencies {
     implementation 'org.postgresql:postgresql'
     implementation 'org.slf4j:slf4j-api'
@@ -17,19 +17,4 @@ dependencies {
     implementation 'org.odpi.egeria:database-integrator-api'
     implementation 'org.odpi.egeria:open-connector-framework'
 }
-
-// merge the new description.artifact id into the publication configuration
-//afterEvaluate {
-//    publishing {
-//        publications {
-//            connector(MavenPublication) {
-//                pom {
-//                    description = "${description}"
-//                    artifactId = "${artifact}"
-//                    name = "${name}"
-//                }
-//            }
-//        }
-//    }
-//}
 

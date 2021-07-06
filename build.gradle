@@ -141,27 +141,14 @@ subprojects {
 
     }
 
-
     // We only have a single artifact for now - this additional metadata is
-// required for publishing to maven central. As above, only if we're running in a build pipeline
-// Environment variables are sourced from GitHub secrets in the CI pipeline
+    // required for publishing to maven central. Only doing signing in 'CI'
     publishing {
         publications {
-            // definining a publication called 'connector'
             connector(MavenPublication) {
-                // Pick up the standard java artifacts
                 from components.java
-                // by default, gradle's groupId, artifactId, version are used for the maven coordinates
-                // but we need additional metadata to align with Egeria (more may need to be added)
                 pom {
-                    //description = "${description}"
-                    //name = "${name}"
-                    //artifactId = "${project.artifact}"
                     url = 'http://egeria.odpi.org'
-                    // No additional properties for now
-                    //properties = [
-                    //        propname: "propvalue"
-                    //]
                     licenses {
                         // Code
                         license {
@@ -186,15 +173,15 @@ subprojects {
                         developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria-database-connectors.git'
                         url = 'http://github.com/odpi/egeria-database-connectors/'
                     }
-
                 }
+                // Override the project name & description for the pom based on properties set in the child build.gradle (hard to default & required for maven central)
                 pom.withXml {
                     asNode().appendNode('name', "${project.ext.name}")
                     asNode().appendNode('description', "${project.description}")
                 }
             }
-
         }
+
         // Release versions get pushed to staging area on maven central, snapshots to snapshot repo
         // Secrets for credentials
         if (System.getenv("CI")) {
@@ -214,7 +201,7 @@ subprojects {
         }
     }
 
-    // To publish to ossrh we need to sign the artifacts
+    // To publish to ossrh we need to sign the artifacts - only in CI
     if (System.getenv("CI")) {
         signing {
             // This is the publication to sign
