@@ -9,6 +9,7 @@
 
 buildscript {
     repositories {
+
         maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
         mavenCentral()
     }
@@ -98,8 +99,8 @@ subprojects {
     }
     // Maven Central (technically sonatype oss) requires we distribute source and javadoc
     java {
-        sourceCompatibility = "VERSION_1_8"
-        targetCompatibility = "VERSION_1_8"
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
         withJavadocJar()
         withSourcesJar()
     }
@@ -144,53 +145,59 @@ subprojects {
     // We only have a single artifact for now - this additional metadata is
 // required for publishing to maven central. As above, only if we're running in a build pipeline
 // Environment variables are sourced from GitHub secrets in the CI pipeline
-    if (System.getenv("CI")) {
-        publishing {
-            publications {
-                // definining a publication called 'connector'
-                connector(MavenPublication) {
-                    // Pick up the standard java artifacts
-                    from components.java
-                    // by default, gradle's groupId, artifactId, version are used for the maven coordinates
-                    // but we need additional metadata to align with Egeria (more may need to be added)
-                    pom {
-                        description = 'Postgres Connector for Egeria'
-                        url = 'http://egeria.odpi.org'
-                        // No additional properties for now
-                        //properties = [
-                        //        propname: "propvalue"
-                        //]
-                        licenses {
-                            // Code
-                            license {
-                                name = 'The Apache License, Version 2.0'
-                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            }
-                            // Docs
-                            license {
-                                name = 'Creative Commons Attribution 4.0 International (CC BY 4.0)'
-                                url = 'https://creativecommons.org/licenses/by/4.0'
-                            }
+    publishing {
+        publications {
+            // definining a publication called 'connector'
+            connector(MavenPublication) {
+                // Pick up the standard java artifacts
+                from components.java
+                // by default, gradle's groupId, artifactId, version are used for the maven coordinates
+                // but we need additional metadata to align with Egeria (more may need to be added)
+                pom {
+                    //description = "${description}"
+                    //name = "${name}"
+                    //artifactId = "${project.artifact}"
+                    url = 'http://egeria.odpi.org'
+                    // No additional properties for now
+                    //properties = [
+                    //        propname: "propvalue"
+                    //]
+                    licenses {
+                        // Code
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
-                        developers {
-                            developer {
-                                id = 'planetf1'
-                                name = 'Nigel Jones'
-                                email = 'nigel.l.jones+git@gmail.com'
-                            }
+                        // Docs
+                        license {
+                            name = 'Creative Commons Attribution 4.0 International (CC BY 4.0)'
+                            url = 'https://creativecommons.org/licenses/by/4.0'
                         }
-                        scm {
-                            connection = 'scm:git:git://github.com/odpi/egeria-database-connectors.git'
-                            developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria-database-connectors.git'
-                            url = 'http://github.com/odpi/egeria-database-connectors/'
-                        }
-
                     }
-                }
+                    developers {
+                        developer {
+                            id = 'planetf1'
+                            name = 'Nigel Jones'
+                            email = 'nigel.l.jones+git@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/odpi/egeria-database-connectors.git'
+                        developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria-database-connectors.git'
+                        url = 'http://github.com/odpi/egeria-database-connectors/'
+                    }
 
+                }
+                pom.withXml {
+                    asNode().appendNode('name', "${project.ext.name}")
+                    asNode().appendNode('description', "${project.description}")
+                }
             }
-            // Release versions get pushed to staging area on maven central, snapshots to snapshot repo
-            // Secrets for credentials
+
+        }
+        // Release versions get pushed to staging area on maven central, snapshots to snapshot repo
+        // Secrets for credentials
+        if (System.getenv("CI")) {
             repositories {
                 maven {
                     name = 'OSSRH'
@@ -205,8 +212,10 @@ subprojects {
                 }
             }
         }
+    }
 
-        // To publish to ossrh we need to sign the artifacts
+    // To publish to ossrh we need to sign the artifacts
+    if (System.getenv("CI")) {
         signing {
             // This is the publication to sign
             sign publishing.publications.connector
