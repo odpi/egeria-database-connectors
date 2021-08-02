@@ -84,7 +84,7 @@ subprojects {
     dependencies {
         constraints
                 {
-                    implementation "org.postgresql:postgresql:42.2.22"
+                    implementation "org.postgresql:postgresql:42.2.23"
                     implementation "org.slf4j:slf4j-api:1.7.32"
                     implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
