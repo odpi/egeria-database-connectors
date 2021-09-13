@@ -5,7 +5,7 @@
 # These may be supplied by the pipeline in future - until then they will default
 
 ARG egeriaversion=2.11-SNAPSHOT
-ARG baseimage=odpi/egeria
+ARG baseimage=docker.io/odpi/egeria
 
 # DEFER setting this for now, using the ${version}:
 # ARG EGERIA_IMAGE_DEFAULT_TAG=latest
