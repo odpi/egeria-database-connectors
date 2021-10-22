@@ -72,7 +72,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.repository == 'odpi/egeria-database-connectors' }}
-          tags: odpi/egeria-database-connectors:${{env.RELEASE_VERSION}}
+          tags: odpi/egeria-database-connectors:${{env.RELEASE_VERSION}},quay.io/odpi/egeria-database-connectors:${{env.RELEASE_VERSION}}
           build-args: version=${{ env.RELEASE_VERSION }}
           context: .
           file: ./Dockerfile
@@ -83,7 +83,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.repository == 'odpi/egeria-database-connectors' }}
-          tags: odpi/egeria-database-connectors:${{ env.RELEASE_VERSION}}, odpi/egeria-database-connectors:latest
+          tags: odpi/egeria-database-connectors:${{ env.RELEASE_VERSION}}, odpi/egeria-database-connectors:latest, quay.io/odpi/egeria-database-connectors:${{ env.RELEASE_VERSION}}, quay.io/odpi/egeria-database-connectors:latest
           build-args: version=${{ env.RELEASE_VERSION }}
           context: .
           file: ./Dockerfile
