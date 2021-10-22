@@ -87,6 +87,36 @@ jobs:
           build-args: version=${{ env.RELEASE_VERSION }}
           context: .
           file: ./Dockerfile
+      - name: Login to container registry (Quay.io)
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_IO_USERNAME }}
+          password: ${{ secrets.QUAY_IO_ACCESS_TOKEN }}
+      # For releases (ie not main)
+      - name: Build and push (not main merge) - quay.io
+        if: github.ref != 'refs/heads/main'
+        id: docker_build_release_quay
+        uses: docker/build-push-action@v2
+        with:
+          registry: quay.io
+          push: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.repository == 'odpi/egeria-database-connectors' }}
+          tags: odpi/egeria-database-connectors:${{env.RELEASE_VERSION}}
+          build-args: version=${{ env.RELEASE_VERSION }}
+          context: .
+          file: ./Dockerfile
+      # For main code stream
+      - name: Build and push (main merge) - quay.io
+        if: github.ref == 'refs/heads/main'
+        id: docker_build_main_quay
+        uses: docker/build-push-action@v2
+        with:
+          registry: quay.io
+          push: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.repository == 'odpi/egeria-database-connectors' }}
+          tags: odpi/egeria-database-connectors:${{ env.RELEASE_VERSION}}, odpi/egeria-database-connectors:latest
+          build-args: version=${{ env.RELEASE_VERSION }}
+          context: .
+          file: ./Dockerfile
       - name: Image digest (release)
         if: github.ref != 'refs/heads/main'
         run: echo ${{ steps.docker_build_release.outputs.digest }}
