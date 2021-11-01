@@ -59,7 +59,7 @@ allprojects {
 subprojects {
 
     ext {
-        egeriaVersion = '3.3-SNAPSHOT'
+        egeriaVersion = '3.4-SNAPSHOT'
     }
 
     apply plugin: 'java-library'
