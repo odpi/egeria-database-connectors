@@ -4,7 +4,7 @@
 # Thes are optional tags used to add additional metadata into the docker image
 # These may be supplied by the pipeline in future - until then they will default
 
-ARG egeriaversion=3.4
+ARG egeriaversion=3.5
 ARG baseimage=docker.io/odpi/egeria
 
 # DEFER setting this for now, using the ${version}:
@@ -16,7 +16,7 @@ ARG baseimage=docker.io/odpi/egeria
 
 FROM ${baseimage}:${egeriaversion}
 
-ARG connectorversion=3.5-SNAPSHOT
+ARG connectorversion=3.6-SNAPSHOT
 ARG postgresurl=https://jdbc.postgresql.org/download/postgresql-42.2.23.jar
 
 #ENV connectorversion ${connectorversion}

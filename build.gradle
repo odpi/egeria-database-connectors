@@ -59,7 +59,7 @@ allprojects {
 subprojects {
 
     ext {
-        egeriaVersion = '3.4'
+        egeriaVersion = '3.5'
     }
 
     apply plugin: 'java-library'
@@ -84,8 +84,8 @@ subprojects {
     dependencies {
         constraints
                 {
-                    implementation "org.postgresql:postgresql:42.3.1"
-                    implementation "org.slf4j:slf4j-api:1.7.32"
+                    implementation "org.postgresql:postgresql:42.3.2"
+                    implementation "org.slf4j:slf4j-api:1.7.35"
                     implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
                     implementation "org.odpi.egeria:database-integrator-api:${egeriaVersion}"
