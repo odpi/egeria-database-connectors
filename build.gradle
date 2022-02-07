@@ -136,7 +136,7 @@ subprojects {
         }
 
         reports {
-            html.enabled = true
+            html.required = true
         }
 
     }
