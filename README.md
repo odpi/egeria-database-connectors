@@ -77,7 +77,7 @@ When launching a platform that will host connectors it is essential to set the S
 
 The directory specified must contain both the Postgres JDBC driver and the Postgres-connector jar file.
 ```
-java -Dloader.path=~/pglib -Dserver.port=9443 -jar /home/wbittles/egeria/open-metadata-distribution/open-metadata-assemblies/target/egeria-3.5-distribution/egeria-omag-3.5/server/server-chassis-spring-3.5.jar`
+java -Dloader.path=/home/testuser/pglib -Dserver.port=9443 -jar /home/testuser/egeria/open-metadata-distribution/open-metadata-assemblies/target/egeria-3.5-distribution/egeria-omag-3.5/server/server-chassis-spring-3.5.jar`
 ```
 
 
