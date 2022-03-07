@@ -4,7 +4,7 @@
 # Thes are optional tags used to add additional metadata into the docker image
 # These may be supplied by the pipeline in future - until then they will default
 
-ARG egeriaversion=3.5
+ARG egeriaversion=3.6
 ARG baseimage=docker.io/odpi/egeria
 
 # DEFER setting this for now, using the ${version}:
