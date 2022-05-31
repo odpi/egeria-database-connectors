@@ -39,7 +39,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '3.6'
+    version = '3.9'
 
     apply plugin: 'idea'
 
