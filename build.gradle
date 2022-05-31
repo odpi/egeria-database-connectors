@@ -39,7 +39,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '3.6'
+    version = '3.9'
 
     apply plugin: 'idea'
 
@@ -59,7 +59,7 @@ allprojects {
 subprojects {
 
     ext {
-        egeriaVersion = '3.6'
+        egeriaVersion = '3.9'
     }
 
     apply plugin: 'java-library'
@@ -85,7 +85,7 @@ subprojects {
     dependencies {
         constraints
                 {
-                    implementation "org.postgresql:postgresql:42.3.3"
+                    implementation "org.postgresql:postgresql:42.3.6"
                     implementation "org.slf4j:slf4j-api:1.7.36"
                     implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"

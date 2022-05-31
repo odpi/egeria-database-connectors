@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: setup Helm
-        uses: azure/setup-helm@v2.0
-      - uses: actions/checkout@v2
+        uses: azure/setup-helm@v2.1
+      - uses: actions/checkout@v3
         name: checkout code
       - uses: engineerd/setup-kind@v0.5.0
         name: setup kind

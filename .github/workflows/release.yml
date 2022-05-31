@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     name: "Release"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         name: Checkout source
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '11'
@@ -44,7 +44,7 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
       # Upload the library so that build results can be viewed
       - name: Upload Connector
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Postgres Connector
           path: '**/build/libs/*.jar'
