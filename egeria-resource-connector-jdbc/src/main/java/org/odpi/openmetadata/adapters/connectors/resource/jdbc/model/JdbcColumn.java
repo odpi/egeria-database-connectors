@@ -150,6 +150,10 @@ public class JdbcColumn {
         return isGeneratedColumn;
     }
 
+    public ResultSetMetaData getResultSetMetaData() {
+        return resultSetMetaData;
+    }
+
     public static JdbcColumn create(ResultSet resultSet) throws SQLException {
         String tableCat = resultSet.getString("TABLE_CAT");
         String tableSchem = resultSet.getString("TABLE_SCHEM");
