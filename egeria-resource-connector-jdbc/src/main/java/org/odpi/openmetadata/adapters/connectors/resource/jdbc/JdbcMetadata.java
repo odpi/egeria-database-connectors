@@ -25,32 +25,32 @@ public interface JdbcMetadata {
     void close();
 
     /**
-     * @see DatabaseMetaData#getUserName()
+     * See {@link DatabaseMetaData#getUserName()}
      */
     String getUserName() throws SQLException;
 
     /**
-     * @see DatabaseMetaData#getDriverName()
+     * See {@link DatabaseMetaData#getDriverName()}
      */
     String getDriverName() throws SQLException;
 
     /**
-     * @see java.sql.DatabaseMetaData#getDatabaseProductName
+     * See {@link DatabaseMetaData#getDatabaseProductName()}
      */
     String getDatabaseProductName() throws SQLException;
 
     /**
-     * @see DatabaseMetaData#getURL()
+     * See {@link DatabaseMetaData#getURL()}
      */
     String getUrl() throws SQLException;
 
     /**
-     * @see DatabaseMetaData#getDatabaseProductVersion()
+     * See {@link DatabaseMetaData#getDatabaseProductVersion()}
      */
     String getDatabaseProductVersion() throws SQLException;
 
     /**
-     * @see DatabaseMetaData#getTableTypes()
+     * See {@link DatabaseMetaData#getTableTypes()}
      */
     List<String> getTableTypes() throws SQLException;
 
@@ -66,7 +66,7 @@ public interface JdbcMetadata {
      *
      * @throws  SQLException sql exception
      *
-     * @see DatabaseMetaData#getColumns(String, String, String, String)
+     * See {@link DatabaseMetaData#getColumns(String, String, String, String)}
      */
     List<JdbcColumn> getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException;
 
@@ -82,7 +82,7 @@ public interface JdbcMetadata {
      *
      * @throws  SQLException sql exception
      *
-     * @see DatabaseMetaData#getTables(String, String, String, String[])
+     * See {@link DatabaseMetaData#getTables(String, String, String, String[])}
      */
     List<JdbcTable> getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException;
 
@@ -96,7 +96,7 @@ public interface JdbcMetadata {
      *
      * @throws  SQLException sql exception
      *
-     * @see DatabaseMetaData#getSchemas(String, String)
+     * See {@link DatabaseMetaData#getSchemas(String, String)}
      */
     List<JdbcSchema> getSchemas(String catalog, String schemaPattern) throws SQLException;
 
@@ -107,7 +107,7 @@ public interface JdbcMetadata {
      *
      * @throws  SQLException sql exception
      *
-     * @see DatabaseMetaData#getSchemas()
+     * See {@link DatabaseMetaData#getSchemas()}
      */
     List<JdbcSchema> getSchemas() throws SQLException;
 
@@ -118,7 +118,7 @@ public interface JdbcMetadata {
      *
      * @throws  SQLException sql exception
      *
-     * @see DatabaseMetaData#getCatalogs()
+     * See {@link DatabaseMetaData#getCatalogs()}
      */
     List<JdbcCatalog> getCatalogs() throws SQLException;
 }
