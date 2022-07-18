@@ -10,7 +10,6 @@ description = 'JDBC Resource Connector for Egeria'
 
 dependencies {
     implementation 'org.slf4j:slf4j-api'
-    implementation 'org.odpi.egeria:database-integrator-api'
     implementation 'org.odpi.egeria:open-connector-framework'
     implementation 'org.odpi.egeria:audit-log-framework'
 }
