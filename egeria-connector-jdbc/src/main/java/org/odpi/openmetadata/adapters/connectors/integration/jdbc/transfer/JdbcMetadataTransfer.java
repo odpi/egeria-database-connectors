@@ -47,9 +47,9 @@ public class JdbcMetadataTransfer {
         this.jdbcMetadata = jdbcMetadata;
         this.databaseIntegratorContext = databaseIntegratorContext;
         this.auditLog = auditLog;
-        this.removeDatabaseSchemaConsumer = new RemoveDatabaseSchemaConsumer(databaseIntegratorContext);
-        this.removeDatabaseTableConsumer = new RemoveDatabaseTableConsumer(databaseIntegratorContext);
-        this.removeDatabaseColumnConsumer = new RemoveDatabaseColumnConsumer(databaseIntegratorContext);
+        this.removeDatabaseSchemaConsumer = new RemoveDatabaseSchemaConsumer(databaseIntegratorContext, auditLog);
+        this.removeDatabaseTableConsumer = new RemoveDatabaseTableConsumer(databaseIntegratorContext, auditLog);
+        this.removeDatabaseColumnConsumer = new RemoveDatabaseColumnConsumer(databaseIntegratorContext, auditLog);
     }
 
     public boolean execute() {

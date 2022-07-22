@@ -3,6 +3,7 @@
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.UserNotAuthorizedException;
@@ -10,21 +11,27 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 
 import java.util.function.Consumer;
 
-public class RemoveDatabaseTableConsumer implements Consumer<DatabaseTableElement> {
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
-    DatabaseIntegratorContext databaseIntegratorContext;
+class RemoveDatabaseTableConsumer implements Consumer<DatabaseTableElement> {
 
-    RemoveDatabaseTableConsumer(DatabaseIntegratorContext databaseIntegratorContext){
+    private DatabaseIntegratorContext databaseIntegratorContext;
+    private AuditLog auditLog;
+
+    RemoveDatabaseTableConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
+        this.auditLog = auditLog;
     }
 
     @Override
     public void accept(DatabaseTableElement databaseTableElement) {
+        String tableGuid = databaseTableElement.getElementHeader().getGUID();
+        String tableQualifiedName = databaseTableElement.getDatabaseTableProperties().getQualifiedName();
         try {
-            databaseIntegratorContext.removeDatabaseSchema(databaseTableElement.getElementHeader().getGUID(),
-                    databaseTableElement.getDatabaseTableProperties().getQualifiedName());
+            databaseIntegratorContext.removeDatabaseTable(tableGuid, tableQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            e.printStackTrace();
+            auditLog.logMessage("Removing table from omas",
+                    ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(tableGuid, tableQualifiedName));
         }
     }
 

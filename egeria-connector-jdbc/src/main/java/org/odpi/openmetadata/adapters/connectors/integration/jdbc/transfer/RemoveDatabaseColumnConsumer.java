@@ -3,7 +3,8 @@
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
-import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
+import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.UserNotAuthorizedException;
@@ -13,19 +14,23 @@ import java.util.function.Consumer;
 
 public class RemoveDatabaseColumnConsumer implements Consumer<DatabaseColumnElement> {
 
-    DatabaseIntegratorContext databaseIntegratorContext;
+    private DatabaseIntegratorContext databaseIntegratorContext;
+    private AuditLog auditLog;
 
-    RemoveDatabaseColumnConsumer(DatabaseIntegratorContext databaseIntegratorContext){
+    RemoveDatabaseColumnConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
+        this.auditLog = auditLog;
     }
 
     @Override
     public void accept(DatabaseColumnElement databaseColumnElement) {
+        String columnGuid = databaseColumnElement.getElementHeader().getGUID();
+        String columnQualifiedName = databaseColumnElement.getDatabaseColumnProperties().getQualifiedName();
         try {
-            databaseIntegratorContext.removeDatabaseSchema(databaseColumnElement.getElementHeader().getGUID(),
-                    databaseColumnElement.getDatabaseColumnProperties().getQualifiedName());
+            databaseIntegratorContext.removeDatabaseColumn(columnGuid, columnQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            e.printStackTrace();
+            auditLog.logMessage("Removing column from omas",
+                    ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(columnGuid, columnQualifiedName));
         }
     }
 

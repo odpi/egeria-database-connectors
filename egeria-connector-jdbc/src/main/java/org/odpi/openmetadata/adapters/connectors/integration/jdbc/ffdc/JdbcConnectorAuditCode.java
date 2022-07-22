@@ -64,6 +64,11 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             OMRSAuditLogRecordSeverity.EXCEPTION,
             "Unknown error transferring metadata in method {0}.",
             "Reading metadata information",
+            "Consult logs for further details"),
+    ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS("JDBC-CONNECTOR-0010",
+            OMRSAuditLogRecordSeverity.INFO,
+            "Unknown error when removing element in omas with guid {0} and qualified name {1}.",
+            "Removing element in omas",
             "Consult logs for further details");
 
 
