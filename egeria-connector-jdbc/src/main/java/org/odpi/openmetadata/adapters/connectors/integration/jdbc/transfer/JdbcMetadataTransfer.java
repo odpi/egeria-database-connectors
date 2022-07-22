@@ -158,7 +158,7 @@ public class JdbcMetadataTransfer {
         String methodName = "getOmasTables";
         try{
             return Optional.ofNullable(databaseIntegratorContext
-                    .getTablesForDatabaseSchema(schemaGuid, 0, 0)).orElseGet(ArrayList::new);
+                    .getTablesForDatabaseAsset(schemaGuid, 0, 0)).orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
             auditLog.logException("Error reading tables from OMAS for schemaGuid: " + schemaGuid,
                     ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
