@@ -39,6 +39,11 @@ public class JdbcConnector extends ConnectorBase implements JdbcMetadata {
     private DatabaseMetaData databaseMetaData;
 
     @Override
+    public String getConnectorTypeQualifiedName(){
+        return (String)connectionProperties.getConfigurationProperties().get("connectorTypeQualifiedName");
+    }
+
+    @Override
     public boolean open(){
         String url = (String)connectionProperties.getConfigurationProperties().get("url");
         String user = connectionProperties.getUserId();

@@ -2,10 +2,15 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
+import org.apache.commons.lang3.StringUtils;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.ConnectionElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.ConnectorTypeElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.EndpointElement;
+import org.odpi.openmetadata.accessservices.datamanager.properties.ConnectionProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
@@ -17,6 +22,7 @@ import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.Jd
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.UNKNOWN_ERROR_WHILE_METADATA_TRANSFER;
 
+import org.odpi.openmetadata.accessservices.datamanager.properties.EndpointProperties;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
@@ -61,6 +67,8 @@ public class JdbcMetadataTransfer {
                         EXITING_ON_METADATA_TRANSFER.getMessageDefinition());
                 return false;
             }
+            createAssetConnection(databaseElement);
+
 
             List<DatabaseSchemaElement> schemas = transferSchemas(databaseElement);
             transferTables(schemas);
@@ -364,6 +372,134 @@ public class JdbcMetadataTransfer {
         databaseProperties.setDatabaseImportedFrom(url);
 
         return databaseProperties;
+    }
+
+    private void createAssetConnection(DatabaseElement databaseElement){
+        String methodName = "createAssetConnection";
+
+        String connectorTypeQualifiedName = jdbcMetadata.getConnectorTypeQualifiedName();
+        if(StringUtils.isBlank(connectorTypeQualifiedName)){
+            auditLog.logMessage("Missing connector type qualified name. Skipping asset connection setup",
+                    null);
+            return;
+        }
+        String connectorTypeGuid = determineConnectorTypeGuid(connectorTypeQualifiedName);
+        if(StringUtils.isBlank(connectorTypeGuid)){
+            auditLog.logMessage("Missing connector type guid. Skipping asset connection setup",
+                    null);
+            return;
+        }
+
+        String databaseGuid = databaseElement.getElementHeader().getGUID();
+        if(StringUtils.isBlank(databaseGuid)){
+            auditLog.logMessage("Missing database guid. Skipping asset connection setup",
+                    null);
+            return;
+        }
+
+        ConnectionProperties connectionProperties = createConnectionProperties(databaseElement);
+        String connectionGuid = determineConnectionGuid(connectionProperties);
+        if(StringUtils.isBlank(connectionGuid)){
+            auditLog.logMessage("Missing connection guid. Skipping asset connection setup",
+                    null);
+            return;
+        }
+
+        EndpointProperties endpointProperties = createEndpointProperties(connectionProperties);
+        String endpointGuid = determineEndpointGuid(endpointProperties);
+        if(StringUtils.isBlank(endpointGuid)){
+            auditLog.logMessage("Missing endpoint guid. Skipping asset connection setup",
+                    null);
+            return;
+        }
+
+        try {
+            databaseIntegratorContext.setupConnectorType(connectionGuid, connectorTypeGuid);
+            databaseIntegratorContext.setupAssetConnection(databaseGuid,
+                    databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
+            databaseIntegratorContext.setupEndpoint(connectionGuid, endpointGuid);
+        } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
+            auditLog.logMessage("Unable to setup connection (guid: " + connectionGuid
+                            + "), connector type (guid: " + connectorTypeQualifiedName
+                            + ") and asset (guid: " + databaseGuid + " . Ignoring",
+                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()));
+        }
+    }
+
+    private ConnectionProperties createConnectionProperties(DatabaseElement databaseElement){
+        ConnectionProperties connectionProperties = new ConnectionProperties();
+        connectionProperties.setDisplayName(databaseElement.getDatabaseProperties().getDisplayName() + " Connection");
+        connectionProperties.setQualifiedName(databaseElement.getDatabaseProperties().getQualifiedName() + "::connection");
+        connectionProperties.setConfigurationProperties(databaseElement.getDatabaseProperties().getExtendedProperties());
+
+        return connectionProperties;
+    }
+
+    private String determineConnectionGuid(ConnectionProperties connectionProperties){
+        try {
+            Optional<List<ConnectionElement>> connections = Optional.ofNullable(
+                    databaseIntegratorContext.getConnectionsByName(connectionProperties.getQualifiedName(),
+                            0, 0));
+            if(connections.isPresent()){
+                if(connections.get().size() == 1){
+                    return connections.get().get(0).getElementHeader().getGUID();
+                }
+            }else{
+                return databaseIntegratorContext.createConnection(connectionProperties);
+            }
+        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
+            // TODO add logging
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String determineConnectorTypeGuid(String connectorTypeQualifiedName){
+        try{
+            Optional<List<ConnectorTypeElement>> connectorTypes = Optional.ofNullable(
+                    databaseIntegratorContext.getConnectorTypesByName(connectorTypeQualifiedName, 0, 0));
+            if(connectorTypes.isPresent()){
+                if(connectorTypes.get().size() == 1){
+                    return connectorTypes.get().get(0).getElementHeader().getGUID();
+                }
+            }
+        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
+            // TODO add logging
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private EndpointProperties createEndpointProperties(ConnectionProperties connectionProperties){
+        EndpointProperties endpointProperties = new EndpointProperties();
+        endpointProperties.setDisplayName(connectionProperties.getDisplayName() + " Endpoint");
+        endpointProperties.setQualifiedName(connectionProperties.getQualifiedName()+"::endpoint");
+        try {
+            endpointProperties.setAddress(jdbcMetadata.getUrl());
+        } catch (SQLException sqlException) {
+            // TODO add logging
+        }
+
+        return endpointProperties;
+    }
+    
+    private String determineEndpointGuid(EndpointProperties endpointProperties){
+        try{
+            Optional<List<EndpointElement>> endpoints = Optional.ofNullable(
+                    databaseIntegratorContext.findEndpoints(endpointProperties.getQualifiedName(), 0, 0));
+            if(endpoints.isPresent()){
+                if(endpoints.get().size() == 1) {
+                    return endpoints.get().get(0).getElementHeader().getGUID();
+                }
+            }else{
+                return databaseIntegratorContext.createEndpoint(endpointProperties);
+            }
+        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
+            // TODO add logging
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
