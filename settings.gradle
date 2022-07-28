@@ -17,4 +17,5 @@ rootProject.name = 'egeria-database-connectors'
 
 include(':egeria-connector-postgres')
 include(':egeria-resource-connector-jdbc')
+include(':egeria-connector-jdbc')
 
