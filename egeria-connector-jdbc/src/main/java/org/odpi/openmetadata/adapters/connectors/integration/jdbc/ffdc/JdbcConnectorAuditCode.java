@@ -69,6 +69,11 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             OMRSAuditLogRecordSeverity.INFO,
             "Unknown error when removing element in omas with guid {0} and qualified name {1}.",
             "Removing element in omas",
+            "Consult logs for further details"),
+    ERROR_WHEN_SETTING_ASSET_CONNECTION("JDBC-CONNECTOR-0011",
+            OMRSAuditLogRecordSeverity.INFO,
+            "Unknown error when setting up asset connection in method {0}.",
+            "Setting up asset connection",
             "Consult logs for further details");
 
 

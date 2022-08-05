@@ -19,6 +19,7 @@ import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTable
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_SETTING_ASSET_CONNECTION;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.UNKNOWN_ERROR_WHILE_METADATA_TRANSFER;
 
@@ -419,7 +420,7 @@ public class JdbcMetadataTransfer {
                     databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
             databaseIntegratorContext.setupEndpoint(connectionGuid, endpointGuid);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logMessage("Unable to setup connection (guid: " + connectionGuid
+            auditLog.logMessage("Setting up connection (guid: " + connectionGuid
                             + "), connector type (guid: " + connectorTypeQualifiedName
                             + ") and asset (guid: " + databaseGuid + " . Ignoring",
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()));
@@ -436,6 +437,7 @@ public class JdbcMetadataTransfer {
     }
 
     private String determineConnectionGuid(ConnectionProperties connectionProperties){
+        String methodName = "determineConnectionGuid";
         try {
             Optional<List<ConnectionElement>> connections = Optional.ofNullable(
                     databaseIntegratorContext.getConnectionsByName(connectionProperties.getQualifiedName(),
@@ -448,14 +450,15 @@ public class JdbcMetadataTransfer {
                 return databaseIntegratorContext.createConnection(connectionProperties);
             }
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            // TODO add logging
-            e.printStackTrace();
+            auditLog.logMessage("Determining connection guid",
+                    ERROR_WHEN_SETTING_ASSET_CONNECTION.getMessageDefinition(methodName));
         }
 
         return null;
     }
 
     private String determineConnectorTypeGuid(String connectorTypeQualifiedName){
+        String methodName = "determineConnectorTypeGuid";
         try{
             Optional<List<ConnectorTypeElement>> connectorTypes = Optional.ofNullable(
                     databaseIntegratorContext.getConnectorTypesByName(connectorTypeQualifiedName, 0, 0));
@@ -465,26 +468,30 @@ public class JdbcMetadataTransfer {
                 }
             }
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            // TODO add logging
-            e.printStackTrace();
+            auditLog.logMessage("Determining connector type guid",
+                    ERROR_WHEN_SETTING_ASSET_CONNECTION.getMessageDefinition(methodName));
         }
         return null;
     }
 
     private EndpointProperties createEndpointProperties(ConnectionProperties connectionProperties){
+        String methodName = "createEndpointProperties";
+
         EndpointProperties endpointProperties = new EndpointProperties();
         endpointProperties.setDisplayName(connectionProperties.getDisplayName() + " Endpoint");
         endpointProperties.setQualifiedName(connectionProperties.getQualifiedName()+"::endpoint");
         try {
             endpointProperties.setAddress(jdbcMetadata.getUrl());
         } catch (SQLException sqlException) {
-            // TODO add logging
+            auditLog.logMessage("Reading url from jdbc metadata",
+                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()));
         }
 
         return endpointProperties;
     }
     
     private String determineEndpointGuid(EndpointProperties endpointProperties){
+        String methodName = "determineEndpointGuid";
         try{
             Optional<List<EndpointElement>> endpoints = Optional.ofNullable(
                     databaseIntegratorContext.findEndpoints(endpointProperties.getQualifiedName(), 0, 0));
@@ -496,8 +503,8 @@ public class JdbcMetadataTransfer {
                 return databaseIntegratorContext.createEndpoint(endpointProperties);
             }
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            // TODO add logging
-            e.printStackTrace();
+            auditLog.logMessage("Determining endpoint guid",
+                    ERROR_WHEN_SETTING_ASSET_CONNECTION.getMessageDefinition(methodName));
         }
         return null;
     }
