@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
-public class RemoveDatabaseSchemaConsumer implements Consumer<DatabaseSchemaElement> {
+class RemoveDatabaseSchemaConsumer implements Consumer<DatabaseSchemaElement> {
 
-    private DatabaseIntegratorContext databaseIntegratorContext;
-    private AuditLog auditLog;
+    private final DatabaseIntegratorContext databaseIntegratorContext;
+    private final AuditLog auditLog;
 
     RemoveDatabaseSchemaConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;

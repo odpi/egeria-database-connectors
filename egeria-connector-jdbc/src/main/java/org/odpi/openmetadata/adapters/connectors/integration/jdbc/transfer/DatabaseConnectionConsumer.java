@@ -29,8 +29,7 @@ class DatabaseConnectionConsumer implements Consumer<DatabaseElement> {
     private final AuditLog auditLog;
     private final JdbcMetadata jdbcMetadata;
 
-    DatabaseConnectionConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog,
-                               JdbcMetadata jdbcMetadata){
+    DatabaseConnectionConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog, JdbcMetadata jdbcMetadata){
         this.databaseIntegratorContext = databaseIntegratorContext;
         this.auditLog = auditLog;
         this.jdbcMetadata = jdbcMetadata;

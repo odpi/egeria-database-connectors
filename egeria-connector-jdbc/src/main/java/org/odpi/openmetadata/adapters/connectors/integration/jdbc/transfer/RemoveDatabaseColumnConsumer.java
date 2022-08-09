@@ -3,7 +3,6 @@
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
@@ -12,10 +11,12 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 
 import java.util.function.Consumer;
 
-public class RemoveDatabaseColumnConsumer implements Consumer<DatabaseColumnElement> {
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
-    private DatabaseIntegratorContext databaseIntegratorContext;
-    private AuditLog auditLog;
+class RemoveDatabaseColumnConsumer implements Consumer<DatabaseColumnElement> {
+
+    private final DatabaseIntegratorContext databaseIntegratorContext;
+    private final AuditLog auditLog;
 
     RemoveDatabaseColumnConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
