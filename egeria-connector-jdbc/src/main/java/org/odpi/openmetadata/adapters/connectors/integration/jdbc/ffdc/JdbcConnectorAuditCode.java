@@ -42,7 +42,7 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             "Consult logs for further details"),
     ERROR_READING_JDBC("JDBC-CONNECTOR-0005",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "An sql exception was received by method {0}. Exception message is: {1}",
+            "An SQL exception was received by method {0}. Exception message is: {1}",
             "Reading JDBC",
             "Investigate database server availability. If the database server is available then contact the Egeria team for support"),
     ERROR_UPSERTING_INTO_OMAS("JDBC-CONNECTOR-0006",
