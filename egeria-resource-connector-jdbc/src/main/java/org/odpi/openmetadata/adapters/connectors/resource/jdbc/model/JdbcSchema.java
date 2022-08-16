@@ -15,12 +15,9 @@ public class JdbcSchema {
     private final String tableSchem;
     private final String tableCatalog;
 
-    private final ResultSetMetaData resultSetMetaData;
-
-    public JdbcSchema(String tableSchem, String tableCatalog, ResultSetMetaData resultSetMetaData){
+    private JdbcSchema(String tableSchem, String tableCatalog){
         this.tableSchem = tableSchem;
         this.tableCatalog = tableCatalog;
-        this.resultSetMetaData = resultSetMetaData;
     }
 
     public String getTableSchem() {
@@ -31,15 +28,11 @@ public class JdbcSchema {
         return tableCatalog;
     }
 
-    public ResultSetMetaData getResultSetMetaData() {
-        return resultSetMetaData;
-    }
-
     public static JdbcSchema create(ResultSet resultSet) throws SQLException {
         String tableSchem = resultSet.getString("TABLE_SCHEM");
         String tableCat = resultSet.getString("TABLE_CATALOG");
 
-        return new JdbcSchema(tableSchem, tableCat, resultSet.getMetaData());
+        return new JdbcSchema(tableSchem, tableCat);
     }
 
 }
