@@ -10,13 +10,6 @@ import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColum
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
-
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.UNKNOWN_ERROR_WHILE_METADATA_TRANSFER;
-
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
@@ -32,6 +25,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.UNKNOWN_ERROR_WHILE_METADATA_TRANSFER;
 
 public class JdbcMetadataTransfer {
 
@@ -61,6 +60,8 @@ public class JdbcMetadataTransfer {
                         EXITING_ON_METADATA_TRANSFER.getMessageDefinition());
                 return false;
             }
+            createAssetConnection(databaseElement);
+
 
             List<DatabaseSchemaElement> schemas = transferSchemas(databaseElement);
             transferTables(schemas);
@@ -364,6 +365,12 @@ public class JdbcMetadataTransfer {
         databaseProperties.setDatabaseImportedFrom(url);
 
         return databaseProperties;
+    }
+
+    private void createAssetConnection(DatabaseElement databaseElement){
+        DatabaseConnectionConsumer databaseConnectionConsumer =
+                new DatabaseConnectionConsumer(databaseIntegratorContext, auditLog, jdbcMetadata);
+        databaseConnectionConsumer.accept(databaseElement);
     }
 
 }

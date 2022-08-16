@@ -42,12 +42,12 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             "Consult logs for further details"),
     ERROR_READING_JDBC("JDBC-CONNECTOR-0005",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "An sql exception was received by method {0}. Exception message is {1}",
+            "An SQL exception was received by method {0}. Exception message is: {1}",
             "Reading JDBC",
             "Investigate database server availability. If the database server is available then contact the Egeria team for support"),
     ERROR_UPSERTING_INTO_OMAS("JDBC-CONNECTOR-0006",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "An exception was received by method {0}. Exception message is {1}",
+            "An exception was received by method {0}. Exception message is: {1}",
             "Upserting an entity into omas failed.",
             "Investigate OMAS availability. If it is available then contact the Egeria team for support"),
     EXITING_ON_METADATA_TRANSFER("JDBC-CONNECTOR-0007",
@@ -69,6 +69,11 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             OMRSAuditLogRecordSeverity.INFO,
             "Unknown error when removing element in omas with guid {0} and qualified name {1}.",
             "Removing element in omas",
+            "Consult logs for further details"),
+    ERROR_WHEN_SETTING_ASSET_CONNECTION("JDBC-CONNECTOR-0011",
+            OMRSAuditLogRecordSeverity.INFO,
+            "Unknown error when setting up asset connection in method {0}.",
+            "Setting up asset connection",
             "Consult logs for further details");
 
 

@@ -15,6 +15,11 @@ import java.util.List;
 public interface JdbcMetadata {
 
     /**
+     * Returns the configured connector type guid
+     */
+    String getConnectorTypeQualifiedName();
+
+    /**
      * Opens a connection to designated server
      */
     boolean open();
