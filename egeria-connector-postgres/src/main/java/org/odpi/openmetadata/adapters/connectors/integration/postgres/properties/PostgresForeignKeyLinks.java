@@ -30,15 +30,15 @@ public class PostgresForeignKeyLinks
 
     public String getImportedColumnQualifiedName()
     {
-        return table_schema +"." +
-                table_name + "." +
+        return table_schema +"::" +
+                table_name + "::" +
                 column_name ;
     }
 
     public String getExportedColumnQualifiedName()
     {
-        return foreign_table_schema+"." +
-                foreign_table_name + "." +
+        return foreign_table_schema+"::" +
+                foreign_table_name + "::" +
                 foreign_column_name;
     }
 

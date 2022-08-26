@@ -285,9 +285,9 @@ class PostgresTableTest {
                 "is_typed",
                 "commit_action");
 
-        String qName = new StringBuilder().append(table.getTable_catalog()).append(".")
-                                            .append(table.getTable_schema()).append(".")
-                                            .append(table.getTable_type().substring(0,4)).append(".")
+        String qName = new StringBuilder().append(table.getTable_catalog()).append("::")
+                                            .append(table.getTable_schema()).append("::")
+                                            .append(table.getTable_type().substring(0,4)).append("::")
                                             .append(table.getTable_name()).toString();
 
         assertEquals( table.getQualifiedName(), qName);
