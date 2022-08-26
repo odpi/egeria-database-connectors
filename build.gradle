@@ -39,7 +39,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '3.10'
+    version = '3.11-SNAPSHOT'
 
     apply plugin: 'idea'
 
@@ -59,7 +59,7 @@ allprojects {
 subprojects {
 
     ext {
-        egeriaVersion = '3.10'
+        egeriaVersion = '3.11-SNAPSHOT'
     }
 
     apply plugin: 'java-library'
