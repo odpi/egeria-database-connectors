@@ -17,7 +17,7 @@ ARG baseimage=docker.io/odpi/egeria
 FROM ${baseimage}:${egeriaversion}
 
 ARG connectorversion=3.10
-ARG postgresurl=https://jdbc.postgresql.org/download/postgresql-42.3.6.jar
+ARG postgresurl=https://jdbc.postgresql.org/download/postgresql-42.5.0.jar
 
 #ENV connectorversion ${connectorversion}
 #ENV egeriaversion ${egeriaversion}
