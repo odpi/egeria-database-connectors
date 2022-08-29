@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
+package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
@@ -13,12 +13,12 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
-class RemoveDatabaseColumnConsumer implements Consumer<DatabaseColumnElement> {
+class OmasRemoveColumn implements Consumer<DatabaseColumnElement> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
     private final AuditLog auditLog;
 
-    RemoveDatabaseColumnConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
+    OmasRemoveColumn(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
         this.auditLog = auditLog;
     }

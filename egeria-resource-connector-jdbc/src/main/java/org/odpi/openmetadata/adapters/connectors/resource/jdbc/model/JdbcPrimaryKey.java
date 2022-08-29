@@ -6,9 +6,10 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
- * Represents a catalog as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
+ * Represents a primary key as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
  */
 public class JdbcPrimaryKey {
 
@@ -16,10 +17,10 @@ public class JdbcPrimaryKey {
     private final String tableSchem;
     private final String tableName;
     private final String columnName;
-    private final String keySeq;
+    private final short keySeq;
     private final String pkName;
 
-    private JdbcPrimaryKey(String tableCat, String tableSchem, String tableName, String columnName, String keySeq,
+    private JdbcPrimaryKey(String tableCat, String tableSchem, String tableName, String columnName, short keySeq,
                           String pkName){
         this.tableCat = tableCat;
         this.tableSchem = tableSchem;
@@ -45,7 +46,7 @@ public class JdbcPrimaryKey {
         return columnName;
     }
 
-    public String getKeySeq() {
+    public short getKeySeq() {
         return keySeq;
     }
 
@@ -58,10 +59,32 @@ public class JdbcPrimaryKey {
         String tableSchem = resultSet.getString("TABLE_SCHEM");
         String tableName = resultSet.getString("TABLE_NAME");
         String columnName = resultSet.getString("COLUMN_NAME");
-        String keySeq = resultSet.getString("KEY_SEQ");
+        short keySeq = resultSet.getShort("KEY_SEQ");
         String pkName = resultSet.getString("PK_NAME");
 
         return new JdbcPrimaryKey(tableCat, tableSchem, tableName, columnName, keySeq, pkName);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        JdbcPrimaryKey other_ = (JdbcPrimaryKey) other;
+        return Objects.equals(getTableCat(), other_.getTableCat()) &&
+                Objects.equals(getTableSchem(), other_.getTableSchem()) &&
+                Objects.equals(getTableName(), other_.getTableName()) &&
+                Objects.equals(getColumnName(), other_.getColumnName()) &&
+                Objects.equals(getKeySeq(), other_.getKeySeq()) &&
+                Objects.equals(getPkName(), other_.getPkName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableCat, tableSchem, tableName, columnName, keySeq, pkName);
+    }
 }

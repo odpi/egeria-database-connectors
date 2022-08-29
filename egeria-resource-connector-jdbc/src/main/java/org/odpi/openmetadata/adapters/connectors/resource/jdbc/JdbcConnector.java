@@ -5,6 +5,7 @@ package org.odpi.openmetadata.adapters.connectors.resource.jdbc;
 
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcCatalog;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
+import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcForeignKey;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcTable;
@@ -120,6 +121,30 @@ public class JdbcConnector extends ConnectorBase implements JdbcMetadata {
             result.add(JdbcPrimaryKey.create(primaryKeys));
         }
         close(primaryKeys);
+
+        return result;
+    }
+
+    @Override
+    public List<JdbcForeignKey> getImportedKeys(String catalog, String schema, String table) throws SQLException {
+        List<JdbcForeignKey> result = new ArrayList<>();
+
+        ResultSet foreignKeys = this.databaseMetaData.getImportedKeys(catalog, schema, table);
+        while(foreignKeys.next()){
+            result.add(JdbcForeignKey.create(foreignKeys));
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<JdbcForeignKey> getExportedKeys(String catalog, String schema, String table) throws SQLException {
+        List<JdbcForeignKey> result = new ArrayList<>();
+
+        ResultSet foreignKeys = this.databaseMetaData.getExportedKeys(catalog, schema, table);
+        while(foreignKeys.next()){
+            result.add(JdbcForeignKey.create(foreignKeys));
+        }
 
         return result;
     }

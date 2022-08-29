@@ -6,6 +6,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Represents a column as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
@@ -174,4 +175,42 @@ public class JdbcColumn {
                 scopeSchema, scopeTable, sourceDataType, isAutoIncrement, isGeneratedColumn);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        JdbcColumn other_ = (JdbcColumn) other;
+        return Objects.equals(getTableCat(), other_.getTableCat()) &&
+                Objects.equals(getTableSchem(), other_.getTableSchem()) &&
+                Objects.equals(getTableName(), other_.getTableName()) &&
+                Objects.equals(getColumnName(), other_.getColumnName()) &&
+                Objects.equals(getDataType(), other_.getDataType()) &&
+                Objects.equals(getTypeName(), other_.getTypeName()) &&
+                Objects.equals(getColumnSize(), other_.getColumnSize()) &&
+                Objects.equals(getDecimalDigits(), other_.getDecimalDigits()) &&
+                Objects.equals(getNumPrecRadix(), other_.getNumPrecRadix()) &&
+                Objects.equals(getNullable(), other_.getNullable()) &&
+                Objects.equals(getRemarks(), other_.getRemarks()) &&
+                Objects.equals(getColumnDef(), other_.getColumnDef()) &&
+                Objects.equals(getCharOctetLength(), other_.getCharOctetLength()) &&
+                Objects.equals(getOrdinalPosition(), other_.getOrdinalPosition()) &&
+                Objects.equals(getIsNullable(), other_.getIsNullable()) &&
+                Objects.equals(getScopeCatalog(), other_.getScopeCatalog()) &&
+                Objects.equals(getScopeSchema(), other_.getScopeSchema()) &&
+                Objects.equals(getScopeTable(), other_.getScopeTable()) &&
+                Objects.equals(getSourceDataType(), other_.getSourceDataType()) &&
+                Objects.equals(getIsAutoIncrement(), other_.getIsAutoIncrement()) &&
+                Objects.equals(getIsGeneratedColumn(), other_.getIsGeneratedColumn());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableCat, tableSchem, tableName, columnName, dataType, typeName, columnSize, decimalDigits,
+                numPrecRadix, nullable, remarks, columnDef, charOctetLength, ordinalPosition, isNullable, scopeCatalog, scopeSchema, scopeTable, sourceDataType, isAutoIncrement, isGeneratedColumn);
+    }
 }

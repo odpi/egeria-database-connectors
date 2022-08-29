@@ -57,7 +57,7 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             "Consult logs for further details"),
     ERROR_READING_OMAS("JDBC-CONNECTOR-0008",
             OMRSAuditLogRecordSeverity.EXCEPTION,
-            "Error reading data from omas in method {0}",
+            "Error reading data from omas in method {0}. Possible message is {1}",
             "Reading omas information",
             "Consult logs for further details"),
     UNKNOWN_ERROR_WHILE_METADATA_TRANSFER("JDBC-CONNECTOR-0009",

@@ -6,6 +6,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Represents a schema as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
@@ -35,4 +36,22 @@ public class JdbcSchema {
         return new JdbcSchema(tableSchem, tableCat);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        JdbcSchema other_ = (JdbcSchema) other;
+        return Objects.equals(getTableCatalog(), other_.getTableCatalog()) &&
+                Objects.equals(getTableSchem(), other_.getTableSchem());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableSchem, tableCatalog);
+    }
 }

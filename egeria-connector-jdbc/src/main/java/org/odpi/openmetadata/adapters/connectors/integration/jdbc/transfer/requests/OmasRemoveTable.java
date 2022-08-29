@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
+package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
@@ -15,12 +15,12 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
-class RemoveDatabaseTableConsumer implements Consumer<DatabaseTableElement> {
+class OmasRemoveTable implements Consumer<DatabaseTableElement> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
     private final AuditLog auditLog;
 
-    RemoveDatabaseTableConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
+    OmasRemoveTable(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
         this.auditLog = auditLog;
     }
@@ -31,8 +31,8 @@ class RemoveDatabaseTableConsumer implements Consumer<DatabaseTableElement> {
         String tableQualifiedName = databaseTableElement.getDatabaseTableProperties().getQualifiedName();
         try {
             List<DatabaseColumnElement> columns = databaseIntegratorContext.getColumnsForDatabaseTable(tableGuid, 0, 0);
-            RemoveDatabaseColumnConsumer removeColumn = new RemoveDatabaseColumnConsumer(databaseIntegratorContext, auditLog);
-            columns.forEach(removeColumn);
+            columns.forEach(new OmasRemoveColumn(databaseIntegratorContext, auditLog));
+
             databaseIntegratorContext.removeDatabaseTable(tableGuid, tableQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
             auditLog.logMessage("Removing table from omas",
