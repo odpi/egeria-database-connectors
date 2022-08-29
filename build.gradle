@@ -39,7 +39,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '3.9'
+    version = '3.11-SNAPSHOT'
 
     apply plugin: 'idea'
 
@@ -59,7 +59,7 @@ allprojects {
 subprojects {
 
     ext {
-        egeriaVersion = '3.9'
+        egeriaVersion = '3.11-SNAPSHOT'
     }
 
     apply plugin: 'java-library'
@@ -85,7 +85,7 @@ subprojects {
     dependencies {
         constraints
                 {
-                    implementation "org.postgresql:postgresql:42.3.6"
+                    implementation "org.postgresql:postgresql:42.5.0"
                     implementation "org.slf4j:slf4j-api:1.7.36"
                     implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
@@ -128,8 +128,8 @@ subprojects {
     test {
         useJUnitPlatform()
         dependencies {
-            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
         }
 
         testLogging {

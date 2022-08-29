@@ -174,7 +174,7 @@ public class PostgresSourceDatabase
                 ResultSet rs = stmt.executeQuery(sql);
         ) {
             rs.next();
-            if (rs.getInt("rowcount") == 0) {
+            if (rs.getInt("rowcount") != 0) {
                 result = true;
             }
         }

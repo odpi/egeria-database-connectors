@@ -133,7 +133,7 @@ In this example we just pass the jdbc connection url and set ssl to false. The f
                  "connectorType" : 
                  {
                      "class" : "ConnectorType",
-                     "connectorProviderClassName" : "org.odpi.openmetadata.adapters.connectors.integration.postgres.postgresdatabaseprovider"
+                     "connectorProviderClassName" : "org.odpi.openmetadata.adapters.connectors.integration.postgres.PostgresDatabaseProvider"
                      
                  },
                   "recognizedConfigurationProperties": [

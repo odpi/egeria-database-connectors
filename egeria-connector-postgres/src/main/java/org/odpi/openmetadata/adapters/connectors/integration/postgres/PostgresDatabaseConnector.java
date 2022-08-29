@@ -1502,28 +1502,28 @@ public class PostgresDatabaseConnector extends DatabaseIntegratorConnector
             for (PostgresTable table : tables)
             {
                 List<PostgresForeignKeyLinks> foreignKeys = source.getForeginKeyLinksForTable(table.getTable_name());
-                List<String> importedGuids = new ArrayList<>();
-                List<String> exportedGuids = new ArrayList<>();
 
                 for (PostgresForeignKeyLinks link : foreignKeys)
                 {
-                    List<DatabaseColumnElement> importedEntities = getContext().findDatabaseColumns(link.getImportedColumnQualifiedName(), startFrom, pageSize);
+                    List<String> importedGuids = new ArrayList<>();
+                    List<String> exportedGuids = new ArrayList<>();
+                    List<DatabaseColumnElement> importedEntities = getContext().findDatabaseColumns(".*" + link.getImportedColumnQualifiedName(), startFrom, pageSize);
 
                     if (importedEntities != null)
                     {
                         for (DatabaseColumnElement col : importedEntities)
                         {
-                            importedGuids.add(col.getReferencedColumnGUID());
+                            importedGuids.add(col.getElementHeader().getGUID());
                         }
                     }
 
-                    List<DatabaseColumnElement> exportedEntities = this.getContext().findDatabaseColumns(link.getExportedColumnQualifiedName(), startFrom, pageSize);
+                    List<DatabaseColumnElement> exportedEntities = this.getContext().findDatabaseColumns(".*" + link.getExportedColumnQualifiedName(), startFrom, pageSize);
 
                     if (exportedEntities != null)
                     {
                         for (DatabaseColumnElement col : exportedEntities)
                         {
-                            exportedGuids.add(col.getReferencedColumnGUID());
+                            exportedGuids.add(col.getElementHeader().getGUID());
                         }
                     }
 

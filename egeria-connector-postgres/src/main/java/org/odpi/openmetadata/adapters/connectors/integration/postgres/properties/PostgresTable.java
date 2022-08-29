@@ -107,7 +107,7 @@ public class PostgresTable {
     }
 
     public String getQualifiedName ( ) {
-        return table_catalog + "." + table_schema + "." + table_type.substring(0,4) + "." + table_name;
+        return table_catalog + "::" + table_schema + "::" + table_type.substring(0,4) + "::" + table_name;
     }
 
     public boolean isEquivalent(DatabaseTableElement element)
