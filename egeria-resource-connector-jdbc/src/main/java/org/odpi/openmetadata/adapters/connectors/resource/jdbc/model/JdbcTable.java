@@ -23,11 +23,8 @@ public class JdbcTable {
     private final String selfReferencingColName;
     private final String refGeneration;
 
-    private final ResultSetMetaData resultSetMetaData;
-
     private JdbcTable(String tableCat, String tableSchem, String tableName, String tableType, String remarks, String typeCat,
-                      String typeSchem, String typeName, String selfReferencingColName, String refGeneration,
-                      ResultSetMetaData resultSetMetaData){
+                      String typeSchem, String typeName, String selfReferencingColName, String refGeneration){
         this.tableCat = tableCat;
         this.tableSchem = tableSchem;
         this. tableName = tableName;
@@ -38,8 +35,6 @@ public class JdbcTable {
         this.typeName = typeName;
         this.selfReferencingColName = selfReferencingColName;
         this.refGeneration = refGeneration;
-
-        this.resultSetMetaData = resultSetMetaData;
     }
 
     public String getTableCat() {
@@ -82,10 +77,6 @@ public class JdbcTable {
         return refGeneration;
     }
 
-    public ResultSetMetaData getResultSetMetaData() {
-        return resultSetMetaData;
-    }
-
     public static JdbcTable create(ResultSet resultSet) throws SQLException {
         String tableCat = resultSet.getString("TABLE_CAT");
         String tableSchem = resultSet.getString("TABLE_SCHEM");
@@ -100,7 +91,7 @@ public class JdbcTable {
         String refGeneration = "";//resultSet.getString("REF_GENERATION");
 
         return new JdbcTable(tableCat, tableSchem, tableName, tableType, remarks, typeCat, typeSchem, typeName,
-                selfReferencingColName, refGeneration, resultSet.getMetaData());
+                selfReferencingColName, refGeneration);
     }
 
 }

@@ -5,6 +5,7 @@ package org.odpi.openmetadata.adapters.connectors.resource.jdbc;
 
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcCatalog;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
+import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcTable;
 import org.odpi.openmetadata.frameworks.connectors.ConnectorBase;
@@ -106,6 +107,19 @@ public class JdbcConnector extends ConnectorBase implements JdbcMetadata {
             result.add(tableTypes.getString("TABLE_TYPE"));
         }
         close(tableTypes);
+
+        return result;
+    }
+
+    @Override
+    public List<JdbcPrimaryKey> getPrimaryKeys(String catalog, String schema, String table) throws SQLException {
+        List<JdbcPrimaryKey> result = new ArrayList<>();
+
+        ResultSet primaryKeys = this.databaseMetaData.getPrimaryKeys(catalog, schema, table);
+        while(primaryKeys.next()){
+            result.add(JdbcPrimaryKey.create(primaryKeys));
+        }
+        close(primaryKeys);
 
         return result;
     }

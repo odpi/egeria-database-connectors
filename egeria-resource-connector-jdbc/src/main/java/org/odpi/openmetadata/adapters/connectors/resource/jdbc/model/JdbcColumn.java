@@ -34,13 +34,11 @@ public class JdbcColumn {
     private final String isAutoIncrement;
     private final String isGeneratedColumn;
 
-    private final ResultSetMetaData resultSetMetaData;
-
     private JdbcColumn(String tableCat, String tableSchem, String tableName, String columnName, int dataType,
                        String typeName, int columnSize, int decimalDigits, int numPrecRadix, int nullable,
                        String remarks, String columnDef, int charOctetLength, int ordinalPosition, String isNullable,
                        String scopeCatalog, String scopeSchema, String scopeTable, short sourceDataType,
-                       String isAutoIncrement, String isGeneratedColumn, ResultSetMetaData resultSetMetaData) {
+                       String isAutoIncrement, String isGeneratedColumn) {
         this.tableCat = tableCat;
         this.tableSchem = tableSchem;
         this.tableName = tableName;
@@ -62,8 +60,6 @@ public class JdbcColumn {
         this.sourceDataType = sourceDataType;
         this.isAutoIncrement = isAutoIncrement;
         this.isGeneratedColumn = isGeneratedColumn;
-
-        this.resultSetMetaData = resultSetMetaData;
     }
 
     public String getTableCat() {
@@ -150,10 +146,6 @@ public class JdbcColumn {
         return isGeneratedColumn;
     }
 
-    public ResultSetMetaData getResultSetMetaData() {
-        return resultSetMetaData;
-    }
-
     public static JdbcColumn create(ResultSet resultSet) throws SQLException {
         String tableCat = resultSet.getString("TABLE_CAT");
         String tableSchem = resultSet.getString("TABLE_SCHEM");
@@ -179,7 +171,7 @@ public class JdbcColumn {
 
         return new JdbcColumn(tableCat, tableSchem, tableName, columnName, dataType, typeName, columnSize, decimalDigits,
                 numPrecRadix, nullable, remarks, columnDef, charOctetLength, ordinalPosition, isNullable, scopeCatalog,
-                scopeSchema, scopeTable, sourceDataType, isAutoIncrement, isGeneratedColumn, resultSet.getMetaData());
+                scopeSchema, scopeTable, sourceDataType, isAutoIncrement, isGeneratedColumn);
     }
 
 }

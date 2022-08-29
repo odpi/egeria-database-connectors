@@ -14,25 +14,19 @@ public class JdbcCatalog {
 
     private final String tableCat;
 
-    private final ResultSetMetaData resultSetMetaData;
-
-    public JdbcCatalog(String tableCat, ResultSetMetaData resultSetMetaData){
+    private JdbcCatalog(String tableCat){
         this.tableCat = tableCat;
-        this.resultSetMetaData = resultSetMetaData;
     }
 
     public String getTableCat() {
         return tableCat;
     }
 
-    public ResultSetMetaData getResultSetMetaData() {
-        return resultSetMetaData;
-    }
 
     public static JdbcCatalog create(ResultSet resultSet) throws SQLException {
         String tableCat = resultSet.getString("TABLE_CAT");
 
-        return new JdbcCatalog(tableCat, resultSet.getMetaData());
+        return new JdbcCatalog(tableCat);
     }
 
 }

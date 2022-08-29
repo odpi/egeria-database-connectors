@@ -2,16 +2,19 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabasePrimaryKeyProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
+import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcTable;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
@@ -61,7 +64,6 @@ public class JdbcMetadataTransfer {
                 return false;
             }
             createAssetConnection(databaseElement);
-
 
             List<DatabaseSchemaElement> schemas = transferSchemas(databaseElement);
             transferTables(schemas);
@@ -170,6 +172,8 @@ public class JdbcMetadataTransfer {
     private void transferColumns(DatabaseSchemaElement schemaElement, DatabaseTableElement tableElement) {
         String schemaElementName = schemaElement.getDatabaseSchemaProperties().getDisplayName();
         String tableElementName = tableElement.getDatabaseTableProperties().getDisplayName();
+
+        List<JdbcPrimaryKey> jdbcPrimaryKeys = getJdbcPrimaryKeys(schemaElementName, tableElementName);
         List<JdbcColumn> jdbcColumns = this.getJdbcColumns(schemaElementName, tableElementName);
         List<DatabaseColumnElement> omasColumns = this.getOmasColumns(tableElement.getElementHeader().getGUID());
 
@@ -187,12 +191,48 @@ public class JdbcMetadataTransfer {
 
             if(omasColumn.isPresent()){
                 this.updateOmasColumn(omasColumn.get(), databaseColumnProperties);
+                this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID());
                 omasColumns.remove(omasColumn.get());
             }else{
-                this.createOmasColumn(tableElement, databaseColumnProperties);
+                String columnGuid = this.createOmasColumn(tableElement, databaseColumnProperties);
+                if(StringUtils.isNotBlank(columnGuid)) {
+                    this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, columnGuid);
+                }
             }
         }
         omasColumns.forEach(removeDatabaseColumnConsumer);
+    }
+
+    private void setPrimaryKey(List<JdbcPrimaryKey> jdbcPrimaryKeys, JdbcColumn jdbcColumn, String columnGuid){
+        Optional<JdbcPrimaryKey> jdbcPrimaryKey = jdbcPrimaryKeys.stream().filter(
+                key -> key.getTableSchem().equals(jdbcColumn.getTableSchem())
+                        && key.getTableName().equals(jdbcColumn.getTableName())
+                        && key.getColumnName().equals(jdbcColumn.getColumnName())
+        ).findFirst();
+        if(jdbcPrimaryKey.isEmpty()){
+            return;
+        }
+
+        DatabasePrimaryKeyProperties primaryKeyProperties = buildPrimaryKeyProperties(jdbcPrimaryKey.get());
+        setPrimaryKeyInOmas(columnGuid, primaryKeyProperties);
+    }
+
+    private void setPrimaryKeyInOmas(String columnGuid, DatabasePrimaryKeyProperties databasePrimaryKeyProperties) {
+        String methodName = "setPrimaryKeyInOmas";
+        try{
+            databaseIntegratorContext.setPrimaryKeyOnColumn(columnGuid, databasePrimaryKeyProperties);
+        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
+            auditLog.logException("Error updating primary key in OMAS for column guid: " + columnGuid ,
+                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+        }
+    }
+
+
+    private DatabasePrimaryKeyProperties buildPrimaryKeyProperties(JdbcPrimaryKey jdbcPrimaryKey){
+        DatabasePrimaryKeyProperties properties = new DatabasePrimaryKeyProperties();
+        properties.setName(jdbcPrimaryKey.getPkName());
+
+        return properties;
     }
 
     private void updateOmasColumn(DatabaseColumnElement omasColumn, DatabaseColumnProperties columnProperties){
@@ -205,14 +245,15 @@ public class JdbcMetadataTransfer {
         }
     }
 
-    private void createOmasColumn(DatabaseTableElement tableElement, DatabaseColumnProperties newColumnProperties){
+    private String createOmasColumn(DatabaseTableElement tableElement, DatabaseColumnProperties newColumnProperties){
         String methodName = "createDatabaseColumn";
         try {
-            databaseIntegratorContext.createDatabaseColumn(tableElement.getElementHeader().getGUID(), newColumnProperties);
+            return databaseIntegratorContext.createDatabaseColumn(tableElement.getElementHeader().getGUID(), newColumnProperties);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
             auditLog.logException("Error creating column in OMAS: " + newColumnProperties.getQualifiedName(),
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
+        return null;
     }
 
     private List<DatabaseColumnElement> getOmasColumns(String tableGuid){
@@ -225,6 +266,20 @@ public class JdbcMetadataTransfer {
             auditLog.logException("Error reading columns from OMAS for table guid: " + tableGuid ,
                     ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
+        return new ArrayList<>();
+    }
+
+    private List<JdbcPrimaryKey> getJdbcPrimaryKeys(String schemaName, String tableName){
+        String methodName = "getJdbcPrimaryKeys";
+        try{
+            return Optional.ofNullable(
+                    jdbcMetadata.getPrimaryKeys(null, schemaName, tableName))
+                    .orElseGet(ArrayList::new);
+        }catch (SQLException sqlException){
+            auditLog.logException("Error reading primary keys from JDBC for schema " + schemaName + " and table " + tableName,
+                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
+        }
+
         return new ArrayList<>();
     }
 
