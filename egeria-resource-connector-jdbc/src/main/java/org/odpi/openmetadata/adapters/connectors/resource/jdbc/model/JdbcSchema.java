@@ -4,7 +4,6 @@ package org.odpi.openmetadata.adapters.connectors.resource.jdbc.model;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -41,7 +40,10 @@ public class JdbcSchema {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (other == null) {
+            return false;
+        }
+        if(!(other instanceof JdbcSchema)){
             return false;
         }
 

@@ -127,7 +127,10 @@ public class JdbcForeignKey {
         if (this == other) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (other == null) {
+            return false;
+        }
+        if(!(other instanceof JdbcForeignKey)){
             return false;
         }
 

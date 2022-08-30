@@ -6,24 +6,15 @@ import org.odpi.openmetadata.accessservices.datamanager.metadataelements.Databas
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabasePrimaryKeyProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Jdbc;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcForeignKey;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcTable;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
 
-import java.sql.JDBCType;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

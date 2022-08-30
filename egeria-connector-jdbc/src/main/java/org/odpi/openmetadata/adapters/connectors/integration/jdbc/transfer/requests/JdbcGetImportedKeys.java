@@ -24,6 +24,7 @@ class JdbcGetImportedKeys implements BiFunction<String, String, List<JdbcForeign
         this.auditLog = auditLog;
     }
 
+    @Override
     public List<JdbcForeignKey> apply(String schemaName, String tableName) {
         String methodName = "getJdbcImportedKeys";
         try {
