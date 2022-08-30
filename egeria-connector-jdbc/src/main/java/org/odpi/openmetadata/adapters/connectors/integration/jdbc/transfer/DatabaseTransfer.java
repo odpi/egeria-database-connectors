@@ -10,6 +10,9 @@ import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.util.List;
 
+/**
+ * Creates the database root of the metadata structure the follows
+ */
 public class DatabaseTransfer {
 
     private final Jdbc jdbc;
@@ -22,6 +25,11 @@ public class DatabaseTransfer {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Triggers database metadata transfer
+     *
+     * @return database element
+     */
     public DatabaseElement execute() {
         DatabaseProperties databaseProperties = buildDatabaseProperties();
         String multipleDatabasesFoundMessage = "Querying for a database with qualified name "
@@ -40,12 +48,19 @@ public class DatabaseTransfer {
 
         databasesInOmas = omas.getDatabasesByName(databaseProperties.getQualifiedName());
         if(databasesInOmas.size() == 1){
+            auditLog.logMessage("Database transferred with qualified name " + databaseProperties.getQualifiedName(),
+                    null);
             return databasesInOmas.get(0);
         }
         auditLog.logMessage(multipleDatabasesFoundMessage, null);
         return null;
     }
 
+    /**
+     * Builds database properties
+     *
+     * @return properties
+     */
     private DatabaseProperties buildDatabaseProperties() {
         String user = jdbc.getUserName();
         String driverName = jdbc.getDriverName();

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * Transfers metadata of a schema
+ */
 public class SchemaTransfer implements Function<JdbcSchema, DatabaseSchemaElement> {
 
     private final Omas omas;
@@ -28,6 +31,13 @@ public class SchemaTransfer implements Function<JdbcSchema, DatabaseSchemaElemen
         this.databaseGuid = databaseGuid;
     }
 
+    /**
+     * Triggers schema metadata transfer
+     *
+     * @param jdbcSchema schema
+     *
+     * @return schema element
+     */
     @Override
     public DatabaseSchemaElement apply(JdbcSchema jdbcSchema) {
         DatabaseSchemaProperties schemaProperties = buildSchemaProperties(jdbcSchema);
@@ -39,13 +49,24 @@ public class SchemaTransfer implements Function<JdbcSchema, DatabaseSchemaElemen
 
         if (omasSchema.isPresent()) {
             omas.updateSchema(omasSchema.get().getElementHeader().getGUID(), schemaProperties);
+            auditLog.logMessage("Updated schema with qualified name " + schemaProperties.getQualifiedName(),
+                    null);
             return omasSchema.get();
         }
 
         omas.createSchema(databaseGuid, schemaProperties);
+        auditLog.logMessage("Created schema with qualified name " + schemaProperties.getQualifiedName(),
+                null);
         return null;
     }
 
+    /**
+     * Build schema properties
+     *
+     * @param jdbcSchema schema
+     *
+     * @return properties
+     */
     private DatabaseSchemaProperties buildSchemaProperties(JdbcSchema jdbcSchema) {
         DatabaseSchemaProperties jdbcSchemaProperties = new DatabaseSchemaProperties();
         jdbcSchemaProperties.setDisplayName(jdbcSchema.getTableSchem());

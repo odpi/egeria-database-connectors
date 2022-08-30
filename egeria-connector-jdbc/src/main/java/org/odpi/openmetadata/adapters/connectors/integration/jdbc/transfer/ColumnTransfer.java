@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * Transfers metadata of a column
+ */
 public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElement> {
 
     private final Omas omas;
@@ -33,6 +36,13 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
         this.omasTable = omasTable;
     }
 
+    /**
+     * Triggers column metadata transfer
+     *
+     * @param jdbcColumn column
+     *
+     * @return column
+     */
     @Override
     public DatabaseColumnElement apply(JdbcColumn jdbcColumn) {
         DatabaseColumnProperties columnProperties = buildColumnProperties(jdbcColumn, omasTable);
@@ -43,15 +53,27 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
 
         if(omasColumn.isPresent()){
             omas.updateColumn(omasColumn.get(), columnProperties);
+            auditLog.logMessage("Updated column with qualified name " + columnProperties.getQualifiedName(), null);
+
             this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID());
             return omasColumn.get();
         }
         Optional<String> columnGuid = omas.createColumn(omasTable.getElementHeader().getGUID(), columnProperties);
+        auditLog.logMessage("Created column with qualified name " + columnProperties.getQualifiedName(), null);
+
         columnGuid.ifPresent(s -> this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, s));
 
         return null;
     }
 
+    /**
+     * Build column properties
+     *
+     * @param jdbcColumn column
+     * @param omasTable table
+     *
+     * @return properties
+     */
     private DatabaseColumnProperties buildColumnProperties(JdbcColumn jdbcColumn, DatabaseTableElement omasTable){
         DatabaseColumnProperties properties = new DatabaseColumnProperties();
         properties.setDisplayName(jdbcColumn.getColumnName());
@@ -61,6 +83,13 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
         return properties;
     }
 
+    /**
+     * Determines data type. See {@link JDBCType}
+     *
+     * @param jdbcDataType data type
+     *
+     * @return data type or "<unknown>"
+     */
     private String extractDataType(int jdbcDataType){
         String dataType = "<unknown>";
         try {
@@ -71,6 +100,13 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
         return dataType;
     }
 
+    /**
+     * Set primary key
+     *
+     * @param jdbcPrimaryKeys jdbc primary keys
+     * @param jdbcColumn column
+     * @param columnGuid guid
+     */
     private void setPrimaryKey(List<JdbcPrimaryKey> jdbcPrimaryKeys, JdbcColumn jdbcColumn, String columnGuid){
         Optional<JdbcPrimaryKey> jdbcPrimaryKey = jdbcPrimaryKeys.stream().filter(
                 key -> key.getTableSchem().equals(jdbcColumn.getTableSchem())
@@ -83,15 +119,21 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
 
         DatabasePrimaryKeyProperties primaryKeyProperties = buildPrimaryKeyProperties(jdbcPrimaryKey.get());
         omas.setPrimaryKey(columnGuid, primaryKeyProperties);
+        auditLog.logMessage("Primary key set on column with guid " + columnGuid, null);
     }
 
+    /**
+     * Build primary key properties
+     *
+     * @param jdbcPrimaryKey primary key
+     *
+     * @return properties
+     */
     private DatabasePrimaryKeyProperties buildPrimaryKeyProperties(JdbcPrimaryKey jdbcPrimaryKey){
         DatabasePrimaryKeyProperties properties = new DatabasePrimaryKeyProperties();
         properties.setName(jdbcPrimaryKey.getPkName());
 
         return properties;
     }
-
-
 
 }

@@ -16,6 +16,12 @@ import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * If a connector type is stored in the omas, triggers the building of the asset connection structure for provided database.
+ * This structure consists of a Connection, a ConnectorType and an Endpoint. For further details on how to store a connector
+ * type consult section
+ * @see <a href="https://egeria-project.org/concepts/open-metadata-archive/#storage-structures">Open Metadata Archives</>
+ */
 class CreateConnectionStructure implements Consumer<DatabaseElement> {
 
     private final Omas omas;
@@ -28,6 +34,12 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Triggers creation of database connection structure, if all information is readily available. If any part is missing,
+     * nothing will be created
+     *
+     * @param databaseElement database
+     */
     @Override
     public void accept(DatabaseElement databaseElement) {
         String connectorTypeQualifiedName = jdbc.getConnectorTypeQualifiedName();
@@ -65,8 +77,16 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
         omas.setupConnectorType(connectionGuid, connectorTypeGuid);
         omas.setupAssetConnection(databaseGuid, databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
         omas.setupEndpoint(connectionGuid, endpointGuid);
+        auditLog.logMessage("Asset connection structure completed", null);
     }
 
+    /**
+     * Create connection properties
+     *
+     * @param databaseElement database
+     *
+     * @return connection properties
+     */
     private ConnectionProperties createConnectionProperties(DatabaseElement databaseElement){
         ConnectionProperties connectionProperties = new ConnectionProperties();
         connectionProperties.setDisplayName(databaseElement.getDatabaseProperties().getDisplayName() + " Connection");
@@ -76,6 +96,13 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
         return connectionProperties;
     }
 
+    /**
+     * Determine connection guid
+     *
+     * @param connectionProperties properties
+     *
+     * @return guid otherwise null
+     */
     private String determineConnectionGuid(ConnectionProperties connectionProperties){
         List<ConnectionElement> connections = omas.getConnectionsByName(connectionProperties.getQualifiedName());
         if(connections.isEmpty()){
@@ -89,6 +116,13 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
         return null;
     }
 
+    /**
+     * Determine connector type guid
+     *
+     * @param connectorTypeQualifiedName properties
+     *
+     * @return guid otherwise null
+     */
     private String determineConnectorTypeGuid(String connectorTypeQualifiedName){
         List<ConnectorTypeElement> connectorTypes = omas.getConnectorTypesByName(connectorTypeQualifiedName);
         if(connectorTypes.size() == 1){
@@ -97,6 +131,13 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
         return null;
     }
 
+    /**
+     * Create endpoint properties
+     *
+     * @param connectionProperties connection properties
+     *
+     * @return endpoint properties
+     */
     private EndpointProperties createEndpointProperties(ConnectionProperties connectionProperties){
         EndpointProperties endpointProperties = new EndpointProperties();
         endpointProperties.setDisplayName(connectionProperties.getDisplayName() + " Endpoint");
@@ -106,6 +147,13 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
         return endpointProperties;
     }
 
+    /**
+     * Determine endpoint guid
+     *
+     * @param endpointProperties properties
+     *
+     * @return guid otherwise null
+     */
     private String determineEndpointGuid(EndpointProperties endpointProperties){
         List<EndpointElement> endpoints = omas.findEndpoints(endpointProperties.getQualifiedName());
         if(endpoints.isEmpty()){

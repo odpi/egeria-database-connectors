@@ -12,6 +12,9 @@ import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Transfers metadata of a foreign key
+ */
 public class ForeignKeyTransfer implements Consumer<JdbcForeignKey> {
 
     private final Omas omas;
@@ -24,6 +27,11 @@ public class ForeignKeyTransfer implements Consumer<JdbcForeignKey> {
         this.database = database;
     }
 
+    /**
+     * Triggers foreign key metadata transfer
+     *
+     * @param jdbcForeignKey foreign key
+     */
     @Override
     public void accept(JdbcForeignKey jdbcForeignKey) {
         String databaseQualifiedName = database.getDatabaseProperties().getQualifiedName();
@@ -38,10 +46,22 @@ public class ForeignKeyTransfer implements Consumer<JdbcForeignKey> {
         if(pkColumn == null || fkColumn == null){
             return;
         }
-        omas.setForeignKey(pkColumn.getElementHeader().getGUID(), fkColumn.getElementHeader().getGUID(),
-                buildForeignKeyProperties(jdbcForeignKey));
+
+        String pkColumnGuid = pkColumn.getElementHeader().getGUID();
+        String fkColumnGuid = fkColumn.getElementHeader().getGUID();
+        omas.setForeignKey(pkColumnGuid, fkColumnGuid, buildForeignKeyProperties(jdbcForeignKey));
+
+        auditLog.logMessage("Foreign key set from column with guid " + pkColumnGuid + " to column with guid " +
+                fkColumnGuid, null);
     }
 
+    /**
+     * Extract item from list
+     *
+     * @param columns columns
+     *
+     * @return item at index 0 if size is 1 otherwise null
+     */
     private DatabaseColumnElement determineColumn(List<DatabaseColumnElement> columns){
         if(columns.size() == 1){
             return columns.get(0);
@@ -49,6 +69,13 @@ public class ForeignKeyTransfer implements Consumer<JdbcForeignKey> {
         return null;
     }
 
+    /**
+     * Build foreign key properties
+     *
+     * @param jdbcForeignKey foreign key
+     *
+     * @return properties
+     */
     private DatabaseForeignKeyProperties buildForeignKeyProperties(JdbcForeignKey jdbcForeignKey){
         DatabaseForeignKeyProperties properties = new DatabaseForeignKeyProperties();
         properties.setName(jdbcForeignKey.getPkName() + " - " + jdbcForeignKey.getFkName());
