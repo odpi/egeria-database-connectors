@@ -15,6 +15,9 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
+/**
+ * Manages the removeDatabaseSchema call to access service
+ */
 class OmasRemoveSchema implements Consumer<DatabaseSchemaElement> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -25,17 +28,23 @@ class OmasRemoveSchema implements Consumer<DatabaseSchemaElement> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Remove schema
+     *
+     * @param schemaElement schema
+     */
     @Override
-    public void accept(DatabaseSchemaElement databaseSchemaElement) {
-        String schemaGuid = databaseSchemaElement.getElementHeader().getGUID();
-        String schemaQualifiedName = databaseSchemaElement.getDatabaseSchemaProperties().getQualifiedName();
+    public void accept(DatabaseSchemaElement schemaElement) {
+        String schemaGuid = schemaElement.getElementHeader().getGUID();
+        String schemaQualifiedName = schemaElement.getDatabaseSchemaProperties().getQualifiedName();
         try {
             List<DatabaseTableElement> tables = new OmasGetTables(databaseIntegratorContext, auditLog).apply(schemaGuid);
             tables.forEach(new OmasRemoveTable(databaseIntegratorContext, auditLog));
 
             databaseIntegratorContext.removeDatabaseSchema(schemaGuid, schemaQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logMessage("Removing schema from omas",
+            auditLog.logMessage("Removing schema with guid " + schemaGuid
+                    + " and qualified name " + schemaQualifiedName,
                     ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(schemaGuid, schemaQualifiedName));
         }
     }

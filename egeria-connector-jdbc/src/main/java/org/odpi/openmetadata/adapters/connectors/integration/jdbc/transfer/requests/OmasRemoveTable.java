@@ -15,6 +15,9 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
+/**
+ * Manages the removeDatabaseTable call to access service
+ */
 class OmasRemoveTable implements Consumer<DatabaseTableElement> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -25,17 +28,23 @@ class OmasRemoveTable implements Consumer<DatabaseTableElement> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Remove table
+     *
+     * @param tableElement table
+     */
     @Override
-    public void accept(DatabaseTableElement databaseTableElement) {
-        String tableGuid = databaseTableElement.getElementHeader().getGUID();
-        String tableQualifiedName = databaseTableElement.getDatabaseTableProperties().getQualifiedName();
+    public void accept(DatabaseTableElement tableElement) {
+        String tableGuid = tableElement.getElementHeader().getGUID();
+        String tableQualifiedName = tableElement.getDatabaseTableProperties().getQualifiedName();
         try {
             List<DatabaseColumnElement> columns = databaseIntegratorContext.getColumnsForDatabaseTable(tableGuid, 0, 0);
             columns.forEach(new OmasRemoveColumn(databaseIntegratorContext, auditLog));
 
             databaseIntegratorContext.removeDatabaseTable(tableGuid, tableQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logMessage("Removing table from omas",
+            auditLog.logMessage("Removing table with guid " + tableGuid
+                    + " and qualified name " + tableQualifiedName,
                     ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(tableGuid, tableQualifiedName));
         }
     }

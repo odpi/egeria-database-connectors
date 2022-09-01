@@ -14,6 +14,9 @@ import java.util.function.BiFunction;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the createDatabaseColumn call to access service
+ */
 class OmasCreateColumn implements BiFunction<String, DatabaseColumnProperties, Optional<String>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -24,14 +27,23 @@ class OmasCreateColumn implements BiFunction<String, DatabaseColumnProperties, O
         this.auditLog = auditLog;
     }
 
+    /**
+     * Create column in table
+     *
+     * @param tableGuid table guid
+     * @param newColumnProperties properties
+     *
+     * @return guid
+     */
     @Override
     public Optional<String> apply(String tableGuid, DatabaseColumnProperties newColumnProperties){
-        String methodName = "createDatabaseColumn";
+        String methodName = "OmasCreateColumn";
         try {
             return Optional.ofNullable(
                     databaseIntegratorContext.createDatabaseColumn(tableGuid, newColumnProperties));
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error creating column in OMAS: " + newColumnProperties.getQualifiedName(),
+            auditLog.logException("Creating column with qualified name " + newColumnProperties.getQualifiedName()
+                    + " in table with guid " + tableGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();

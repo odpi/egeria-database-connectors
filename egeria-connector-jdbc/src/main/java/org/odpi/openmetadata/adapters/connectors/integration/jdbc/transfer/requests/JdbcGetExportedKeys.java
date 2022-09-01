@@ -14,6 +14,9 @@ import java.util.function.BiFunction;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getExportedKeys call to jdbc
+ */
 class JdbcGetExportedKeys implements BiFunction<String, String, List<JdbcForeignKey>> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -24,9 +27,17 @@ class JdbcGetExportedKeys implements BiFunction<String, String, List<JdbcForeign
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get foreign keys as described by the foreign key columns referenced by primary key columns of target table
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     *
+     * @return foreign keys
+     */
     @Override
     public List<JdbcForeignKey> apply(String schemaName, String tableName) {
-        String methodName = "getJdbcExportedKeys";
+        String methodName = "JdbcGetExportedKeys";
         try {
             return Optional.ofNullable(jdbcMetadata.getExportedKeys(null, schemaName, tableName))
                     .orElseGet(ArrayList::new);

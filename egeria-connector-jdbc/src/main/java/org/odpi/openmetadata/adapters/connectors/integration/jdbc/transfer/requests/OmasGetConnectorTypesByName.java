@@ -14,8 +14,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_SETTING_ASSET_CONNECTION;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
 
+/**
+ * Manages the getConnectorTypesByName call to access service
+ */
 class OmasGetConnectorTypesByName implements Function<String, List<ConnectorTypeElement>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -26,6 +29,13 @@ class OmasGetConnectorTypesByName implements Function<String, List<ConnectorType
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get connector types by name
+     *
+     * @param connectorTypeQualifiedName qualified name
+     *
+     * @return connector types
+     */
     @Override
     public List<ConnectorTypeElement> apply(String connectorTypeQualifiedName){
         String methodName = "OmasGetConnectorTypesByName";
@@ -34,8 +44,8 @@ class OmasGetConnectorTypesByName implements Function<String, List<ConnectorType
                     databaseIntegratorContext.getConnectorTypesByName(connectorTypeQualifiedName, 0, 0))
                     .orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logMessage("Determining connector type guid",
-                    ERROR_WHEN_SETTING_ASSET_CONNECTION.getMessageDefinition(methodName));
+            auditLog.logMessage("Reading connector type with qualified name " + connectorTypeQualifiedName,
+                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()));
         }
         return new ArrayList<>();
     }

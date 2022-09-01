@@ -2,7 +2,6 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
-import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
@@ -14,7 +13,10 @@ import java.util.function.BiConsumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
-class OmasUpdateColumn implements BiConsumer<DatabaseColumnElement, DatabaseColumnProperties> {
+/**
+ * Manages the updateDatabaseColumn call to access service
+ */
+class OmasUpdateColumn implements BiConsumer<String, DatabaseColumnProperties> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
     private final AuditLog auditLog;
@@ -24,13 +26,20 @@ class OmasUpdateColumn implements BiConsumer<DatabaseColumnElement, DatabaseColu
         this.auditLog = auditLog;
     }
 
+    /**
+     * Update column
+     *
+     * @param columnGuid guid
+     * @param columnProperties properties
+     */
     @Override
-    public void accept(DatabaseColumnElement omasColumn, DatabaseColumnProperties columnProperties){
-        String methodName = "updateDatabaseColumn";
+    public void accept(String columnGuid, DatabaseColumnProperties columnProperties){
+        String methodName = "OmasUpdateColumn";
         try {
-            databaseIntegratorContext.updateDatabaseColumn(omasColumn.getElementHeader().getGUID(), columnProperties);
+            databaseIntegratorContext.updateDatabaseColumn(columnGuid, columnProperties);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error updating column in OMAS for qualifiedName: " + columnProperties.getQualifiedName(),
+            auditLog.logException("Updating column with qualifiedName " + columnProperties.getQualifiedName()
+                    + " and guid " + columnGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
     }

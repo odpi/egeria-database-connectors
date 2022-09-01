@@ -16,6 +16,9 @@ import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
 
+/**
+ * Manages the findDatabaseColumns call to access service
+ */
 class OmasFindDatabaseColumns implements Function<String, List<DatabaseColumnElement>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -26,6 +29,13 @@ class OmasFindDatabaseColumns implements Function<String, List<DatabaseColumnEle
         this.auditLog = auditLog;
     }
 
+    /**
+     * Find columns
+     *
+     * @param searchBy criteria
+     *
+     * @return columns
+     */
     @Override
     public List<DatabaseColumnElement> apply(String searchBy){
         String methodName = "OmasFindDatabaseColumns";
@@ -34,7 +44,7 @@ class OmasFindDatabaseColumns implements Function<String, List<DatabaseColumnEle
                     databaseIntegratorContext.findDatabaseColumns(searchBy, 0, 0))
                     .orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading database columns from OMAS",
+            auditLog.logException("Reading columns with name " + searchBy,
                     ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return new ArrayList<>();

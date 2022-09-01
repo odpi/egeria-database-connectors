@@ -14,6 +14,9 @@ import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
 
+/**
+ * Manages the getDatabaseTableByGUID call to access service
+ */
 class OmasGetTable implements Function<String, Optional<DatabaseTableElement>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -24,13 +27,20 @@ class OmasGetTable implements Function<String, Optional<DatabaseTableElement>> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get table
+     *
+     * @param tableGuid table guid
+     *
+     * @return table
+     */
     @Override
     public Optional<DatabaseTableElement> apply(String tableGuid){
-        String methodName = "getDatabaseTable";
+        String methodName = "OmasGetTable";
         try{
             return Optional.ofNullable(databaseIntegratorContext.getDatabaseTableByGUID(tableGuid));
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading table from OMAS for guid: " + tableGuid,
+            auditLog.logException("Reading table for guid: " + tableGuid,
                     ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();

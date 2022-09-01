@@ -13,6 +13,9 @@ import java.util.function.BiConsumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the setPrimaryKeyOnColumn call to access service
+ */
 class OmasSetPrimaryKey implements BiConsumer<String, DatabasePrimaryKeyProperties> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -23,13 +26,19 @@ class OmasSetPrimaryKey implements BiConsumer<String, DatabasePrimaryKeyProperti
         this.auditLog = auditLog;
     }
 
+    /**
+     * Set primary key
+     *
+     * @param columnGuid guid
+     * @param primaryKeyProperties properties
+     */
     @Override
-    public void accept(String columnGuid, DatabasePrimaryKeyProperties databasePrimaryKeyProperties) {
-        String methodName = "setPrimaryKeyInOmas";
+    public void accept(String columnGuid, DatabasePrimaryKeyProperties primaryKeyProperties) {
+        String methodName = "OmasSetPrimaryKey";
         try{
-            databaseIntegratorContext.setPrimaryKeyOnColumn(columnGuid, databasePrimaryKeyProperties);
+            databaseIntegratorContext.setPrimaryKeyOnColumn(columnGuid, primaryKeyProperties);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error updating primary key in OMAS for column guid: " + columnGuid ,
+            auditLog.logException("Setting primary key on column with guid " + columnGuid ,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
     }

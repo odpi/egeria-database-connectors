@@ -11,6 +11,9 @@ import java.util.function.Supplier;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getUrl call to jdbc
+ */
 class JdbcGetUrl implements Supplier<String> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -21,6 +24,11 @@ class JdbcGetUrl implements Supplier<String> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get url
+     *
+     * @return url
+     */
     @Override
     public String get(){
         String methodName = "JdbcGetUrl";

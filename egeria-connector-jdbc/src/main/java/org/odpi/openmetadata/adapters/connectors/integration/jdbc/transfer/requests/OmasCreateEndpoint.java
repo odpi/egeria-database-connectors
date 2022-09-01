@@ -14,6 +14,9 @@ import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the createEndpoint call to access service
+ */
 class OmasCreateEndpoint implements Function<EndpointProperties, Optional<String>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -24,6 +27,13 @@ class OmasCreateEndpoint implements Function<EndpointProperties, Optional<String
         this.auditLog = auditLog;
     }
 
+    /**
+     * Create endpoint
+     *
+     * @param newEndpointProperties properties
+     *
+     * @return guid
+     */
     @Override
     public Optional<String> apply(EndpointProperties newEndpointProperties){
         String methodName = "OmasCreateEndpoint";
@@ -31,7 +41,7 @@ class OmasCreateEndpoint implements Function<EndpointProperties, Optional<String
             return Optional.ofNullable(
                     databaseIntegratorContext.createEndpoint(newEndpointProperties));
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error creating column in OMAS: " + newEndpointProperties.getQualifiedName(),
+            auditLog.logException("Creating endpoint with qualified name " + newEndpointProperties.getQualifiedName(),
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();

@@ -11,6 +11,9 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the addForeignKeyRelationship call to access service
+ */
 class OmasSetForeignKey implements TriConsumer<String, String, DatabaseForeignKeyProperties> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -21,13 +24,20 @@ class OmasSetForeignKey implements TriConsumer<String, String, DatabaseForeignKe
         this.auditLog = auditLog;
     }
 
+    /**
+     * Set foreign key
+     *
+     * @param primaryKeyColumnGuid guid
+     * @param foreignKeyColumnGuid guid
+     * @param foreignKeyProperties properties
+     */
     @Override
-    public void accept(String primaryKeyColumnGuid, String foreignKeyColumnGuid, DatabaseForeignKeyProperties databaseForeignProperties) {
+    public void accept(String primaryKeyColumnGuid, String foreignKeyColumnGuid, DatabaseForeignKeyProperties foreignKeyProperties) {
         String methodName = "OmasSetForeignKey";
         try{
-            databaseIntegratorContext.addForeignKeyRelationship(primaryKeyColumnGuid, foreignKeyColumnGuid, databaseForeignProperties);
+            databaseIntegratorContext.addForeignKeyRelationship(primaryKeyColumnGuid, foreignKeyColumnGuid, foreignKeyProperties);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Updating foreign key in OMAS for primary key column guid " + primaryKeyColumnGuid +
+            auditLog.logException("Setting foreign key in OMAS for primary key column guid " + primaryKeyColumnGuid +
                             " and foreign key column guid " + foreignKeyColumnGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }

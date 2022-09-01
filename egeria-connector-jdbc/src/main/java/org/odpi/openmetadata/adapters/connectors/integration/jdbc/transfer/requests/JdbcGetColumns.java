@@ -14,6 +14,9 @@ import java.util.function.BiFunction;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getColumns call to jdbc
+ */
 class JdbcGetColumns implements BiFunction<String, String, List<JdbcColumn>> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -24,15 +27,25 @@ class JdbcGetColumns implements BiFunction<String, String, List<JdbcColumn>> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get all columns from table
+     *
+     * @param schemaName schema
+     * @param tableName table
+     *
+     * @return columns or empty list
+     *
+     * See {@link JdbcMetadata#getColumns(String, String, String, String)}
+     */
     @Override
     public List<JdbcColumn> apply(String schemaName, String tableName){
-        String methodName = "getJdbcColumns";
+        String methodName = "JdbcGetColumns";
         try{
             return Optional.ofNullable(
                     jdbcMetadata.getColumns(null, schemaName, tableName, null))
                     .orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
-            auditLog.logException("Error reading tables from JDBC for schema " + schemaName + " and table " + tableName,
+            auditLog.logException("Reading columns from JDBC for schema " + schemaName + " and table " + tableName,
                     ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
         return new ArrayList<>();

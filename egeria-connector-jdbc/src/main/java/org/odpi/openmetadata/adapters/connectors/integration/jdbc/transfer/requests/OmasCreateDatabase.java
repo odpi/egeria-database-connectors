@@ -14,6 +14,9 @@ import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the createDatabase call to access service
+ */
 class OmasCreateDatabase implements Function<DatabaseProperties, Optional<String>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -24,6 +27,13 @@ class OmasCreateDatabase implements Function<DatabaseProperties, Optional<String
         this.auditLog = auditLog;
     }
 
+    /**
+     * Create database
+     *
+     * @param newDatabaseProperties properties
+     *
+     * @return guid
+     */
     @Override
     public Optional<String> apply(DatabaseProperties newDatabaseProperties){
         String methodName = "OmasCreateDatabase";
@@ -31,7 +41,7 @@ class OmasCreateDatabase implements Function<DatabaseProperties, Optional<String
             return Optional.ofNullable(
                     databaseIntegratorContext.createDatabase(newDatabaseProperties));
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Creating database in OMAS: " + newDatabaseProperties.getQualifiedName(),
+            auditLog.logException("Creating database with qualified name " + newDatabaseProperties.getQualifiedName(),
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();

@@ -14,6 +14,9 @@ import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getTables call to jdbc
+ */
 public class JdbcGetTables implements Function<String, List<JdbcTable>> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -24,15 +27,22 @@ public class JdbcGetTables implements Function<String, List<JdbcTable>> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get all tables of a schema
+     *
+     * @param schemaName schema name
+     *
+     * @return tables
+     */
     @Override
     public List<JdbcTable> apply(String schemaName) {
-        String methodName = "getJdbcTables";
+        String methodName = "JdbcGetTables";
         try {
             return Optional.ofNullable(
                     jdbcMetadata.getTables(null, schemaName, null, new String[]{"TABLE"}))
                     .orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
-            auditLog.logException("Error reading tables from JDBC for schema: " + schemaName,
+            auditLog.logException("Reading tables from JDBC for schema: " + schemaName,
                     ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
         return new ArrayList<>();

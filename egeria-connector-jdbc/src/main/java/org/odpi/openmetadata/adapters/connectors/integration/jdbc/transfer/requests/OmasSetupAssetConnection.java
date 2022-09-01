@@ -10,6 +10,9 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the setupAssetConnection call to access service
+ */
 class OmasSetupAssetConnection implements TriConsumer<String, String, String> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -20,6 +23,13 @@ class OmasSetupAssetConnection implements TriConsumer<String, String, String> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Setup asset connection
+     *
+     * @param assetGuid guid
+     * @param assetSummary summary
+     * @param connectionGuid guid
+     */
     @Override
     public void accept(String assetGuid, String assetSummary, String connectionGuid){
         String methodName = "OmasSetupAssetConnection";
@@ -27,8 +37,8 @@ class OmasSetupAssetConnection implements TriConsumer<String, String, String> {
             databaseIntegratorContext.setupAssetConnection(assetGuid, assetSummary, connectionGuid);
         } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
             auditLog.logMessage("Setting up asset connection for asset with guid " + assetGuid
-                            + ", asset summary: " + assetSummary
-                            + ", and connection guid " + connectionGuid,
+                            + ", with summary  " + assetSummary
+                            + ", and connection with guid " + connectionGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()));
         }
     }

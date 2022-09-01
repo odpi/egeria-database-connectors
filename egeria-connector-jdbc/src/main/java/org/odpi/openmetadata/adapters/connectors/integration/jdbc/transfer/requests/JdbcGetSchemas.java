@@ -14,6 +14,9 @@ import java.util.function.Supplier;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getSchemas call to jdbc
+ */
 class JdbcGetSchemas implements Supplier<List<JdbcSchema>> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -24,13 +27,18 @@ class JdbcGetSchemas implements Supplier<List<JdbcSchema>> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get all schemas
+     *
+     * @return schemas
+     */
     @Override
     public List<JdbcSchema> get(){
-        String methodName = "getJdbcSchemas";
+        String methodName = "JdbcGetSchemas";
         try {
             return Optional.ofNullable(jdbcMetadata.getSchemas()).orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
-            auditLog.logException("Error reading schemas from JDBC",
+            auditLog.logException("Reading schemas from JDBC",
                     ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
         return new ArrayList<>();

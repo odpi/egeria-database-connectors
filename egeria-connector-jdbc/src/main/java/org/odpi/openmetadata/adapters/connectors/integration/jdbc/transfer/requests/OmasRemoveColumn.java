@@ -13,6 +13,9 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
+/**
+ * Manages the removeDatabaseColumn call to access service
+ */
 class OmasRemoveColumn implements Consumer<DatabaseColumnElement> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -23,15 +26,21 @@ class OmasRemoveColumn implements Consumer<DatabaseColumnElement> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Remove column
+     *
+     * @param columnElement column
+     */
     @Override
-    public void accept(DatabaseColumnElement databaseColumnElement) {
-        String columnGuid = databaseColumnElement.getElementHeader().getGUID();
-        String columnQualifiedName = databaseColumnElement.getDatabaseColumnProperties().getQualifiedName();
+    public void accept(DatabaseColumnElement columnElement) {
+        String columnGuid = columnElement.getElementHeader().getGUID();
+        String columnQualifiedName = columnElement.getDatabaseColumnProperties().getQualifiedName();
         try {
             databaseIntegratorContext.removePrimaryKeyFromColumn(columnGuid);
             databaseIntegratorContext.removeDatabaseColumn(columnGuid, columnQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logMessage("Removing column from omas",
+            auditLog.logMessage("Removing column with guid " + columnGuid
+                    + " and qualified name " + columnQualifiedName,
                     ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(columnGuid, columnQualifiedName));
         }
     }

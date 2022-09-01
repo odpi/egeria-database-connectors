@@ -13,6 +13,9 @@ import java.util.function.BiConsumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the updateDatabaseTable call to access service
+ */
 class OmasUpdateTable implements BiConsumer<String, DatabaseTableProperties> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -29,7 +32,8 @@ class OmasUpdateTable implements BiConsumer<String, DatabaseTableProperties> {
         try {
             databaseIntegratorContext.updateDatabaseTable(tableGuid, tableProperties);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error updating table in OMAS for qualifiedName: " + tableProperties.getQualifiedName(),
+            auditLog.logException("Updating table with qualifiedName " + tableProperties.getQualifiedName()
+                    + " and guid " + tableGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
     }

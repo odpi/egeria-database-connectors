@@ -14,6 +14,9 @@ import java.util.function.BiFunction;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getPrimaryKeys call to jdbc
+ */
 class JdbcGetPrimaryKeys implements BiFunction<String, String, List<JdbcPrimaryKey>> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -24,15 +27,23 @@ class JdbcGetPrimaryKeys implements BiFunction<String, String, List<JdbcPrimaryK
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get table primary keys
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     *
+     * @return primary keys
+     */
     @Override
     public List<JdbcPrimaryKey> apply(String schemaName, String tableName){
-        String methodName = "getJdbcPrimaryKeys";
+        String methodName = "JdbcGetPrimaryKeys";
         try{
             return Optional.ofNullable(
                     jdbcMetadata.getPrimaryKeys(null, schemaName, tableName))
                     .orElseGet(ArrayList::new);
         }catch (SQLException sqlException){
-            auditLog.logException("Error reading primary keys from JDBC for schema " + schemaName + " and table " + tableName,
+            auditLog.logException("Reading primary keys from JDBC for schema " + schemaName + " and table " + tableName,
                     ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
 

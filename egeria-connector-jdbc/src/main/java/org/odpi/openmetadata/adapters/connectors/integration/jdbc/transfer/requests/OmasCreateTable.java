@@ -14,6 +14,9 @@ import java.util.function.BiFunction;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the createDatabaseTable call to access service
+ */
 class OmasCreateTable implements BiFunction<String, DatabaseTableProperties, Optional<String>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -24,14 +27,23 @@ class OmasCreateTable implements BiFunction<String, DatabaseTableProperties, Opt
         this.auditLog = auditLog;
     }
 
+    /**
+     * Create table in schema
+     *
+     * @param schemaGuid schema guid
+     * @param newTableProperties properties
+     *
+     * @return guid
+     */
     @Override
     public Optional<String> apply(String schemaGuid, DatabaseTableProperties newTableProperties){
-        String methodName = "createDatabaseTable";
+        String methodName = "OmasCreateTable";
 
         try {
             return Optional.ofNullable(databaseIntegratorContext.createDatabaseTable(schemaGuid, newTableProperties));
         } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
-            auditLog.logException("Error creating schema in OMAS: " + newTableProperties.getQualifiedName(),
+            auditLog.logException("Creating table with qualified name " + newTableProperties.getQualifiedName()
+                    + " in schema with guid " + schemaGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();

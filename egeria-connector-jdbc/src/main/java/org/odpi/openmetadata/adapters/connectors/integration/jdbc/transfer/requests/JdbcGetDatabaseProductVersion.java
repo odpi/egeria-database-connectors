@@ -11,6 +11,9 @@ import java.util.function.Supplier;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getDatabaseProductVersion call to jdbc
+ */
 class JdbcGetDatabaseProductVersion implements Supplier<String> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -21,6 +24,11 @@ class JdbcGetDatabaseProductVersion implements Supplier<String> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get database product version
+     *
+     * @return database product version
+     */
     @Override
     public String get(){
         String methodName = "JdbcGetDatabaseProductVersion";

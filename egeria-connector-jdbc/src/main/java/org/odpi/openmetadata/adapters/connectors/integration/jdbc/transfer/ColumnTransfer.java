@@ -52,7 +52,7 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
                 .findFirst();
 
         if(omasColumn.isPresent()){
-            omas.updateColumn(omasColumn.get(), columnProperties);
+            omas.updateColumn(omasColumn.get().getElementHeader().getGUID(), columnProperties);
             auditLog.logMessage("Updated column with qualified name " + columnProperties.getQualifiedName(), null);
 
             this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID());

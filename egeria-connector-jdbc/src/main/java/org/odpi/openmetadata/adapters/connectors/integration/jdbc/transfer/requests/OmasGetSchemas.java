@@ -16,6 +16,9 @@ import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
 
+/**
+ * Manages the getSchemasForDatabase call to access service
+ */
 class OmasGetSchemas implements Function<String, List<DatabaseSchemaElement>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -26,15 +29,22 @@ class OmasGetSchemas implements Function<String, List<DatabaseSchemaElement>> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get schemas of database
+     *
+     * @param databaseGuid database guid
+     *
+     * @return schemas
+     */
     @Override
     public List<DatabaseSchemaElement> apply(String databaseGuid){
-        String methodName = "getOmasSchemas";
+        String methodName = "OmasGetSchemasForDatabase";
         try{
             return Optional.ofNullable(
                     databaseIntegratorContext.getSchemasForDatabase(databaseGuid, 0, 0))
                     .orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading schemas from OMAS",
+            auditLog.logException("Reading schemas from database with guid " + databaseGuid,
                     ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return new ArrayList<>();

@@ -14,8 +14,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_SETTING_ASSET_CONNECTION;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
 
+/**
+ * Manages the getDatabasesByName call to access service
+ */
 class OmasGetDatabasesByName implements Function<String, List<DatabaseElement>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -26,6 +29,13 @@ class OmasGetDatabasesByName implements Function<String, List<DatabaseElement>> 
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get databases
+     *
+     * @param databaseQualifiedName qualified name
+     *
+     * @return databases
+     */
     @Override
     public List<DatabaseElement> apply(String databaseQualifiedName){
         String methodName = "OmasGetDatabasesByName";
@@ -34,8 +44,8 @@ class OmasGetDatabasesByName implements Function<String, List<DatabaseElement>> 
                     databaseIntegratorContext.getDatabasesByName(databaseQualifiedName, 0, 0))
                     .orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logMessage("Extracting database with qualified name " + databaseQualifiedName,
-                    ERROR_WHEN_SETTING_ASSET_CONNECTION.getMessageDefinition(methodName));
+            auditLog.logMessage("Reading database with qualified name " + databaseQualifiedName,
+                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()));
         }
         return new ArrayList<>();
     }

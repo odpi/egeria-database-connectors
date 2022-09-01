@@ -12,6 +12,9 @@ import java.util.function.BiConsumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 
+/**
+ * Manages the setupEndpoint call to access service
+ */
 class OmasSetupEndpoint implements BiConsumer<String, String> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
@@ -22,14 +25,20 @@ class OmasSetupEndpoint implements BiConsumer<String, String> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Setup endpoint
+     *
+     * @param connectionGuid guid
+     * @param endpointGuid guid
+     */
     @Override
     public void accept(String connectionGuid, String endpointGuid){
         String methodName = "OmasSetupEndpoint";
         try {
             databaseIntegratorContext.setupEndpoint(connectionGuid, endpointGuid);
         } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
-            auditLog.logException("Error setting connector type in OMAS for connection guid " + connectionGuid +
-                    " and endpoint guid " + endpointGuid,
+            auditLog.logException("Setting endpoint for connection with guid " + connectionGuid +
+                    " and endpoint with guid " + endpointGuid,
                     ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
     }

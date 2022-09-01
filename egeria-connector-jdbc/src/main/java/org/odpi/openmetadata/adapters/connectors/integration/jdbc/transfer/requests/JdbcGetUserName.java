@@ -11,6 +11,9 @@ import java.util.function.Supplier;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getUserName call to jdbc
+ */
 class JdbcGetUserName implements Supplier<String> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -21,13 +24,18 @@ class JdbcGetUserName implements Supplier<String> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get user name
+     *
+     * @return user name
+     */
     @Override
     public String get(){
-        String methodName = "JdbcGetUsername";
+        String methodName = "JdbcGetUserName";
         try {
             return Optional.ofNullable(jdbcMetadata.getUserName()).orElseGet(String::new);
         } catch (SQLException sqlException) {
-            auditLog.logException("Reading username from JDBC",
+            auditLog.logException("Reading user name from JDBC",
                     ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
         return "";

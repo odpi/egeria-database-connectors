@@ -11,6 +11,9 @@ import java.util.function.Supplier;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
 
+/**
+ * Manages the getDatabaseProductName call to jdbc
+ */
 class JdbcGetDatabaseProductName implements Supplier<String> {
 
     private final JdbcMetadata jdbcMetadata;
@@ -21,6 +24,11 @@ class JdbcGetDatabaseProductName implements Supplier<String> {
         this.auditLog = auditLog;
     }
 
+    /**
+     * Get database product name
+     *
+     * @return database product name
+     */
     @Override
     public String get(){
         String methodName = "JdbcGetDatabaseProductName";
