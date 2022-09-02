@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS;
 
 /**
  * Transfers metadata from jdbc in an exploratory way. What can be accessed will be transferred
@@ -98,7 +99,8 @@ public class JdbcMetadataTransfer {
         omasSchemas.forEach(omas::removeSchema);
 
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Schema transfer complete in " + (end - start)/1000 + " seconds", null);
+        auditLog.logMessage("Schema transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("schemas", "" + (end - start)/1000));
     }
 
     /**
@@ -128,7 +130,8 @@ public class JdbcMetadataTransfer {
         }).collect(Collectors.toList());
 
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Table transfer complete in " + (end - start)/1000 + " seconds", null);
+        auditLog.logMessage("Table transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables", "" + (end - start)/1000));
     }
 
     /**
@@ -160,7 +163,8 @@ public class JdbcMetadataTransfer {
                 }).collect(Collectors.toList());
 
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Column transfer complete in " + (end - start)/1000 + " seconds", null);
+        auditLog.logMessage("Column transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("columns", "" + (end - start)/1000));
     }
 
     /**
@@ -185,7 +189,8 @@ public class JdbcMetadataTransfer {
         foreignKeys.forEach(new ForeignKeyTransfer(omas, auditLog, database));
 
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Foreign key transfer complete in " + (end - start)/1000 + " seconds", null);
+        auditLog.logMessage("Foreign key transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("foreign keys", "" + (end - start)/1000));
     }
 
 }
