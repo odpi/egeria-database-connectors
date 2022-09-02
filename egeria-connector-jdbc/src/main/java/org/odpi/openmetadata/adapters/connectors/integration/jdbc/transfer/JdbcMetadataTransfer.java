@@ -80,6 +80,8 @@ public class JdbcMetadataTransfer {
      * @param databaseElement database
      */
     private void transferSchemas(DatabaseElement databaseElement){
+        long start = System.currentTimeMillis();
+
         String databaseQualifiedName = databaseElement.getDatabaseProperties().getQualifiedName();
         String databaseGuid = databaseElement.getElementHeader().getGUID();
 
@@ -87,7 +89,7 @@ public class JdbcMetadataTransfer {
         List<DatabaseSchemaElement> omasSchemas = omas.getSchemas(databaseGuid);
         // a schema update will always occur as long as the schema is returned by jdbc
         List<DatabaseSchemaElement> omasSchemasUpdated =
-                jdbc.getSchemas().stream().map(new SchemaTransfer(omas, auditLog, omasSchemas, databaseQualifiedName, databaseGuid))
+                jdbc.getSchemas().parallelStream().map(new SchemaTransfer(omas, auditLog, omasSchemas, databaseQualifiedName, databaseGuid))
                         .collect(Collectors.toList());
 
         // will remove all updated schemas, and what remains are the ones deleted in jdbc
@@ -95,7 +97,8 @@ public class JdbcMetadataTransfer {
         // remove from omas the schemas deleted in jdbc
         omasSchemas.forEach(omas::removeSchema);
 
-        auditLog.logMessage("Schema transfer complete", null);
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Schema transfer complete in " + (end - start)/1000 + " seconds", null);
     }
 
     /**
@@ -104,7 +107,9 @@ public class JdbcMetadataTransfer {
      * @param schemas schemas
      */
     private void transferTables(List<DatabaseSchemaElement> schemas){
-        schemas.forEach( schema -> {
+        long start = System.currentTimeMillis();
+
+        schemas.parallelStream().peek( schema -> {
             String schemaDisplayName = schema.getDatabaseSchemaProperties().getDisplayName();
             String schemaGuid = schema.getElementHeader().getGUID();
             String schemaQualifiedName = schema.getDatabaseSchemaProperties().getQualifiedName();
@@ -112,7 +117,7 @@ public class JdbcMetadataTransfer {
             // already known tables by the omas, previously transferred
             List<DatabaseTableElement> omasTables = omas.getTables(schemaGuid);
             // a table update will always occur as long as the table is returned by jdbc
-            List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables(schemaDisplayName).stream()
+            List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables(schemaDisplayName).parallelStream()
                     .map(new TableTransfer(omas, auditLog, omasTables, schemaQualifiedName, schemaGuid))
                     .collect(Collectors.toList());
 
@@ -120,8 +125,10 @@ public class JdbcMetadataTransfer {
             omasTables.removeAll(omasTablesUpdated);
             // remove from omas the tables deleted in jdbc
             omasTables.forEach(omas::removeTable);
-        });
-        auditLog.logMessage("Table transfer complete", null);
+        }).collect(Collectors.toList());
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Table transfer complete in " + (end - start)/1000 + " seconds", null);
     }
 
     /**
@@ -130,28 +137,30 @@ public class JdbcMetadataTransfer {
      * @param schemas schemas
      */
     private void transferColumns(List<DatabaseSchemaElement> schemas){
-        schemas.forEach(schema -> {
-            List<DatabaseTableElement> tables = omas.getTables(schema.getElementHeader().getGUID());
+        long start = System.currentTimeMillis();
 
-            tables.forEach( table ->{
-                String schemaName = table.getDatabaseTableProperties().getQualifiedName().split("::")[1];
-                String tableName = table.getDatabaseTableProperties().getDisplayName();
-                String tableGuid = table.getElementHeader().getGUID();
+         schemas.parallelStream()
+                 .flatMap(s -> omas.getTables(s.getElementHeader().getGUID()).parallelStream())
+                 .peek(table -> {
+                     String schemaName = table.getDatabaseTableProperties().getQualifiedName().split("::")[1];
+                     String tableName = table.getDatabaseTableProperties().getDisplayName();
+                     String tableGuid = table.getElementHeader().getGUID();
 
-                List<JdbcPrimaryKey> jdbcPrimaryKeys = jdbc.getPrimaryKeys(schemaName, tableName);
-                // already known columns by the omas, previously transferred
-                List<DatabaseColumnElement> omasColumns = omas.getColumns(tableGuid);
-                // a column update will always occur as long as the column is returned by jdbc
-                List<DatabaseColumnElement> omasUpdatedColumns = jdbc.getColumns(schemaName, tableName).stream()
-                        .map(new ColumnTransfer(omas, auditLog, omasColumns, jdbcPrimaryKeys, table)).collect(Collectors.toList());
+                     List<JdbcPrimaryKey> jdbcPrimaryKeys = jdbc.getPrimaryKeys(schemaName, tableName);
+                     // already known columns by the omas, previously transferred
+                     List<DatabaseColumnElement> omasColumns = omas.getColumns(tableGuid);
+                     // a column update will always occur as long as the column is returned by jdbc
+                     List<DatabaseColumnElement> omasUpdatedColumns = jdbc.getColumns(schemaName, tableName).parallelStream()
+                             .map(new ColumnTransfer(omas, auditLog, omasColumns, jdbcPrimaryKeys, table)).collect(Collectors.toList());
 
-                // will remove all updated column, and what remains are the ones deleted in jdbc
-                omasColumns.removeAll(omasUpdatedColumns);
-                // remove from omas the columns deleted in jdbc
-                omasColumns.forEach(omas::removeColumn);
-            });
-        });
-        auditLog.logMessage("Column transfer complete", null);
+                     // will remove all updated column, and what remains are the ones deleted in jdbc
+                     omasColumns.removeAll(omasUpdatedColumns);
+                     // remove from omas the columns deleted in jdbc
+                     omasColumns.forEach(omas::removeColumn);
+                }).collect(Collectors.toList());
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Column transfer complete in " + (end - start)/1000 + " seconds", null);
     }
 
     /**
@@ -161,6 +170,8 @@ public class JdbcMetadataTransfer {
      * @param database database
      */
     private void transferForeignKeys(DatabaseElement database){
+        long start = System.currentTimeMillis();
+
         // all foreign keys as returned by calling getExportedKeys and getImportedKeys on jdbc
         Set<JdbcForeignKey> foreignKeys = Stream.concat(
                 jdbc.getSchemas().stream()
@@ -172,7 +183,9 @@ public class JdbcMetadataTransfer {
         ).collect(Collectors.toSet());
 
         foreignKeys.forEach(new ForeignKeyTransfer(omas, auditLog, database));
-        auditLog.logMessage("Foreign key transfer complete", null);
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Foreign key transfer complete in " + (end - start)/1000 + " seconds", null);
     }
 
 }
