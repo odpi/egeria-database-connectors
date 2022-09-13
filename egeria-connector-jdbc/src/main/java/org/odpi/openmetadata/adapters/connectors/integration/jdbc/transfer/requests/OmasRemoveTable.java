@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
+package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
@@ -15,27 +15,36 @@ import java.util.function.Consumer;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
-class RemoveDatabaseTableConsumer implements Consumer<DatabaseTableElement> {
+/**
+ * Manages the removeDatabaseTable call to access service
+ */
+class OmasRemoveTable implements Consumer<DatabaseTableElement> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
     private final AuditLog auditLog;
 
-    RemoveDatabaseTableConsumer(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
+    OmasRemoveTable(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
         this.auditLog = auditLog;
     }
 
+    /**
+     * Remove table
+     *
+     * @param tableElement table
+     */
     @Override
-    public void accept(DatabaseTableElement databaseTableElement) {
-        String tableGuid = databaseTableElement.getElementHeader().getGUID();
-        String tableQualifiedName = databaseTableElement.getDatabaseTableProperties().getQualifiedName();
+    public void accept(DatabaseTableElement tableElement) {
+        String tableGuid = tableElement.getElementHeader().getGUID();
+        String tableQualifiedName = tableElement.getDatabaseTableProperties().getQualifiedName();
         try {
             List<DatabaseColumnElement> columns = databaseIntegratorContext.getColumnsForDatabaseTable(tableGuid, 0, 0);
-            RemoveDatabaseColumnConsumer removeColumn = new RemoveDatabaseColumnConsumer(databaseIntegratorContext, auditLog);
-            columns.forEach(removeColumn);
+            columns.forEach(new OmasRemoveColumn(databaseIntegratorContext, auditLog));
+
             databaseIntegratorContext.removeDatabaseTable(tableGuid, tableQualifiedName);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logMessage("Removing table from omas",
+            auditLog.logMessage("Removing table with guid " + tableGuid
+                    + " and qualified name " + tableQualifiedName,
                     ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(tableGuid, tableQualifiedName));
         }
     }

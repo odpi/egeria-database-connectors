@@ -4,8 +4,8 @@ package org.odpi.openmetadata.adapters.connectors.resource.jdbc.model;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Represents a table as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
@@ -94,4 +94,34 @@ public class JdbcTable {
                 selfReferencingColName, refGeneration);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if(!(other instanceof JdbcTable)){
+            return false;
+        }
+
+        JdbcTable other_ = (JdbcTable) other;
+        return Objects.equals(getTableCat(), other_.getTableCat()) &&
+                Objects.equals(getTableSchem(), other_.getTableSchem()) &&
+                Objects.equals(getTableName(), other_.getTableName()) &&
+                Objects.equals(getTableType(), other_.getTableType()) &&
+                Objects.equals(getRemarks(), other_.getRemarks()) &&
+                Objects.equals(getTypeCat(), other_.getTypeCat()) &&
+                Objects.equals(getTypeSchem(), other_.getTypeSchem()) &&
+                Objects.equals(getTypeName(), other_.getTypeName()) &&
+                Objects.equals(getSelfReferencingColName(), other_.getSelfReferencingColName()) &&
+                Objects.equals(getRefGeneration(), other_.getRefGeneration());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tableCat, tableSchem, tableName, tableType, remarks, typeCat, typeSchem, typeName,
+                selfReferencingColName, refGeneration);
+    }
 }

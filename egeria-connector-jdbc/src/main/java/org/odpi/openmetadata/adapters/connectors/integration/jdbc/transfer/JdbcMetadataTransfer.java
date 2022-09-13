@@ -2,430 +2,195 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
-import org.apache.commons.lang3.StringUtils;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabasePrimaryKeyProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
-import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Jdbc;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
+import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcForeignKey;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcTable;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
-import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
-import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
-import org.odpi.openmetadata.frameworks.connectors.ffdc.UserNotAuthorizedException;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
 
-import java.sql.JDBCType;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.UNKNOWN_ERROR_WHILE_METADATA_TRANSFER;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS;
 
+/**
+ * Transfers metadata from jdbc in an exploratory way. What can be accessed will be transferred
+ */
 public class JdbcMetadataTransfer {
 
-    private final JdbcMetadata jdbcMetadata;
-    private final DatabaseIntegratorContext databaseIntegratorContext;
+    private final Jdbc jdbc;
+    private final Omas omas;
     private final AuditLog auditLog;
 
-    private final RemoveDatabaseSchemaConsumer removeDatabaseSchemaConsumer;
-    private final RemoveDatabaseTableConsumer removeDatabaseTableConsumer;
-    private final RemoveDatabaseColumnConsumer removeDatabaseColumnConsumer;
-
     public JdbcMetadataTransfer(JdbcMetadata jdbcMetadata, DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog) {
-        this.jdbcMetadata = jdbcMetadata;
-        this.databaseIntegratorContext = databaseIntegratorContext;
+        this.jdbc = new Jdbc(jdbcMetadata, auditLog);
+        this.omas = new Omas(databaseIntegratorContext, auditLog);
         this.auditLog = auditLog;
-        this.removeDatabaseSchemaConsumer = new RemoveDatabaseSchemaConsumer(databaseIntegratorContext, auditLog);
-        this.removeDatabaseTableConsumer = new RemoveDatabaseTableConsumer(databaseIntegratorContext, auditLog);
-        this.removeDatabaseColumnConsumer = new RemoveDatabaseColumnConsumer(databaseIntegratorContext, auditLog);
     }
 
+    /**
+     * Triggers database, schema, table and column metadata transfer. Will do the best it can to transfer as much of the
+     * metadata as possible. If available will also build the asset (database) connection structure
+     *
+     * @return true if successful, false otherwise
+     */
     public boolean execute() {
-        String methodName = "execute";
-        try {
-            DatabaseElement databaseElement = transferDatabase();
-            if (databaseElement == null) {
-                auditLog.logMessage("No database metadata transferred. Exiting",
-                        EXITING_ON_METADATA_TRANSFER.getMessageDefinition());
-                return false;
-            }
-            createAssetConnection(databaseElement);
+        String methodName = "JdbcMetadataTransfer.execute";
 
-            List<DatabaseSchemaElement> schemas = transferSchemas(databaseElement);
-            transferTables(schemas);
-            return true;
-        }catch (Exception e){
-            auditLog.logException("Transferring metadata",
-                    UNKNOWN_ERROR_WHILE_METADATA_TRANSFER.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return false;
-    }
-
-    private void transferTables(List<DatabaseSchemaElement> schemas) {
-        for(DatabaseSchemaElement schemaElement : schemas){
-            DatabaseSchemaProperties databaseSchemaProperties = schemaElement.getDatabaseSchemaProperties();
-
-            List<JdbcTable> jdbcTables = getJdbcTables(databaseSchemaProperties.getDisplayName());
-            List<DatabaseTableElement> omasTables = this.getOmasTables(schemaElement.getElementHeader().getGUID());
-
-            for(JdbcTable jdbcTable : jdbcTables){
-                DatabaseTableProperties jdbcTableProperties = new DatabaseTableProperties();
-                jdbcTableProperties.setDisplayName(jdbcTable.getTableName());
-                String databaseTableQualifiedName = databaseSchemaProperties.getQualifiedName() + "::" + jdbcTable.getTableName();
-                jdbcTableProperties.setQualifiedName(databaseTableQualifiedName);
-
-                Optional<DatabaseTableElement> omasTable = omasTables.stream()
-                        .filter(dte -> dte.getDatabaseTableProperties().getQualifiedName().equals(databaseTableQualifiedName))
-                        .findFirst();
-
-                if(omasTable.isPresent()){
-                    this.updateOmasTable(omasTable.get(), jdbcTableProperties);
-                    omasTables.remove(omasTable.get());
-                }else{
-                    Optional<String> tableGuid = this.createOmasTable(schemaElement, jdbcTableProperties);
-                    if(tableGuid.isPresent()){
-                        omasTable = this.getOmasTable(tableGuid.get());
-                    }else{
-                        // move on to the next table, as something happened with saving the new table
-                        continue;
-                    }
-                }
-                omasTable.ifPresent(tableElement -> transferColumns(schemaElement, tableElement));
-            }
-            omasTables.forEach(removeDatabaseTableConsumer);
-        }
-    }
-
-    private Optional<DatabaseTableElement> getOmasTable(String tableGuid){
-        String methodName = "getDatabaseTable";
-        try{
-            return Optional.ofNullable(databaseIntegratorContext.getDatabaseTableByGUID(tableGuid));
-        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading table from OMAS for guid: " + tableGuid,
-                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return Optional.empty();
-    }
-
-    private Optional<String> createOmasTable(DatabaseSchemaElement omasSchema, DatabaseTableProperties newTableProperties){
-        String methodName = "createDatabaseTable";
-
-        try {
-            return Optional.ofNullable(databaseIntegratorContext
-                    .createDatabaseTable(omasSchema.getElementHeader().getGUID(), newTableProperties));
-        } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
-            auditLog.logException("Error creating schema in OMAS: " + newTableProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return Optional.empty();
-    }
-
-    private void updateOmasTable(DatabaseTableElement omasTable, DatabaseTableProperties tableProperties){
-        String methodName = "updateDatabaseTable";
-        try {
-            databaseIntegratorContext.updateDatabaseTable(omasTable.getElementHeader().getGUID(), tableProperties);
-        } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error updating table in OMAS for qualifiedName: " + tableProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-    }
-
-    private List<JdbcTable> getJdbcTables(String schemaName) {
-        String methodName = "getJdbcTables";
-        try {
-            return Optional.ofNullable(
-                    jdbcMetadata.getTables(null, schemaName, null, new String[]{"TABLE"}))
-                    .orElseGet(ArrayList::new);
-        } catch (SQLException sqlException) {
-            auditLog.logException("Error reading tables from JDBC for schema: " + schemaName,
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
-        }
-        return new ArrayList<>();
-    }
-
-    private List<DatabaseTableElement> getOmasTables(String schemaGuid){
-        String methodName = "getOmasTables";
-        try{
-            return Optional.ofNullable(databaseIntegratorContext
-                    .getTablesForDatabaseAsset(schemaGuid, 0, 0)).orElseGet(ArrayList::new);
-        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading tables from OMAS for schemaGuid: " + schemaGuid,
-                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return new ArrayList<>();
-    }
-
-    private void transferColumns(DatabaseSchemaElement schemaElement, DatabaseTableElement tableElement) {
-        String schemaElementName = schemaElement.getDatabaseSchemaProperties().getDisplayName();
-        String tableElementName = tableElement.getDatabaseTableProperties().getDisplayName();
-
-        List<JdbcPrimaryKey> jdbcPrimaryKeys = getJdbcPrimaryKeys(schemaElementName, tableElementName);
-        List<JdbcColumn> jdbcColumns = this.getJdbcColumns(schemaElementName, tableElementName);
-        List<DatabaseColumnElement> omasColumns = this.getOmasColumns(tableElement.getElementHeader().getGUID());
-
-        for(JdbcColumn jdbcColumn : jdbcColumns){
-            DatabaseColumnProperties databaseColumnProperties = new DatabaseColumnProperties();
-            databaseColumnProperties.setDisplayName(jdbcColumn.getColumnName());
-            String databaseColumnQualifiedName = tableElement.getDatabaseTableProperties().getQualifiedName()
-                    + "::" + jdbcColumn.getColumnName();
-            databaseColumnProperties.setQualifiedName(databaseColumnQualifiedName);
-            databaseColumnProperties.setDataType(extractDataType(jdbcColumn.getDataType()));
-
-            Optional<DatabaseColumnElement> omasColumn = omasColumns.stream()
-                    .filter(dce -> dce.getDatabaseColumnProperties().getQualifiedName().equals(databaseColumnQualifiedName))
-                    .findFirst();
-
-            if(omasColumn.isPresent()){
-                this.updateOmasColumn(omasColumn.get(), databaseColumnProperties);
-                this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID());
-                omasColumns.remove(omasColumn.get());
-            }else{
-                String columnGuid = this.createOmasColumn(tableElement, databaseColumnProperties);
-                if(StringUtils.isNotBlank(columnGuid)) {
-                    this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, columnGuid);
-                }
-            }
-        }
-        omasColumns.forEach(removeDatabaseColumnConsumer);
-    }
-
-    private void setPrimaryKey(List<JdbcPrimaryKey> jdbcPrimaryKeys, JdbcColumn jdbcColumn, String columnGuid){
-        Optional<JdbcPrimaryKey> jdbcPrimaryKey = jdbcPrimaryKeys.stream().filter(
-                key -> key.getTableSchem().equals(jdbcColumn.getTableSchem())
-                        && key.getTableName().equals(jdbcColumn.getTableName())
-                        && key.getColumnName().equals(jdbcColumn.getColumnName())
-        ).findFirst();
-        if(jdbcPrimaryKey.isEmpty()){
-            return;
+        DatabaseElement database = new DatabaseTransfer(jdbc, omas, auditLog).execute();
+        if (database == null) {
+            auditLog.logMessage("No database metadata transferred. Exiting",
+                    EXITING_ON_METADATA_TRANSFER.getMessageDefinition(methodName));
+            return false;
         }
 
-        DatabasePrimaryKeyProperties primaryKeyProperties = buildPrimaryKeyProperties(jdbcPrimaryKey.get());
-        setPrimaryKeyInOmas(columnGuid, primaryKeyProperties);
-    }
+        createAssetConnection(database);
+        transferSchemas(database);
 
-    private void setPrimaryKeyInOmas(String columnGuid, DatabasePrimaryKeyProperties databasePrimaryKeyProperties) {
-        String methodName = "setPrimaryKeyInOmas";
-        try{
-            databaseIntegratorContext.setPrimaryKeyOnColumn(columnGuid, databasePrimaryKeyProperties);
-        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error updating primary key in OMAS for column guid: " + columnGuid ,
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-    }
-
-
-    private DatabasePrimaryKeyProperties buildPrimaryKeyProperties(JdbcPrimaryKey jdbcPrimaryKey){
-        DatabasePrimaryKeyProperties properties = new DatabasePrimaryKeyProperties();
-        properties.setName(jdbcPrimaryKey.getPkName());
-
-        return properties;
-    }
-
-    private void updateOmasColumn(DatabaseColumnElement omasColumn, DatabaseColumnProperties columnProperties){
-        String methodName = "updateDatabaseColumn";
-        try {
-            databaseIntegratorContext.updateDatabaseColumn(omasColumn.getElementHeader().getGUID(), columnProperties);
-        } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error updating column in OMAS for qualifiedName: " + columnProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-    }
-
-    private String createOmasColumn(DatabaseTableElement tableElement, DatabaseColumnProperties newColumnProperties){
-        String methodName = "createDatabaseColumn";
-        try {
-            return databaseIntegratorContext.createDatabaseColumn(tableElement.getElementHeader().getGUID(), newColumnProperties);
-        } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error creating column in OMAS: " + newColumnProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return null;
-    }
-
-    private List<DatabaseColumnElement> getOmasColumns(String tableGuid){
-        String methodName = "getOmasColumns";
-        try{
-            return Optional.ofNullable(
-                    databaseIntegratorContext.getColumnsForDatabaseTable(tableGuid, 0, 0))
-                    .orElseGet(ArrayList::new);
-        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading columns from OMAS for table guid: " + tableGuid ,
-                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return new ArrayList<>();
-    }
-
-    private List<JdbcPrimaryKey> getJdbcPrimaryKeys(String schemaName, String tableName){
-        String methodName = "getJdbcPrimaryKeys";
-        try{
-            return Optional.ofNullable(
-                    jdbcMetadata.getPrimaryKeys(null, schemaName, tableName))
-                    .orElseGet(ArrayList::new);
-        }catch (SQLException sqlException){
-            auditLog.logException("Error reading primary keys from JDBC for schema " + schemaName + " and table " + tableName,
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
+        List<DatabaseSchemaElement> schemas = omas.getSchemas(database.getElementHeader().getGUID());
+        if(schemas.isEmpty()){
+            auditLog.logMessage("No schema metadata transferred. Exiting",
+                    EXITING_ON_METADATA_TRANSFER.getMessageDefinition(methodName));
+            return false;
         }
 
-        return new ArrayList<>();
-    }
+        transferTables(schemas);
+        transferColumns(schemas);
+        transferForeignKeys(database);
+        return true;
 
-    private List<JdbcColumn> getJdbcColumns(String schemaName, String tableName){
-        String methodName = "getJdbcColumns";
-        try{
-            return Optional.ofNullable(
-                    jdbcMetadata.getColumns(null, schemaName, tableName, null))
-                    .orElseGet(ArrayList::new);
-        } catch (SQLException sqlException) {
-            auditLog.logException("Error reading tables from JDBC for schema " + schemaName + " and table " + tableName,
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
-        }
-        return new ArrayList<>();
-    }
-
-    private String extractDataType(int jdbcDataType){
-        String dataType = "<unknown>";
-        try {
-            dataType = JDBCType.valueOf(jdbcDataType).getName();
-        }catch(IllegalArgumentException iae){
-            // do nothing
-        }
-        return dataType;
-    }
-
-    private List<DatabaseSchemaElement> transferSchemas(DatabaseElement databaseElement) {
-
-        List<JdbcSchema> jdbcSchemas = this.getJdbcSchemas();
-        List<DatabaseSchemaElement> omasSchemas = this.getOmasSchemas(databaseElement);
-
-        for (JdbcSchema jdbcSchema : jdbcSchemas) {
-            DatabaseSchemaProperties jdbcSchemaProperties = new DatabaseSchemaProperties();
-            jdbcSchemaProperties.setDisplayName(jdbcSchema.getTableSchem());
-            String databaseSchemaQualifiedName =
-                    databaseElement.getDatabaseProperties().getQualifiedName() + "::" + jdbcSchema.getTableSchem();
-            jdbcSchemaProperties.setQualifiedName(databaseSchemaQualifiedName);
-
-            Optional<DatabaseSchemaElement> omasSchema = omasSchemas.stream()
-                    .filter(dse -> dse.getDatabaseSchemaProperties().getQualifiedName().equals(databaseSchemaQualifiedName))
-                    .findFirst();
-            if (omasSchema.isPresent()) {
-                updateOmasSchema(omasSchema.get(), jdbcSchemaProperties);
-                omasSchemas.remove(omasSchema.get());
-            } else {
-                createOmasSchema(databaseElement, jdbcSchemaProperties);
-            }
-        }
-        omasSchemas.forEach(removeDatabaseSchemaConsumer);
-
-        return getOmasSchemas(databaseElement);
-
-    }
-
-    private void createOmasSchema(DatabaseElement databaseElement, DatabaseSchemaProperties newSchemaProperties){
-        String methodName = "createDatabaseSchema";
-        try {
-            databaseIntegratorContext.createDatabaseSchema(databaseElement.getElementHeader().getGUID(),
-                    newSchemaProperties);
-        } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
-            auditLog.logException("Error creating schema in OMAS: " + newSchemaProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-    }
-
-    private void updateOmasSchema(DatabaseSchemaElement omasSchema, DatabaseSchemaProperties schemaProperties){
-        String methodName = "updateDatabaseSchema";
-        try {
-            databaseIntegratorContext.updateDatabaseSchema(omasSchema.getElementHeader().getGUID(), schemaProperties);
-        } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
-            auditLog.logException("Error updating schema in OMAS for qualifiedName: " + schemaProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-    }
-
-    private List<JdbcSchema> getJdbcSchemas(){
-        String methodName = "getJdbcSchemas";
-        try {
-            return Optional.ofNullable(jdbcMetadata.getSchemas()).orElseGet(ArrayList::new);
-        } catch (SQLException sqlException) {
-            auditLog.logException("Error reading schemas from JDBC",
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
-        }
-        return new ArrayList<>();
-    }
-
-    private List<DatabaseSchemaElement> getOmasSchemas(DatabaseElement databaseElement){
-        String methodName = "getOmasSchemas";
-        try{
-            return Optional.ofNullable(
-                    databaseIntegratorContext.getSchemasForDatabase(databaseElement.getElementHeader().getGUID(), 0, 0))
-                    .orElseGet(ArrayList::new);
-        } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Error reading schemas from OMAS",
-                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return new ArrayList<>();
-    }
-
-    private DatabaseElement transferDatabase() {
-        String methodName = "transferDatabase";
-
-        try {
-            DatabaseIntegratorContext context = databaseIntegratorContext;
-            DatabaseProperties databaseProperties = buildDatabaseProperties();
-            List<DatabaseElement> databasesInOmas = Optional.ofNullable(
-                    context.getDatabasesByName(databaseProperties.getQualifiedName(), 0, 0))
-                    .orElseGet(ArrayList::new);
-            if (databasesInOmas.isEmpty()) {
-                context.createDatabase(databaseProperties);
-            } else {
-                context.updateDatabase(databasesInOmas.get(0).getElementHeader().getGUID(), databaseProperties);
-            }
-            return context.getDatabasesByName(databaseProperties.getQualifiedName(), 0, 0).get(0);
-        }catch (SQLException sqlException){
-            auditLog.logException("Error reading database properties from JDBC",
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
-        }catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e){
-            auditLog.logException("Error upserting entity into OMAS",
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
-        }
-        return null;
-    }
-
-    private DatabaseProperties buildDatabaseProperties() throws SQLException {
-        String user = jdbcMetadata.getUserName();
-        String driverName = jdbcMetadata.getDriverName();
-        String databaseProductVersion = jdbcMetadata.getDatabaseProductVersion();
-        String databaseProductName = jdbcMetadata.getDatabaseProductName();
-        String url = jdbcMetadata.getUrl();
-
-        DatabaseProperties databaseProperties = new DatabaseProperties();
-        databaseProperties.setQualifiedName(url);
-        databaseProperties.setDisplayName(user);
-        databaseProperties.setDatabaseInstance(driverName);
-        databaseProperties.setDatabaseVersion(databaseProductVersion);
-        databaseProperties.setDatabaseType(databaseProductName);
-        databaseProperties.setDatabaseImportedFrom(url);
-
-        return databaseProperties;
     }
 
     private void createAssetConnection(DatabaseElement databaseElement){
-        DatabaseConnectionConsumer databaseConnectionConsumer =
-                new DatabaseConnectionConsumer(databaseIntegratorContext, auditLog, jdbcMetadata);
-        databaseConnectionConsumer.accept(databaseElement);
+        CreateConnectionStructure createConnectionStructure = new CreateConnectionStructure(omas, jdbc, auditLog);
+        createConnectionStructure.accept(databaseElement);
+    }
+
+    /**
+     * Triggers the transfer of all available schemas
+     *
+     * @param databaseElement database
+     */
+    private void transferSchemas(DatabaseElement databaseElement){
+        long start = System.currentTimeMillis();
+
+        String databaseQualifiedName = databaseElement.getDatabaseProperties().getQualifiedName();
+        String databaseGuid = databaseElement.getElementHeader().getGUID();
+
+        // already known schemas by the omas, previously transferred
+        List<DatabaseSchemaElement> omasSchemas = omas.getSchemas(databaseGuid);
+        // a schema update will always occur as long as the schema is returned by jdbc
+        List<DatabaseSchemaElement> omasSchemasUpdated =
+                jdbc.getSchemas().parallelStream().map(new SchemaTransfer(omas, auditLog, omasSchemas, databaseQualifiedName, databaseGuid))
+                        .collect(Collectors.toList());
+
+        // will remove all updated schemas, and what remains are the ones deleted in jdbc
+        omasSchemas.removeAll(omasSchemasUpdated);
+        // remove from omas the schemas deleted in jdbc
+        omasSchemas.forEach(omas::removeSchema);
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Schema transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("schemas", "" + (end - start)/1000));
+    }
+
+    /**
+     * Triggers the transfer of all available tables
+     *
+     * @param schemas schemas
+     */
+    private void transferTables(List<DatabaseSchemaElement> schemas){
+        long start = System.currentTimeMillis();
+
+        schemas.parallelStream().peek( schema -> {
+            String schemaDisplayName = schema.getDatabaseSchemaProperties().getDisplayName();
+            String schemaGuid = schema.getElementHeader().getGUID();
+            String schemaQualifiedName = schema.getDatabaseSchemaProperties().getQualifiedName();
+
+            // already known tables by the omas, previously transferred
+            List<DatabaseTableElement> omasTables = omas.getTables(schemaGuid);
+            // a table update will always occur as long as the table is returned by jdbc
+            List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables(schemaDisplayName).parallelStream()
+                    .map(new TableTransfer(omas, auditLog, omasTables, schemaQualifiedName, schemaGuid))
+                    .collect(Collectors.toList());
+
+            // will remove all updated tables, and what remains are the ones deleted in jdbc
+            omasTables.removeAll(omasTablesUpdated);
+            // remove from omas the tables deleted in jdbc
+            omasTables.forEach(omas::removeTable);
+        }).collect(Collectors.toList());
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Table transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables", "" + (end - start)/1000));
+    }
+
+    /**
+     * Triggers the transfer of all available tables
+     *
+     * @param schemas schemas
+     */
+    private void transferColumns(List<DatabaseSchemaElement> schemas){
+        long start = System.currentTimeMillis();
+
+         schemas.parallelStream()
+                 .flatMap(s -> omas.getTables(s.getElementHeader().getGUID()).parallelStream())
+                 .peek(table -> {
+                     String schemaName = table.getDatabaseTableProperties().getQualifiedName().split("::")[1];
+                     String tableName = table.getDatabaseTableProperties().getDisplayName();
+                     String tableGuid = table.getElementHeader().getGUID();
+
+                     List<JdbcPrimaryKey> jdbcPrimaryKeys = jdbc.getPrimaryKeys(schemaName, tableName);
+                     // already known columns by the omas, previously transferred
+                     List<DatabaseColumnElement> omasColumns = omas.getColumns(tableGuid);
+                     // a column update will always occur as long as the column is returned by jdbc
+                     List<DatabaseColumnElement> omasUpdatedColumns = jdbc.getColumns(schemaName, tableName).parallelStream()
+                             .map(new ColumnTransfer(omas, auditLog, omasColumns, jdbcPrimaryKeys, table)).collect(Collectors.toList());
+
+                     // will remove all updated column, and what remains are the ones deleted in jdbc
+                     omasColumns.removeAll(omasUpdatedColumns);
+                     // remove from omas the columns deleted in jdbc
+                     omasColumns.forEach(omas::removeColumn);
+                }).collect(Collectors.toList());
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Column transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("columns", "" + (end - start)/1000));
+    }
+
+    /**
+     * Triggers the transfer of all foreign keys. The reason for doing this at database level is that a foreign key relationship
+     * can exist between columns located in tables in different schemas
+     *
+     * @param database database
+     */
+    private void transferForeignKeys(DatabaseElement database){
+        long start = System.currentTimeMillis();
+
+        // all foreign keys as returned by calling getExportedKeys and getImportedKeys on jdbc
+        Set<JdbcForeignKey> foreignKeys = Stream.concat(
+                jdbc.getSchemas().stream()
+                        .flatMap(s -> jdbc.getTables(s.getTableSchem()).stream())
+                        .flatMap(t -> jdbc.getImportedKeys(t.getTableSchem(), t.getTableName()).stream()),
+                jdbc.getSchemas().stream()
+                        .flatMap(s -> jdbc.getTables(s.getTableSchem()).stream())
+                        .flatMap(t -> jdbc.getExportedKeys(t.getTableSchem(), t.getTableName()).stream())
+        ).collect(Collectors.toSet());
+
+        foreignKeys.forEach(new ForeignKeyTransfer(omas, auditLog, database));
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Foreign key transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("foreign keys", "" + (end - start)/1000));
     }
 
 }
