@@ -47,9 +47,9 @@ public class JdbcConnector extends ConnectorBase implements JdbcMetadata {
 
     @Override
     public boolean open(){
-        String url = (String)connectionProperties.getConfigurationProperties().get("url");
-        String user = connectionProperties.getUserId();
-        String password = connectionProperties.getClearPassword();
+        String url = connectionBean.getEndpoint().getAddress();
+        String user = connectionBean.getUserId();
+        String password = connectionBean.getClearPassword();
 
         try {
             Connection connection = DriverManager.getConnection(url, user, password);
