@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadata;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.sql.SQLException;

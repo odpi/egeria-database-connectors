@@ -4,8 +4,8 @@ package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcSchema;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.util.List;

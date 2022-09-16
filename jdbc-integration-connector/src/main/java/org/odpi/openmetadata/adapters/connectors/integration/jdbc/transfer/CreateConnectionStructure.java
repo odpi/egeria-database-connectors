@@ -26,11 +26,13 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
 
     private final Omas omas;
     private final Jdbc jdbc;
+    private final String configuredConnectorTypeQualifiedName;
     private final AuditLog auditLog;
 
-    CreateConnectionStructure(Omas omas, Jdbc jdbc, AuditLog auditLog) {
+    CreateConnectionStructure(Omas omas, Jdbc jdbc, String configuredConnectorTypeQualifiedName, AuditLog auditLog) {
         this.omas = omas;
         this.jdbc = jdbc;
+        this.configuredConnectorTypeQualifiedName = configuredConnectorTypeQualifiedName;
         this.auditLog = auditLog;
     }
 
@@ -42,12 +44,11 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
      */
     @Override
     public void accept(DatabaseElement databaseElement) {
-        String connectorTypeQualifiedName = jdbc.getConnectorTypeQualifiedName();
-        if(StringUtils.isBlank(connectorTypeQualifiedName)){
+        if(StringUtils.isBlank(configuredConnectorTypeQualifiedName)){
             auditLog.logMessage("Missing connector type qualified name. Skipping asset connection setup", null);
             return;
         }
-        String connectorTypeGuid = determineConnectorTypeGuid(connectorTypeQualifiedName);
+        String connectorTypeGuid = determineConnectorTypeGuid(configuredConnectorTypeQualifiedName);
         if(StringUtils.isBlank(connectorTypeGuid)){
             auditLog.logMessage("Missing connector type guid. Skipping asset connection setup", null);
             return;

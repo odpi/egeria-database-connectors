@@ -2,12 +2,8 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcColumn;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcForeignKey;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcSchema;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcTable;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadata;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.*;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.util.List;
@@ -26,18 +22,9 @@ public class Jdbc {
     }
 
     /**
-     * Get connector type qualified name
+     * Get username
      *
-     * @return connector type qualified name
-     */
-    public String getConnectorTypeQualifiedName(){
-        return new JdbcGetConnectorTypeQualifiedName(jdbcMetadata).get();
-    }
-
-    /**
-     * Get user name
-     *
-     * @return user name
+     * @return username
      */
     public String getUserName(){
         return new JdbcGetUserName(jdbcMetadata, auditLog).get();

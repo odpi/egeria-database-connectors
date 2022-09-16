@@ -6,11 +6,10 @@ import org.odpi.openmetadata.accessservices.datamanager.metadataelements.Databas
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcForeignKey;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcPrimaryKey;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Jdbc;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcMetadata;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcForeignKey;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcPrimaryKey;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
 
@@ -29,11 +28,14 @@ public class JdbcMetadataTransfer {
 
     private final Jdbc jdbc;
     private final Omas omas;
+    private final String configuredConnectorTypeQualifiedName;
     private final AuditLog auditLog;
 
-    public JdbcMetadataTransfer(JdbcMetadata jdbcMetadata, DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog) {
+    public JdbcMetadataTransfer(JdbcMetadata jdbcMetadata, DatabaseIntegratorContext databaseIntegratorContext,
+                                String configuredConnectorTypeQualifiedName, AuditLog auditLog) {
         this.jdbc = new Jdbc(jdbcMetadata, auditLog);
         this.omas = new Omas(databaseIntegratorContext, auditLog);
+        this.configuredConnectorTypeQualifiedName = configuredConnectorTypeQualifiedName;
         this.auditLog = auditLog;
     }
 
@@ -71,7 +73,8 @@ public class JdbcMetadataTransfer {
     }
 
     private void createAssetConnection(DatabaseElement databaseElement){
-        CreateConnectionStructure createConnectionStructure = new CreateConnectionStructure(omas, jdbc, auditLog);
+        CreateConnectionStructure createConnectionStructure = new CreateConnectionStructure(omas, jdbc,
+                configuredConnectorTypeQualifiedName, auditLog);
         createConnectionStructure.accept(databaseElement);
     }
 

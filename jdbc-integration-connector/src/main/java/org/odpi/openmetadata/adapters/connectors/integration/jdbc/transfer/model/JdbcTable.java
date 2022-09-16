@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.openmetadata.adapters.connectors.resource.jdbc.model;
+package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
