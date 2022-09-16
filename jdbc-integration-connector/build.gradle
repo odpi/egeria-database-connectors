@@ -14,6 +14,6 @@ dependencies {
     implementation 'org.odpi.egeria:data-manager-api'
     implementation 'org.odpi.egeria:database-integrator-api'
     implementation 'org.odpi.egeria:open-connector-framework'
-    implementation project(':egeria-resource-connector-jdbc')
+    implementation project(':jdbc-resource-connector')
 }
 
