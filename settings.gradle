@@ -16,6 +16,6 @@ pluginManagement {
 rootProject.name = 'egeria-database-connectors'
 
 include(':egeria-connector-postgres')
-include(':egeria-resource-connector-jdbc')
+include(':jdbc-resource-connector')
 include(':jdbc-integration-connector')
 
