@@ -6,6 +6,8 @@ package org.odpi.openmetadata.adapters.connectors.resource.jdbc;
 import org.odpi.openmetadata.frameworks.connectors.ConnectorProviderBase;
 import org.odpi.openmetadata.frameworks.connectors.properties.beans.ConnectorType;
 
+import javax.sql.DataSource;
+
 /**
  * JdbcConnectorProvider is the OCF connector provider for the jdbc resource connector.
  */
@@ -16,7 +18,7 @@ public class JdbcConnectorProvider extends ConnectorProviderBase
     static final String connectorDisplayName = "Relational Database JDBC Connector";
     static final String connectorTypeDescription = "Connector supports reading of metadata from relational databases using exclusively the JDBC API";
 
-    private static final String  assetTypeName = "Jdbc";
+    private static final String  assetTypeName = "Database";
 
     /**
      * Constructor used to initialize the ConnectorProviderBase with the Java class name of the specific
@@ -35,7 +37,7 @@ public class JdbcConnectorProvider extends ConnectorProviderBase
         connectorType.setSupportedAssetTypeName(assetTypeName);
         connectorType.setConnectorProviderClassName(this.getClass().getName());
 
-        connectorInterfaces.add(JdbcMetadata.class.getName());
+        connectorInterfaces.add(DataSource.class.getName());
         connectorType.setConnectorInterfaces(connectorInterfaces);
 
         super.connectorTypeBean = connectorType;

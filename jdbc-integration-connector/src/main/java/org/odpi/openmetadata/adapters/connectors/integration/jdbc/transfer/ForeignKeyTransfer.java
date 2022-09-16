@@ -5,8 +5,8 @@ package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseForeignKeyProperties;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcForeignKey;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
-import org.odpi.openmetadata.adapters.connectors.resource.jdbc.model.JdbcForeignKey;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.util.List;
