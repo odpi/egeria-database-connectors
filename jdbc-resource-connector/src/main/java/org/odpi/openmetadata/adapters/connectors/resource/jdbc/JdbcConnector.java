@@ -22,7 +22,7 @@ public class JdbcConnector extends ConnectorBase  {
     /**
      * Get as {@link DataSource}
      *
-     * @return
+     * @return implementation
      */
     public DataSource asDataSource(){
         return new JdbcConnectorAsDataSource();
