@@ -29,9 +29,6 @@ Body
                     "class": "ConnectorType",
                     "connectorProviderClassName": "org.odpi.openmetadata.adapters.connectors.integration.jdbc.JdbcIntegrationConnectorProvider"
                 },
-                "configurationProperties" :{
-                    "connectorTypeQualifiedName" : "<already-stored-connector-type>"
-                },
                 "embeddedConnections":[
                     {
                         "class" : "EmbeddedConnection",
@@ -46,6 +43,9 @@ Body
                             "endpoint":{
                                 "class": "Endpoint",
                                 "address" : "<jdbc-format-database-address>"
+                            },
+                            "configurationProperties" :{
+                                "connectorTypeQualifiedName" : "<already-stored-connector-type>"
                             }
                         }
                     }
