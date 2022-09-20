@@ -9,7 +9,6 @@ import org.odpi.openmetadata.frameworks.connectors.Connector;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorConnector;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -19,12 +18,12 @@ import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.Jd
 
 public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
 
-    private DataSource jdbcConnector;
+    private JdbcConnector jdbcConnector;
 
     @Override
     public void initializeEmbeddedConnectors(List<Connector> embeddedConnectors) {
         super.initializeEmbeddedConnectors(embeddedConnectors);
-        jdbcConnector = ((JdbcConnector) embeddedConnectors.get(0)).asDataSource();
+        jdbcConnector = (JdbcConnector) embeddedConnectors.get(0);
     }
 
     @Override
@@ -64,7 +63,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
     private Connection connect(){
         String methodName = "connect";
         try {
-            return jdbcConnector.getConnection();
+            return jdbcConnector.asDataSource().getConnection();
         } catch (SQLException e) {
             auditLog.logException("Connecting to target database server",
                     EXITING_ON_CONNECTION_FAIL.getMessageDefinition(methodName), e);
@@ -95,7 +94,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
         String methodName = "createJdbcMetadataTransfer";
         try{
             String connectorTypeQualifiedName =
-                    (String) this.connectionProperties.getConfigurationProperties().get("connectorTypeQualifiedName");
+                    (String) jdbcConnector.getConnection().getConfigurationProperties().get("connectorTypeQualifiedName");
             return new JdbcMetadataTransfer(new JdbcMetadata(databaseMetaData), this.getContext(),
                     connectorTypeQualifiedName, auditLog);
         }catch (ConnectorCheckedException e) {
