@@ -93,8 +93,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
     private JdbcMetadataTransfer createJdbcMetadataTransfer(DatabaseMetaData databaseMetaData){
         String methodName = "createJdbcMetadataTransfer";
         try{
-            String connectorTypeQualifiedName =
-                    (String) jdbcConnector.getConnection().getConfigurationProperties().get("connectorTypeQualifiedName");
+            String connectorTypeQualifiedName = jdbcConnector.getConnection().getConnectorType().getConnectorProviderClassName();
             return new JdbcMetadataTransfer(new JdbcMetadata(databaseMetaData), this.getContext(),
                     connectorTypeQualifiedName, auditLog);
         }catch (ConnectorCheckedException e) {

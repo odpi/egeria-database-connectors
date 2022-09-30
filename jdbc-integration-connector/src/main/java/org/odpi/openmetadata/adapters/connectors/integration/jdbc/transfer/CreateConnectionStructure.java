@@ -26,13 +26,13 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
 
     private final Omas omas;
     private final Jdbc jdbc;
-    private final String configuredConnectorTypeQualifiedName;
+    private final String connectorTypeQualifiedName;
     private final AuditLog auditLog;
 
-    CreateConnectionStructure(Omas omas, Jdbc jdbc, String configuredConnectorTypeQualifiedName, AuditLog auditLog) {
+    CreateConnectionStructure(Omas omas, Jdbc jdbc, String connectorTypeQualifiedName, AuditLog auditLog) {
         this.omas = omas;
         this.jdbc = jdbc;
-        this.configuredConnectorTypeQualifiedName = configuredConnectorTypeQualifiedName;
+        this.connectorTypeQualifiedName = connectorTypeQualifiedName;
         this.auditLog = auditLog;
     }
 
@@ -44,40 +44,42 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
      */
     @Override
     public void accept(DatabaseElement databaseElement) {
-        if(StringUtils.isBlank(configuredConnectorTypeQualifiedName)){
-            auditLog.logMessage("Missing connector type qualified name. Skipping asset connection setup", null);
-            return;
-        }
-        String connectorTypeGuid = determineConnectorTypeGuid(configuredConnectorTypeQualifiedName);
-        if(StringUtils.isBlank(connectorTypeGuid)){
-            auditLog.logMessage("Missing connector type guid. Skipping asset connection setup", null);
-            return;
-        }
-
+        // create database to connection relationship
         String databaseGuid = databaseElement.getElementHeader().getGUID();
         if(StringUtils.isBlank(databaseGuid)){
-            auditLog.logMessage("Missing database guid. Skipping asset connection setup", null);
+            auditLog.logMessage("Missing database guid. Skipping database to connection relationship", null);
             return;
         }
-
         ConnectionProperties connectionProperties = createConnectionProperties(databaseElement);
         String connectionGuid = determineConnectionGuid(connectionProperties);
         if(StringUtils.isBlank(connectionGuid)){
-            auditLog.logMessage("Missing connection guid. Skipping asset connection setup", null);
+            auditLog.logMessage("Missing connection guid. Skipping database to connection relationship", null);
             return;
         }
+        omas.setupAssetConnection(databaseGuid, databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
 
+        // create connection to endpoint relationship
         EndpointProperties endpointProperties = createEndpointProperties(connectionProperties);
         String endpointGuid = determineEndpointGuid(endpointProperties);
         if(StringUtils.isBlank(endpointGuid)){
-            auditLog.logMessage("Missing endpoint guid. Skipping asset connection setup",
-                    null);
-            return;
+            auditLog.logMessage("Missing endpoint guid. Skipping connection to endpoint setup", null);
+        }else{
+            omas.setupEndpoint(connectionGuid, endpointGuid);
         }
 
+        // create connection to connector type relationship
+        if(StringUtils.isBlank(connectorTypeQualifiedName)){
+            auditLog.logMessage("Missing connector type qualified name. Skipping connection to connector type relationship", null);
+            return;
+        }
+        String connectorTypeGuid = determineConnectorTypeGuid(connectorTypeQualifiedName);
+        if(StringUtils.isBlank(connectorTypeGuid)){
+            auditLog.logMessage("Missing connector type guid. Skipping connection to connector type relationship", null);
+            return;
+        }
         omas.setupConnectorType(connectionGuid, connectorTypeGuid);
-        omas.setupAssetConnection(databaseGuid, databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
-        omas.setupEndpoint(connectionGuid, endpointGuid);
+
+
         auditLog.logMessage("Asset connection structure completed", null);
     }
 
