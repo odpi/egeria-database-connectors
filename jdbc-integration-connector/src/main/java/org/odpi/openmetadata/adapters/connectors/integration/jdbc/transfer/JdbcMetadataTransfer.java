@@ -28,14 +28,14 @@ public class JdbcMetadataTransfer {
 
     private final Jdbc jdbc;
     private final Omas omas;
-    private final String configuredConnectorTypeQualifiedName;
+    private final String connectorTypeQualifiedName;
     private final AuditLog auditLog;
 
     public JdbcMetadataTransfer(JdbcMetadata jdbcMetadata, DatabaseIntegratorContext databaseIntegratorContext,
-                                String configuredConnectorTypeQualifiedName, AuditLog auditLog) {
+                                String connectorTypeQualifiedName, AuditLog auditLog) {
         this.jdbc = new Jdbc(jdbcMetadata, auditLog);
         this.omas = new Omas(databaseIntegratorContext, auditLog);
-        this.configuredConnectorTypeQualifiedName = configuredConnectorTypeQualifiedName;
+        this.connectorTypeQualifiedName = connectorTypeQualifiedName;
         this.auditLog = auditLog;
     }
 
@@ -74,7 +74,7 @@ public class JdbcMetadataTransfer {
 
     private void createAssetConnection(DatabaseElement databaseElement){
         CreateConnectionStructure createConnectionStructure = new CreateConnectionStructure(omas, jdbc,
-                configuredConnectorTypeQualifiedName, auditLog);
+                connectorTypeQualifiedName, auditLog);
         createConnectionStructure.accept(databaseElement);
     }
 
