@@ -44,30 +44,30 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
      */
     @Override
     public void accept(DatabaseElement databaseElement) {
-        // create database to connection relationship
+        // determining database guid
         String databaseGuid = databaseElement.getElementHeader().getGUID();
         if(StringUtils.isBlank(databaseGuid)){
             auditLog.logMessage("Missing database guid. Skipping database to connection relationship", null);
             return;
         }
+
+        // determining connection guid
         ConnectionProperties connectionProperties = createConnectionProperties(databaseElement);
         String connectionGuid = determineConnectionGuid(connectionProperties);
         if(StringUtils.isBlank(connectionGuid)){
             auditLog.logMessage("Missing connection guid. Skipping database to connection relationship", null);
             return;
         }
-        omas.setupAssetConnection(databaseGuid, databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
 
-        // create connection to endpoint relationship
+        // determining endpoint guid
         EndpointProperties endpointProperties = createEndpointProperties(connectionProperties);
         String endpointGuid = determineEndpointGuid(endpointProperties);
         if(StringUtils.isBlank(endpointGuid)){
             auditLog.logMessage("Missing endpoint guid. Skipping connection to endpoint setup", null);
-        }else{
-            omas.setupEndpoint(connectionGuid, endpointGuid);
+            return;
         }
 
-        // create connection to connector type relationship
+        // determining connector type guid
         if(StringUtils.isBlank(connectorTypeQualifiedName)){
             auditLog.logMessage("Missing connector type qualified name. Skipping connection to connector type relationship", null);
             return;
@@ -77,8 +77,10 @@ class CreateConnectionStructure implements Consumer<DatabaseElement> {
             auditLog.logMessage("Missing connector type guid. Skipping connection to connector type relationship", null);
             return;
         }
-        omas.setupConnectorType(connectionGuid, connectorTypeGuid);
 
+        omas.setupAssetConnection(databaseGuid, databaseElement.getDatabaseProperties().getDescription(), connectionGuid);
+        omas.setupEndpoint(connectionGuid, endpointGuid);
+        omas.setupConnectorType(connectionGuid, connectorTypeGuid);
 
         auditLog.logMessage("Asset connection structure completed", null);
     }
