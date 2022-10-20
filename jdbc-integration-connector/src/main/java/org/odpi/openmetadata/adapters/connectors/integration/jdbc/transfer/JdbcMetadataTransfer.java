@@ -73,6 +73,11 @@ public class JdbcMetadataTransfer {
 
     }
 
+    /**
+     * Triggers the transfer of available tables that are not assigned to any schema
+     *
+     * @param databaseElement database element
+     */
     private void transferTablesWithoutSchema(DatabaseElement databaseElement) {
         long start = System.currentTimeMillis();
 
@@ -91,7 +96,7 @@ public class JdbcMetadataTransfer {
         omasTables.forEach(omas::removeTable);
 
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Schema transfer complete",
+        auditLog.logMessage("Tables transfer complete",
                 PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables with no schema", "" + (end - start)/1000));
     }
 
