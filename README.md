@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 <!-- Copyright Contributors to the ODPi Egeria project. -->
 
-![Egeria Logo](https://raw.githubusercontent.com/odpi/egeria/master/assets/img/ODPi_Egeria_Logo_color.png)
+![Egeria Logo](https://raw.githubusercontent.com/odpi/egeria/main/assets/img/ODPi_Egeria_Logo_color.png)
 
 [![GitHub](https://img.shields.io/github/license/odpi/egeria)](LICENSE)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/3044/badge)](https://bestpractices.coreinfrastructure.org/projects/3044)
@@ -53,7 +53,7 @@ This Integration Postgres connector supports the following types of database ass
 * Foreign Keys 
 
 # Additional Container Images & Chart Information
-If using the Egeria container image see [container docs](https://github.com/odpi/egeria/tree/master/open-metadata-resources/open-metadata-deployment/docker/egeria) 'Extending the image' which refers to how to add additional connectors. Alternatively use the [container image built here](https://quay.io/repository/odpi/egeria-database-connectors), which contains the version of Egeria the connector was built with, and the connector itself.
+If using the Egeria container image see [container docs](https://github.com/odpi/egeria/tree/main/open-metadata-resources/open-metadata-deployment/docker/egeria) 'Extending the image' which refers to how to add additional connectors. Alternatively use the [container image built here](https://quay.io/repository/odpi/egeria-database-connectors), which contains the version of Egeria the connector was built with, and the connector itself.
 
 If using the egeria-base helm chart see [egeria-base docs](https://egeria-project.org/guides/operations/kubernetes/charts/base/#accessing-egeria) 'Extending the image' which refers to how to add additional connectors. 
 
