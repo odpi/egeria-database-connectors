@@ -84,15 +84,17 @@ public class JdbcMetadataTransfer {
         String databaseQualifiedName = databaseElement.getDatabaseProperties().getQualifiedName();
         String databaseGuid = databaseElement.getElementHeader().getGUID();
 
+        // already known tables by the omas, previously transferred
         List<DatabaseTableElement> omasTables = omas.getTables(databaseGuid);
-
+        // a table update will always occur as long as the table is returned by jdbc
         List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables("").parallelStream()
                 .filter(jdbcTable -> jdbcTable.getTableSchem().isEmpty() || jdbcTable.getTableSchem().isBlank())
                 .map(new TableTransfer(omas, auditLog, omasTables, databaseQualifiedName, databaseGuid))
                 .collect(Collectors.toList());
 
+        // will remove all updated tables, and what remains are the ones deleted in jdbc
         omasTables.removeAll(omasTablesUpdated);
-
+        // remove from omas the tables deleted in jdbc
         omasTables.forEach(omas::removeTable);
 
         long end = System.currentTimeMillis();
