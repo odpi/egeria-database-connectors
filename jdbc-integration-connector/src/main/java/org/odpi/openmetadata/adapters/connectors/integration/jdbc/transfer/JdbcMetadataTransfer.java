@@ -56,6 +56,7 @@ public class JdbcMetadataTransfer {
         }
 
         createAssetConnection(database);
+        transferTablesWithoutSchema(database);
         transferSchemas(database);
 
         List<DatabaseSchemaElement> schemas = omas.getSchemas(database.getElementHeader().getGUID());
@@ -70,6 +71,35 @@ public class JdbcMetadataTransfer {
         transferForeignKeys(database);
         return true;
 
+    }
+
+    /**
+     * Triggers the transfer of available tables that are not assigned to any schema
+     *
+     * @param databaseElement database element
+     */
+    private void transferTablesWithoutSchema(DatabaseElement databaseElement) {
+        long start = System.currentTimeMillis();
+
+        String databaseQualifiedName = databaseElement.getDatabaseProperties().getQualifiedName();
+        String databaseGuid = databaseElement.getElementHeader().getGUID();
+
+        // already known tables by the omas, previously transferred
+        List<DatabaseTableElement> omasTables = omas.getTables(databaseGuid);
+        // a table update will always occur as long as the table is returned by jdbc
+        List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables("").parallelStream()
+                .filter(jdbcTable -> jdbcTable.getTableSchem().isEmpty() || jdbcTable.getTableSchem().isBlank())
+                .map(new TableTransfer(omas, auditLog, omasTables, databaseQualifiedName, databaseGuid))
+                .collect(Collectors.toList());
+
+        // will remove all updated tables, and what remains are the ones deleted in jdbc
+        omasTables.removeAll(omasTablesUpdated);
+        // remove from omas the tables deleted in jdbc
+        omasTables.forEach(omas::removeTable);
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Tables transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables with no schema", "" + (end - start)/1000));
     }
 
     private void createAssetConnection(DatabaseElement databaseElement){
