@@ -48,12 +48,12 @@ public class Omas {
     /**
      * Get tables of schema
      *
-     * @param schemaGuid schema guid
+     * @param assetGuid database or schema guid
      *
      * @return tables
      */
-    public List<DatabaseTableElement> getTables(String schemaGuid){
-        return new OmasGetTables(databaseIntegratorContext, auditLog).apply(schemaGuid);
+    public List<DatabaseTableElement> getTables(String assetGuid){
+        return new OmasGetTables(databaseIntegratorContext, auditLog).apply(assetGuid);
     }
 
     /**

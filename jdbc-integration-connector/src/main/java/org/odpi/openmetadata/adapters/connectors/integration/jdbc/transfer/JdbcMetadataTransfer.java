@@ -56,6 +56,7 @@ public class JdbcMetadataTransfer {
         }
 
         createAssetConnection(database);
+        transferTablesWithoutSchema(database);
         transferSchemas(database);
 
         List<DatabaseSchemaElement> schemas = omas.getSchemas(database.getElementHeader().getGUID());
@@ -70,6 +71,28 @@ public class JdbcMetadataTransfer {
         transferForeignKeys(database);
         return true;
 
+    }
+
+    private void transferTablesWithoutSchema(DatabaseElement databaseElement) {
+        long start = System.currentTimeMillis();
+
+        String databaseQualifiedName = databaseElement.getDatabaseProperties().getQualifiedName();
+        String databaseGuid = databaseElement.getElementHeader().getGUID();
+
+        List<DatabaseTableElement> omasTables = omas.getTables(databaseGuid);
+
+        List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables("").parallelStream()
+                .filter(jdbcTable -> jdbcTable.getTableSchem().isEmpty() || jdbcTable.getTableSchem().isBlank())
+                .map(new TableTransfer(omas, auditLog, omasTables, databaseQualifiedName, databaseGuid))
+                .collect(Collectors.toList());
+
+        omasTables.removeAll(omasTablesUpdated);
+
+        omasTables.forEach(omas::removeTable);
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Schema transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables with no schema", "" + (end - start)/1000));
     }
 
     private void createAssetConnection(DatabaseElement databaseElement){
