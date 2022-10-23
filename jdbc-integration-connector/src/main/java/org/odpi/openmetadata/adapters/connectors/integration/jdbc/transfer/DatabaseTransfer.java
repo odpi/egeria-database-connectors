@@ -4,6 +4,7 @@ package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcCatalog;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Jdbc;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
@@ -62,7 +63,7 @@ public class DatabaseTransfer {
      * @return properties
      */
     private DatabaseProperties buildDatabaseProperties() {
-        String user = jdbc.getUserName();
+        List<JdbcCatalog> catalogs = jdbc.getCatalogs();
         String driverName = jdbc.getDriverName();
         String databaseProductVersion = jdbc.getDatabaseProductVersion();
         String databaseProductName = jdbc.getDatabaseProductName();
@@ -70,7 +71,7 @@ public class DatabaseTransfer {
 
         DatabaseProperties databaseProperties = new DatabaseProperties();
         databaseProperties.setQualifiedName(url);
-        databaseProperties.setDisplayName(user);
+        databaseProperties.setDisplayName(catalogs.isEmpty() ? jdbc.getUserName() : catalogs.get(0).getTableCat());
         databaseProperties.setDatabaseInstance(driverName);
         databaseProperties.setDatabaseVersion(databaseProductVersion);
         databaseProperties.setDatabaseType(databaseProductName);

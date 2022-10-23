@@ -134,4 +134,13 @@ public class Jdbc {
         return new JdbcGetSchemas(jdbcMetadata, auditLog).get();
     }
 
+    /**
+     * Get all catalogs
+     *
+     * @return schemas
+     */
+    public List<JdbcCatalog> getCatalogs(){
+        return new JdbcGetCatalogs(jdbcMetadata, auditLog).get();
+    }
+
 }
