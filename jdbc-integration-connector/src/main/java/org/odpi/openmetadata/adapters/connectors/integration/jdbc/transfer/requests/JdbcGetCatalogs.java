@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
 
 /**
  * Manages the getSchemas call to jdbc
@@ -39,7 +39,7 @@ class JdbcGetCatalogs implements Supplier<List<JdbcCatalog>> {
             return Optional.ofNullable(jdbcMetadata.getCatalogs()).orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
             auditLog.logException("Reading catalogs from JDBC",
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
+                    EXCEPTION_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
         return new ArrayList<>();
     }

@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
 
 /**
  * Manages the getDriverName call to jdbc
@@ -36,7 +36,7 @@ class JdbcGetDriverName implements Supplier<String> {
             return Optional.ofNullable(jdbcMetadata.getDriverName()).orElseGet(String::new);
         } catch (SQLException sqlException) {
             auditLog.logException("Reading driver name from JDBC",
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
+                    EXCEPTION_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
         return "";
     }

@@ -10,7 +10,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 
 import java.util.function.BiConsumer;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WRITING_OMAS;
 
 /**
  * Manages the setupEndpoint call to access service
@@ -39,7 +39,7 @@ class OmasSetupEndpoint implements BiConsumer<String, String> {
         } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
             auditLog.logException("Setting endpoint for connection with guid " + connectionGuid +
                     " and endpoint with guid " + endpointGuid,
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_WRITING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
     }
 

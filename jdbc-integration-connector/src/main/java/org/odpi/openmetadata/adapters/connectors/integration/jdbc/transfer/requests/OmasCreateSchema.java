@@ -12,7 +12,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WRITING_OMAS;
 
 /**
  * Manages the createDatabaseSchema call to access service
@@ -43,7 +43,7 @@ class OmasCreateSchema implements BiFunction<String, DatabaseSchemaProperties, O
         } catch (InvalidParameterException | PropertyServerException | UserNotAuthorizedException e) {
             auditLog.logException("Creating schema with qualified name " + newSchemaProperties.getQualifiedName()
                     + " in database with guid " + databaseGuid,
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_WRITING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();
     }

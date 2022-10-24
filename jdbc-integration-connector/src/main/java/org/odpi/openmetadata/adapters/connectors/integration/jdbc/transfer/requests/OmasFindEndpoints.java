@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_OMAS;
 
 /**
  * Manages the findEndpoints call to access service
@@ -45,7 +45,7 @@ class OmasFindEndpoints implements Function<String, List<EndpointElement>> {
                     .orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
             auditLog.logException("Reading endpoints with name " + searchBy,
-                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return new ArrayList<>();
     }

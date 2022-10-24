@@ -12,7 +12,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 import java.util.Optional;
 import java.util.function.Function;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WRITING_OMAS;
 
 /**
  * Manages the createConnection call to access service
@@ -42,7 +42,7 @@ class OmasCreateConnection implements Function<ConnectionProperties, Optional<St
                     databaseIntegratorContext.createConnection(newConnectionProperties));
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
             auditLog.logException("Creating connection with qualified name " + newConnectionProperties.getQualifiedName(),
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_WRITING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();
     }
