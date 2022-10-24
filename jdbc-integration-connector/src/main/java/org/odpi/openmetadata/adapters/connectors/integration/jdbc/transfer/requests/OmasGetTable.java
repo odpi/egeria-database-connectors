@@ -12,7 +12,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 import java.util.Optional;
 import java.util.function.Function;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_OMAS;
 
 /**
  * Manages the getDatabaseTableByGUID call to access service
@@ -41,7 +41,7 @@ class OmasGetTable implements Function<String, Optional<DatabaseTableElement>> {
             return Optional.ofNullable(databaseIntegratorContext.getDatabaseTableByGUID(tableGuid));
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
             auditLog.logException("Reading table for guid: " + tableGuid,
-                    ERROR_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();
     }

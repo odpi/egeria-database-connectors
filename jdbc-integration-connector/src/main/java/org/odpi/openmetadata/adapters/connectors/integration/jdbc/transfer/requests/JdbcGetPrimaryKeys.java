@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_READING_JDBC;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
 
 /**
  * Manages the getPrimaryKeys call to jdbc
@@ -44,7 +44,7 @@ class JdbcGetPrimaryKeys implements BiFunction<String, String, List<JdbcPrimaryK
                     .orElseGet(ArrayList::new);
         }catch (SQLException sqlException){
             auditLog.logException("Reading primary keys from JDBC for schema " + schemaName + " and table " + tableName,
-                    ERROR_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
+                    EXCEPTION_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
 
         return new ArrayList<>();

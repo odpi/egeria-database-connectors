@@ -12,7 +12,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WRITING_OMAS;
 
 /**
  * Manages the createDatabaseColumn call to access service
@@ -44,7 +44,7 @@ class OmasCreateColumn implements BiFunction<String, DatabaseColumnProperties, O
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
             auditLog.logException("Creating column with qualified name " + newColumnProperties.getQualifiedName()
                     + " in table with guid " + tableGuid,
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_WRITING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return Optional.empty();
     }
