@@ -3,7 +3,12 @@
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadata;
-import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.*;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcCatalog;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcColumn;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcForeignKey;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcPrimaryKey;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcSchema;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcTable;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.util.List;
@@ -73,8 +78,8 @@ public class Jdbc {
      *
      * @return tables
      */
-    public List<JdbcTable> getTables(String schemaName){
-        return new JdbcGetTables(jdbcMetadata, auditLog).apply(schemaName);
+    public List<JdbcTable> getTables(String catalog, String schemaName){
+        return new JdbcGetTables(jdbcMetadata, auditLog).apply(catalog, schemaName);
     }
 
     /**
@@ -121,8 +126,8 @@ public class Jdbc {
      *
      * @return columns
      */
-    public List<JdbcColumn> getColumns(String schemaName, String tableName){
-        return new JdbcGetColumns(jdbcMetadata, auditLog).apply(schemaName, tableName);
+    public List<JdbcColumn> getColumns(String catalog, String schemaName, String tableName){
+        return new JdbcGetColumns(jdbcMetadata, auditLog).apply(catalog, schemaName, tableName);
     }
 
     /**
@@ -130,8 +135,8 @@ public class Jdbc {
      *
      * @return schemas
      */
-    public List<JdbcSchema> getSchemas(){
-        return new JdbcGetSchemas(jdbcMetadata, auditLog).get();
+    public List<JdbcSchema> getSchemas(String catalog){
+        return new JdbcGetSchemas(jdbcMetadata, auditLog).apply(catalog);
     }
 
     /**

@@ -10,14 +10,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
 
 /**
  * Manages the getSchemas call to jdbc
  */
-class JdbcGetSchemas implements Supplier<List<JdbcSchema>> {
+class JdbcGetSchemas implements Function<String, List<JdbcSchema>> {
 
     private final JdbcMetadata jdbcMetadata;
     private final AuditLog auditLog;
@@ -33,10 +33,10 @@ class JdbcGetSchemas implements Supplier<List<JdbcSchema>> {
      * @return schemas
      */
     @Override
-    public List<JdbcSchema> get(){
+    public List<JdbcSchema> apply(String catalog){
         String methodName = "JdbcGetSchemas";
         try {
-            return Optional.ofNullable(jdbcMetadata.getSchemas()).orElseGet(ArrayList::new);
+            return Optional.ofNullable(jdbcMetadata.getSchemas(catalog, null)).orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
             auditLog.logException("Reading schemas from JDBC",
                     EXCEPTION_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);

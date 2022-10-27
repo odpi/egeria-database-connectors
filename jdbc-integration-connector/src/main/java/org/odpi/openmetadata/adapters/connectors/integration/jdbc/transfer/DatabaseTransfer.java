@@ -4,7 +4,6 @@ package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
-import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcCatalog;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Jdbc;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Omas;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
@@ -63,19 +62,25 @@ public class DatabaseTransfer {
      * @return properties
      */
     private DatabaseProperties buildDatabaseProperties() {
-        List<JdbcCatalog> catalogs = jdbc.getCatalogs();
         String driverName = jdbc.getDriverName();
         String databaseProductVersion = jdbc.getDatabaseProductVersion();
         String databaseProductName = jdbc.getDatabaseProductName();
         String url = jdbc.getUrl();
+        String urlWithNoParams = url.contains("?") ? url.substring(0, url.indexOf("?")) : url;
+        String catalogFromUrl = urlWithNoParams.substring(url.lastIndexOf("/") + 1);
 
         DatabaseProperties databaseProperties = new DatabaseProperties();
-        databaseProperties.setQualifiedName(url);
-        databaseProperties.setDisplayName(catalogs.isEmpty() ? jdbc.getUserName() : catalogs.get(0).getTableCat());
+        databaseProperties.setQualifiedName(urlWithNoParams);
+        databaseProperties.setDisplayName(catalogFromUrl);
         databaseProperties.setDatabaseInstance(driverName);
         databaseProperties.setDatabaseVersion(databaseProductVersion);
         databaseProperties.setDatabaseType(databaseProductName);
         databaseProperties.setDatabaseImportedFrom(url);
+
+//        Map<String, String> origin = new HashMap<>();
+//        Optional<JdbcCatalog> catalog = jdbc.getCatalogs().stream().filter(c -> c.getTableCat().equals(catalogFromUrl)).findFirst();
+//        origin.put("jdbcCatalog", catalog.isPresent() ? catalog.get().getTableCat() : "unavailable");
+//        databaseProperties.setAdditionalProperties(origin);
 
         return databaseProperties;
     }
