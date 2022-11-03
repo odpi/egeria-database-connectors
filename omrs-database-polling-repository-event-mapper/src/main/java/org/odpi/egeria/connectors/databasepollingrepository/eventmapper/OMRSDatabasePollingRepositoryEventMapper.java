@@ -4,8 +4,10 @@ package org.odpi.egeria.connectors.databasepollingrepository.eventmapper;
 
 import org.odpi.egeria.connectors.databasepollingrepository.ConnectorColumn;
 import org.odpi.egeria.connectors.databasepollingrepository.ConnectorTable;
+import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOMRSAuditCode;
 import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOMRSErrorCode;
 
+import org.odpi.egeria.connectors.databasepollingrepository.helpers.ExceptionHelper;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
 
 

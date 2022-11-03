@@ -8,26 +8,26 @@
 ext.name = 'Abstract database polling event mapper connector'
 description = 'Abstract database polling event mapper connector'
 ext {
-    jacksonVersion = '2.13.2'
-    jupiterVersion = '5.8.2'
-    springwebVersion = '5.3.19'
+//    jacksonVersion = '2.13.2'
+//    jupiterVersion = '5.8.2'
+//    springwebVersion = '5.3.19'
     cachingconnectorVersion = '1.0-SNAPSHOT'
 }
 
 dependencies {
     compileOnly "org.odpi.egeria:audit-log-framework"
-    compileOnly "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    compileOnly "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    compileOnly "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-    compileOnly "org.springframework:spring-core:${springwebVersion}"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind"
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations"
+    compileOnly "com.fasterxml.jackson.core:jackson-core"
+    compileOnly "org.springframework:spring-core"
     compileOnly "org.odpi.egeria:open-connector-framework"
+    compileOnly "org.odpi.egeria:repository-services-apis"
     compileOnly "org.odpi.egeria:open-metadata-types"
     compileOnly "org.odpi.egeria:audit-log-framework"
-    compileOnly "org.odpi.egeria:repository-services"
     compileOnly "org.odpi.egeria:repository-services-implementation"
     compileOnly "org.odpi.egeria:admin-services-api"
     compileOnly "org.odpi.egeria:connector-configuration-factory"
-    compileOnly "org.odpi.egeria:repository-services-apis"
+
     compileOnly "org.odpi.egeria:admin-services-api"
     compileOnly "org.odpi.egeria:audit-log-framework"
     implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorVersion}"
