@@ -10,10 +10,10 @@ description = 'Egeria integration connector that uses Generic JDBC resource conn
 
 dependencies {
     implementation 'org.slf4j:slf4j-api'
-    implementation 'org.odpi.egeria:data-manager-client'
-    implementation 'org.odpi.egeria:data-manager-api'
-    implementation 'org.odpi.egeria:database-integrator-api'
-    implementation 'org.odpi.egeria:open-connector-framework'
+    compileOnly 'org.odpi.egeria:data-manager-client'
+    compileOnly 'org.odpi.egeria:data-manager-api'
+    compileOnly 'org.odpi.egeria:database-integrator-api'
+    compileOnly 'org.odpi.egeria:open-connector-framework'
     implementation project(':jdbc-resource-connector')
 }
 
