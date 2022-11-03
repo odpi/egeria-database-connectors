@@ -5,7 +5,6 @@
 
 // Artifact names are taken from the directory by default, set in settings.gradle to override
 // The 'name' for the maven artifact, and description are set here
-ext.name = 'Abstract database polling event mapper connector'
 description = 'Abstract database polling event mapper connector'
 ext {
 //    jacksonVersion = '2.13.2'

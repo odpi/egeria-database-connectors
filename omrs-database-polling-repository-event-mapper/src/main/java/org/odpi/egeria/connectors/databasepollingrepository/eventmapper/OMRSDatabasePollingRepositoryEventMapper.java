@@ -8,6 +8,8 @@ import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOM
 import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOMRSErrorCode;
 
 import org.odpi.egeria.connectors.databasepollingrepository.helpers.ExceptionHelper;
+import org.odpi.egeria.connectors.databasepollingrepository.helpers.MapperHelper;
+import org.odpi.egeria.connectors.databasepollingrepository.helpers.SupportedTypes;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
 
 
@@ -54,12 +56,8 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
     private String repositoryName = null;
     private String catName = "spark";
     private String dbName = "default";
-    private String metadata_store_userId = null;
-    private String metadata_store_password = null;
-
     private boolean sendPollEvents = false;
 
-    private boolean useSSL = false;
     private boolean sendEntitiesForSchemaType = false;
 
     private String configuredEndpointAddress = null;
@@ -160,22 +158,9 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
         if (configuredDBName != null) {
             dbName = configuredDBName;
         }
-        String configuredMetadataStoreUserId = (String) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.METADATA_STORE_USER);
-        if (configuredMetadataStoreUserId != null) {
-            metadata_store_userId = configuredMetadataStoreUserId;
-        }
-        String configuredMetadataStorePassword = (String) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.METADATA_STORE_PASSWORD);
-        if (configuredMetadataStorePassword != null) {
-            metadata_store_password = configuredMetadataStorePassword;
-        }
-
         Boolean configuredSendPollEvents = (Boolean) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.SEND_POLL_EVENTS);
         if (configuredSendPollEvents != null) {
             sendPollEvents = configuredSendPollEvents;
-        }
-        Boolean configuredUseSSL = (Boolean) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.USE_SSL);
-        if (configuredUseSSL != null) {
-            useSSL = configuredUseSSL;
         }
         configuredEndpointAddress = (String) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.ENDPOINT_ADDRESS);
 
@@ -238,7 +223,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
                                     metadataCollectionName, qualifiedNamePrefix);
 
                             getRequiredTypes();
-                            // connect to the 3rd party technoilogy
+                            // connect to the 3rd party technology
                             connectTo3rdParty();
                             // reset the variables used to accumulate state
                             cachedRepositoryAccessor = new CachedRepositoryAccessor(userId, repositoryConnector.getServerName(), metadataCollection);
