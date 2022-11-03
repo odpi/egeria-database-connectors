@@ -239,3 +239,4 @@ dependencyAnalysis {
 
 // Always run dependency check for every regular build
 build.dependsOn("buildHealth")
+
