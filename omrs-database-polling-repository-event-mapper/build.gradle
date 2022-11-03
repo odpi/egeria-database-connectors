@@ -11,23 +11,24 @@ ext {
     jacksonVersion = '2.13.2'
     jupiterVersion = '5.8.2'
     springwebVersion = '5.3.19'
+    cachingconnectorVersion = '1.0-SNAPSHOT'
 }
 
 dependencies {
-    implementation "org.odpi.egeria:audit-log-framework"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-    implementation "org.springframework:spring-core:${springwebVersion}"
-    implementation "org.odpi.egeria:open-connector-framework"
-    implementation "org.odpi.egeria:open-metadata-types"
-    implementation "org.odpi.egeria:audit-log-framework"
-    implementation "org.odpi.egeria:repository-services"
-    implementation "org.odpi.egeria:repository-services-implementation"
-    implementation "org.odpi.egeria:admin-services-api"
-    implementation "org.odpi.egeria:connector-configuration-factory"
-    implementation "org.odpi.egeria:repository-services-apis"
-    implementation "org.odpi.egeria:admin-services-api"
-    implementation "org.odpi.egeria:audit-log-framework"
-    implementation "org.odpi.egeria:egeria-connector-omrs-caching"
+    compileOnly "org.odpi.egeria:audit-log-framework"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    compileOnly "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    compileOnly "org.springframework:spring-core:${springwebVersion}"
+    compileOnly "org.odpi.egeria:open-connector-framework"
+    compileOnly "org.odpi.egeria:open-metadata-types"
+    compileOnly "org.odpi.egeria:audit-log-framework"
+    compileOnly "org.odpi.egeria:repository-services"
+    compileOnly "org.odpi.egeria:repository-services-implementation"
+    compileOnly "org.odpi.egeria:admin-services-api"
+    compileOnly "org.odpi.egeria:connector-configuration-factory"
+    compileOnly "org.odpi.egeria:repository-services-apis"
+    compileOnly "org.odpi.egeria:admin-services-api"
+    compileOnly "org.odpi.egeria:audit-log-framework"
+    implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorVersion}"
 }
