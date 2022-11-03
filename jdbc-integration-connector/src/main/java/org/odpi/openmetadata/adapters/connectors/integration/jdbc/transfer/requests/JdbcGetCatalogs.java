@@ -3,42 +3,45 @@
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadata;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcCatalog;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
 
 /**
- * Manages the getDatabaseProductName call to jdbc
+ * Manages the getSchemas call to jdbc
  */
-class JdbcGetDatabaseProductName implements Supplier<String> {
+class JdbcGetCatalogs implements Supplier<List<JdbcCatalog>> {
 
     private final JdbcMetadata jdbcMetadata;
     private final AuditLog auditLog;
 
-    JdbcGetDatabaseProductName(JdbcMetadata jdbcMetadata, AuditLog auditLog) {
+    JdbcGetCatalogs(JdbcMetadata jdbcMetadata, AuditLog auditLog) {
         this.jdbcMetadata = jdbcMetadata;
         this.auditLog = auditLog;
     }
 
     /**
-     * Get database product name
+     * Get all schemas
      *
-     * @return database product name
+     * @return schemas
      */
     @Override
-    public String get(){
-        String methodName = "JdbcGetDatabaseProductName";
+    public List<JdbcCatalog> get(){
+        String methodName = "JdbcGetCatalogs";
         try {
-            return Optional.ofNullable(jdbcMetadata.getDatabaseProductName()).orElseGet(String::new);
+            return Optional.ofNullable(jdbcMetadata.getCatalogs()).orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
-            auditLog.logException("Reading database product name from JDBC",
+            auditLog.logException("Reading catalogs from JDBC",
                     EXCEPTION_READING_JDBC.getMessageDefinition(methodName, sqlException.getMessage()), sqlException);
         }
-        return "";
+        return new ArrayList<>();
     }
 
 }

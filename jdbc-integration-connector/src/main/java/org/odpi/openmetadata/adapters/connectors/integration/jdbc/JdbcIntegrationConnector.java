@@ -14,7 +14,12 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.*;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_ON_CONTEXT_RETRIEVAL;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_COMPLETE;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_CONNECTION_FAIL;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_INTEGRATION_CONTEXT_FAIL;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_TRANSFER_FAIL;
 
 public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
 
@@ -39,14 +44,14 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
         DatabaseMetaData databaseMetaData = getDatabaseMetadata(connection);
         if(databaseMetaData == null){
             auditLog.logMessage(exitAction, EXITING_ON_CONNECTION_FAIL.getMessageDefinition(methodName));
-            disconnect(connection);
+            close(connection);
             return;
         }
 
         JdbcMetadataTransfer jdbcMetadataTransfer = createJdbcMetadataTransfer(databaseMetaData);
         if(jdbcMetadataTransfer == null){
             auditLog.logMessage(exitAction, EXITING_ON_INTEGRATION_CONTEXT_FAIL.getMessageDefinition(methodName));
-            disconnect(connection);
+            close(connection);
             return;
         }
 
@@ -57,35 +62,39 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
         }else{
             auditLog.logMessage(exitAction, EXITING_ON_TRANSFER_FAIL.getMessageDefinition(methodName));
         }
-        disconnect(connection);
+        close(connection);
     }
 
     private Connection connect(){
         String methodName = "connect";
         try {
             return jdbcConnector.asDataSource().getConnection();
-        } catch (SQLException e) {
+        } catch (SQLException sqlException) {
             auditLog.logException("Connecting to target database server",
-                    EXITING_ON_CONNECTION_FAIL.getMessageDefinition(methodName), e);
+                    EXCEPTION_READING_JDBC.getMessageDefinition(methodName), sqlException);
         }
         return null;
     }
 
-    public void disconnect(Connection connection) {
+    public void close(Connection connection) {
+        String methodName = "close";
         try{
             if(!connection.isClosed()){
                 connection.close();
             }
         } catch (SQLException sqlException) {
-            auditLog.logMessage("Error when closing connection to database server", null);
+            auditLog.logException("Closing connection to database server",
+                    EXCEPTION_READING_JDBC.getMessageDefinition(methodName), sqlException);
         }
     }
 
     private DatabaseMetaData getDatabaseMetadata(Connection connection){
+        String methodName = "getDatabaseMetadata";
         try{
             return connection.getMetaData();
         }catch (SQLException sqlException){
-            auditLog.logMessage("Extracting database metadata", null);
+            auditLog.logException("Extracting database metadata",
+                    EXCEPTION_READING_JDBC.getMessageDefinition(methodName), sqlException);
         }
         return null;
     }
@@ -98,7 +107,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
                     connectorTypeQualifiedName, auditLog);
         }catch (ConnectorCheckedException e) {
             auditLog.logException("Extracting integration context",
-                    EXITING_ON_INTEGRATION_CONTEXT_FAIL.getMessageDefinition(methodName), e);
+                    EXCEPTION_ON_CONTEXT_RETRIEVAL.getMessageDefinition(methodName), e);
         }
         return null;
     }
