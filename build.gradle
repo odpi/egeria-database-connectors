@@ -35,7 +35,7 @@ allprojects {
     // As we've migrated from maven - we'll assume all submodules publish directly to maven
     apply plugin: 'maven-publish'
 
-    // Only use maven central
+    // Only use maven central and snapshots
     repositories {
         maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
         mavenCentral()
