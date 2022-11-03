@@ -39,7 +39,7 @@ allprojects {
 
     // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '3.11-SNAPSHOT'
+    version = '3.12-SNAPSHOT'
 
     apply plugin: 'idea'
 
@@ -59,7 +59,8 @@ allprojects {
 subprojects {
 
     ext {
-        egeriaVersion = '3.11-SNAPSHOT'
+        egeriaVersion = '3.12-SNAPSHOT'
+        cachingconnectorVersion = '1.0-SNAPSHOT'
     }
 
     apply plugin: 'java-library'
@@ -91,6 +92,13 @@ subprojects {
                     implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
                     implementation "org.odpi.egeria:database-integrator-api:${egeriaVersion}"
                     implementation "org.odpi.egeria:open-connector-framework:${egeriaVersion}"
+                    implementation "org.odpi.egeria:repository-services-apis:${egeriaVersion}"
+                    implementation "org.odpi.egeria:connector-configuration-factory:${egeriaVersion}"
+                    implementation "org.odpi.egeria:open-metadata-types:${egeriaVersion}"
+                    implementation "org.odpi.egeria:repository-services:${egeriaVersion}"
+                    implementation "org.odpi.egeria:repository-services-implementation:${egeriaVersion}"
+                    implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorVersion}"
+
                 }
         test {
             useJUnitPlatform {

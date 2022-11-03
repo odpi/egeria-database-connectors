@@ -18,4 +18,6 @@ rootProject.name = 'egeria-database-connectors'
 include(':egeria-connector-postgres')
 include(':jdbc-resource-connector')
 include(':jdbc-integration-connector')
+include(':omrs-database-polling-repository-event-mapper')
+
 
