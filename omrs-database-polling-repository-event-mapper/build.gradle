@@ -23,6 +23,7 @@ dependencies {
     compileOnly "org.odpi.egeria:open-connector-framework"
     compileOnly "org.odpi.egeria:open-metadata-types"
     compileOnly "org.odpi.egeria:audit-log-framework"
+    compileOnly "org.odpi.egeria:repository-services"
     compileOnly "org.odpi.egeria:repository-services-implementation"
     compileOnly "org.odpi.egeria:admin-services-api"
     compileOnly "org.odpi.egeria:connector-configuration-factory"
