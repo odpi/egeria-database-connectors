@@ -16,6 +16,14 @@ pluginManagement {
 rootProject.name = 'egeria-database-connectors'
 
 include(':egeria-connector-postgres')
-include(':jdbc-resource-connector')
-include(':jdbc-integration-connector')
+include(':egeria-connector-resource-jdbc')
+include(':egeria-connector-integration-jdbc')
+include(':egeria-connector-event-mapper-polling-database')
 
+// These define the project names. For now we'll keep them the same as the directory
+// Not needed if we're only going one level deep
+project(':egeria-connector-postgres').projectDir = file('egeria-connector-postgres')
+project(':egeria-connector-resource-jdbc').projectDir = file('jdbc-resource-connector')
+project(':egeria-connector-integration-jdbc').projectDir = file('jdbc-integration-connector')
+project(':egeria-connector-postgres').projectDir = file('egeria-connector-postgres')
+project(':egeria-connector-event-mapper-polling-database').projectDir = file('omrs-database-polling-repository-event-mapper')
