@@ -5,7 +5,6 @@
 
 // Artifact names are taken from the directory by default, set in settings.gradle to override
 // The 'name' for the maven artifact, and description are set here
-ext.name = 'JDBC Resource Connector'
 description = 'JDBC Resource Connector for Egeria'
 
 dependencies {

@@ -141,14 +141,14 @@ allprojects {
                         }
                     }
                     scm {
-                        connection = 'scm:git:git://github.com/odpi/egeria.git'
-                        developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria.git'
-                        url = 'http://github.com/odpi/egeria'
+                        connection = 'scm:git:https://github.com/odpi/egeria-database-connectors'
+                        developerConnection = 'scm:git:https://github.com/odpi/egeria-database-connectors'
+                        url = 'https://egithub.com/odpi/egeria-database-connectors'
                     }
                 }
                 // Override the project name & description for the pom based on properties set in the child build.gradle (hard to default & required for maven central)
                 pom.withXml {
-                    asNode().appendNode('name', "${project.name}")
+                    //asNode().appendNode('name', "${project.name}")
                     asNode().appendNode('description', "${project.description}")
                 }
             }
