@@ -59,7 +59,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
     /**
      * Default polling refresh interval in milliseconds.
      */
-    private int refreshInterval = 5000;
+    private int refreshInterval = 0;
     private String qualifiedNamePrefix = "";
     protected String metadataCollectionId = null;
     protected String metadataCollectionName = null;
@@ -156,7 +156,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
     private void extractConfigurationProperties(Map<String, Object> configurationProperties) {
         Integer configuredRefreshInterval = (Integer) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.REFRESH_TIME_INTERVAL);
         if (configuredRefreshInterval != null) {
-            refreshInterval = configuredRefreshInterval * 1000;
+            refreshInterval = configuredRefreshInterval * 60 * 1000;
         }
         String configuredQualifiedNamePrefix = (String) configurationProperties.get(OMRSDatabasePollingRepositoryEventMapperProvider.QUALIFIED_NAME_PREFIX);
         if (configuredQualifiedNamePrefix != null) {
@@ -261,13 +261,18 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
                         // come out of synchronization when waiting.
                         //  wait the polling interval.
                         auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_POLL_LOOP_PRE_WAIT.getMessageDefinition());
-                        try {
-                            Thread.sleep(refreshInterval);
-                            auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_POLL_LOOP_POST_WAIT.getMessageDefinition());
-                        } catch (InterruptedException e) {
-                            // should not happen as there is only one thread
-                            // if it happens then continue in the while
-                            auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_POLL_LOOP_INTERRUPTED_EXCEPTION.getMessageDefinition());
+                        if (refreshInterval == 0) {
+                            // only issue one retrieval from the 3rd party technology
+                            break;
+                        } else {
+                            try {
+                                Thread.sleep(refreshInterval);
+                                auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_POLL_LOOP_POST_WAIT.getMessageDefinition());
+                            } catch (InterruptedException e) {
+                                // should not happen as there is only one thread
+                                // if it happens then continue in the while
+                                auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_POLL_LOOP_INTERRUPTED_EXCEPTION.getMessageDefinition());
+                            }
                         }
 
 
