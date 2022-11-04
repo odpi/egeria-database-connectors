@@ -5,7 +5,6 @@
 
 // Artifact names are taken from the directory by default, set in settings.gradle to override
 // The 'name' for the maven artifact, and description are set here
-ext.name = 'Postgres Connector'
 description = 'Postgres Connector for Egeria'
 
 // Dependencies for this project. Versions set in constraints in root project.

@@ -5,7 +5,7 @@
 
 // Artifact names are taken from the directory by default, set in settings.gradle to override
 // The 'name' for the maven artifact, and description are set here
-ext.name = 'JDBC Database Integration Connector'
+
 description = 'Egeria integration connector that uses Generic JDBC resource connector to access the database metadata'
 
 dependencies {
@@ -14,6 +14,6 @@ dependencies {
     compileOnly 'org.odpi.egeria:data-manager-api'
     compileOnly 'org.odpi.egeria:database-integrator-api'
     compileOnly 'org.odpi.egeria:open-connector-framework'
-    implementation project(':jdbc-resource-connector')
+    implementation project(':egeria-connector-resource-jdbc')
 }
 
