@@ -31,15 +31,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * OMRSDatabasePollingRepositoryEventMapper supports the event mapper function for a Hive metastore used as an open metadata repository.
- *
+ * <p>
  * This class is an implementation of an OMRS event mapper, it polls for content in Hive metastore and puts
  * that content into an embedded Egeria repository. It then (if configured to send batch events) extracts the entities and relationships
  * from the embedded repository and sends a batch event for
  * 1) for the asset Entities and relationships
  * 2) for each RelationalTable, it's RelationalColumns and associated relationships
  */
-abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepositoryEventMapperBase
-{
+abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepositoryEventMapperBase {
 
 
     /**
@@ -134,6 +133,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
     }
 
     protected abstract void connectTo3rdParty() throws RepositoryErrorException, ConnectorCheckedException;
+
     protected abstract List<ConnectorTable> getTablesFrom3rdParty(String catName, String dbName, String baseCanonicalName);
 
 
@@ -226,7 +226,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
             if (running.compareAndSet(false, true)) {
                 while (running.get()) {
                     try {
-                         // synchronise the processing to ensure that a start does not change the instance variables under us.
+                        // synchronise the processing to ensure that a start does not change the instance variables under us.
                         synchronized (this) {
                             mapperHelper = new MapperHelper(repositoryHelper,
                                     userId,
@@ -455,7 +455,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
                 for (String typeName : SupportedTypes.supportedTypeNames) {
 
                     TypeDef typeDef = repositoryHelper.getTypeDefByName("OMRSDatabasePollingRepositoryEventMapper",
-                                                                        typeName);
+                            typeName);
                     if (typeDef != null) {
                         auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_ACQUIRING_TYPES_LOOP_FOUND_TYPE.getMessageDefinition(typeName));
                         typeNameToGuidMap.put(typeName, typeDef.getGUID());
@@ -500,7 +500,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
 
             try {
                 connectorTables = getTablesFrom3rdParty(catName, dbName, baseCanonicalName);
-           //TODO correct exception type
+                //TODO correct exception type
             } catch (Exception e) {
                 // throw Exception
                 auditLog.logMessage(methodName, DbPollingOMRSAuditCode.GETTABLES_FAILED.getMessageDefinition(e.getMessage()));
@@ -562,23 +562,23 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
 
                     saveEntityReferenceCopyForTable(tableEntityType, tableQualifiedName);
                     tableTypeGUID = tableEntityType.getGUID();
-                    Relationship relationship =mapperHelper.createReferenceRelationship(SupportedTypes.SCHEMA_ATTRIBUTE_TYPE,
+                    Relationship relationship = mapperHelper.createReferenceRelationship(SupportedTypes.SCHEMA_ATTRIBUTE_TYPE,
                             tableEntity.getGUID(),
                             SupportedTypes.TABLE,
                             tableTypeGUID,
                             SupportedTypes.RELATIONAL_TABLE_TYPE);
-                    saveRelationshipReferenceCopyForTable(relationship,tableQualifiedName);
+                    saveRelationshipReferenceCopyForTable(relationship, tableQualifiedName);
                 }
 
                 // relationship
 
 
-                Relationship relationship =mapperHelper.createReferenceRelationship(SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
+                Relationship relationship = mapperHelper.createReferenceRelationship(SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
                         relationalDBTypeGuid,
                         SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE,
                         tableGuid,
                         SupportedTypes.TABLE);
-                saveRelationshipReferenceCopyForTable(relationship,tableQualifiedName);
+                saveRelationshipReferenceCopyForTable(relationship, tableQualifiedName);
 
                 Iterator<ConnectorColumn> colsIterator = connectorTable.getColumns().listIterator();
 
@@ -621,12 +621,12 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
 
                         saveEntityReferenceCopyForTable(columnEntityType, tableQualifiedName);
                         // create column to column type relationship
-                         relationship = mapperHelper.createReferenceRelationship(SupportedTypes.SCHEMA_ATTRIBUTE_TYPE,
+                        relationship = mapperHelper.createReferenceRelationship(SupportedTypes.SCHEMA_ATTRIBUTE_TYPE,
                                 columnEntity.getGUID(),
                                 SupportedTypes.COLUMN,
                                 columnEntityType.getGUID(),
                                 SupportedTypes.RELATIONAL_COLUMN_TYPE);
-                        saveRelationshipReferenceCopyForTable(relationship,tableQualifiedName);
+                        saveRelationshipReferenceCopyForTable(relationship, tableQualifiedName);
 
                         // create hmsTable type to column relationship
                         relationship = mapperHelper.createReferenceRelationship(SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
@@ -634,16 +634,16 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
                                 SupportedTypes.RELATIONAL_TABLE_TYPE,
                                 columnEntity.getGUID(),
                                 SupportedTypes.COLUMN);
-                        saveRelationshipReferenceCopyForTable(relationship,tableQualifiedName);
+                        saveRelationshipReferenceCopyForTable(relationship, tableQualifiedName);
 
                     } else {
                         // relate the column to the table
-                        relationship=mapperHelper.createReferenceRelationship(SupportedTypes.NESTED_SCHEMA_ATTRIBUTE,
+                        relationship = mapperHelper.createReferenceRelationship(SupportedTypes.NESTED_SCHEMA_ATTRIBUTE,
                                 tableGuid,
                                 SupportedTypes.TABLE,
                                 columnEntity.getGUID(),
                                 SupportedTypes.COLUMN);
-                        saveRelationshipReferenceCopyForTable(relationship,tableQualifiedName);
+                        saveRelationshipReferenceCopyForTable(relationship, tableQualifiedName);
                     }
                 }
             }
@@ -744,23 +744,25 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
         private void saveEntityReferenceCopyForTable(EntityDetail entityToAdd, String qualifiedTableName) {
             List<EntityDetail> entities = qualifiedTableNameToEntityMap.get(qualifiedTableName);
             if (entities == null) {
-                entities= new ArrayList<>();
+                entities = new ArrayList<>();
                 entities.add(entityToAdd);
-                qualifiedTableNameToEntityMap.put(qualifiedTableName,entities);
+                qualifiedTableNameToEntityMap.put(qualifiedTableName, entities);
             } else {
                 entities.add(entityToAdd);
             }
         }
+
         private void saveRelationshipReferenceCopyForTable(Relationship relationshipToAdd, String qualifiedTableName) {
             List<Relationship> relationships = qualifiedTableNameToRelationshipMap.get(qualifiedTableName);
-            if (relationships ==null) {
-                relationships =new ArrayList<>();
+            if (relationships == null) {
+                relationships = new ArrayList<>();
                 relationships.add(relationshipToAdd);
                 qualifiedTableNameToRelationshipMap.put(qualifiedTableName, relationships);
             } else {
                 relationships.add(relationshipToAdd);
             }
         }
+
         /**
          * Issue the batch event with the list of supplied entities and relationships
          *
