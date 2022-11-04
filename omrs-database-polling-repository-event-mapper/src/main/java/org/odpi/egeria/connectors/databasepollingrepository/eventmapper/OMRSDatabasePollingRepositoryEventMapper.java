@@ -10,7 +10,19 @@ import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOM
 import org.odpi.egeria.connectors.databasepollingrepository.helpers.ExceptionHelper;
 import org.odpi.egeria.connectors.databasepollingrepository.helpers.MapperHelper;
 import org.odpi.egeria.connectors.databasepollingrepository.helpers.SupportedTypes;
+import org.odpi.openmetadata.adapters.repositoryservices.caching.repository.CachedRepositoryAccessor;
+import org.odpi.openmetadata.adapters.repositoryservices.caching.repositoryconnector.CachingOMRSRepositoryProxyConnector;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.OMRSMetadataCollection;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Classification;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceGraph;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProperties;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Relationship;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.repositoryeventmapper.OMRSRepositoryEventMapperBase;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.RepositoryErrorException;
+import org.odpi.openmetadata.repositoryservices.ffdc.exception.TypeErrorException;
 
 
 import java.util.*;
@@ -438,7 +450,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
                 for (String typeName : SupportedTypes.supportedTypeNames) {
 
                     TypeDef typeDef = repositoryHelper.getTypeDefByName("OMRSDatabasePollingRepositoryEventMapper",
-                            typeName);
+                                                                        typeName);
                     if (typeDef != null) {
                         auditLog.logMessage(methodName, DbPollingOMRSAuditCode.EVENT_MAPPER_ACQUIRING_TYPES_LOOP_FOUND_TYPE.getMessageDefinition(typeName));
                         typeNameToGuidMap.put(typeName, typeDef.getGUID());

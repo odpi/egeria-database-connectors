@@ -42,7 +42,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapperProvider extends O
      * OMRS Connector implementation.
      */
     public OMRSDatabasePollingRepositoryEventMapperProvider() {
-        Class<?> connectorClass = HMSOMRSRepositoryEventMapper.class;
+        Class<?> connectorClass = OMRSDatabasePollingRepositoryEventMapper.class;
         super.setConnectorClassName(connectorClass.getName());
         ConnectorType connectorType = new ConnectorType();
         connectorType.setType(ConnectorType.getConnectorTypeType());
