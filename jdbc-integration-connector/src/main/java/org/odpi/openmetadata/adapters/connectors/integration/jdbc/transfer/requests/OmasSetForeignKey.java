@@ -9,7 +9,7 @@ import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.UserNotAuthorizedException;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_UPSERTING_INTO_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WRITING_OMAS;
 
 /**
  * Manages the addForeignKeyRelationship call to access service
@@ -39,7 +39,7 @@ class OmasSetForeignKey implements TriConsumer<String, String, DatabaseForeignKe
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
             auditLog.logException("Setting foreign key in OMAS for primary key column guid " + primaryKeyColumnGuid +
                             " and foreign key column guid " + foreignKeyColumnGuid,
-                    ERROR_UPSERTING_INTO_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
+                    EXCEPTION_WRITING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
     }
 

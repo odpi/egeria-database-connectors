@@ -62,19 +62,25 @@ public class DatabaseTransfer {
      * @return properties
      */
     private DatabaseProperties buildDatabaseProperties() {
-        String user = jdbc.getUserName();
         String driverName = jdbc.getDriverName();
         String databaseProductVersion = jdbc.getDatabaseProductVersion();
         String databaseProductName = jdbc.getDatabaseProductName();
         String url = jdbc.getUrl();
+        String urlWithNoParams = url.contains("?") ? url.substring(0, url.indexOf("?")) : url;
+        String catalogFromUrl = urlWithNoParams.substring(url.lastIndexOf("/") + 1);
 
         DatabaseProperties databaseProperties = new DatabaseProperties();
-        databaseProperties.setQualifiedName(url);
-        databaseProperties.setDisplayName(user);
+        databaseProperties.setQualifiedName(urlWithNoParams);
+        databaseProperties.setDisplayName(catalogFromUrl);
         databaseProperties.setDatabaseInstance(driverName);
         databaseProperties.setDatabaseVersion(databaseProductVersion);
         databaseProperties.setDatabaseType(databaseProductName);
         databaseProperties.setDatabaseImportedFrom(url);
+
+//        Map<String, String> origin = new HashMap<>();
+//        Optional<JdbcCatalog> catalog = jdbc.getCatalogs().stream().filter(c -> c.getTableCat().equals(catalogFromUrl)).findFirst();
+//        origin.put("jdbcCatalog", catalog.isPresent() ? catalog.get().getTableCat() : "unavailable");
+//        databaseProperties.setAdditionalProperties(origin);
 
         return databaseProperties;
     }

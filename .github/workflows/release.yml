@@ -47,5 +47,5 @@ jobs:
       - name: Upload Connector
         uses: actions/upload-artifact@v3
         with:
-          name: Postgres Connector
+          name: Database Connectors
           path: '**/build/libs/*.jar'

@@ -3,33 +3,20 @@
  * Copyright Contributors to the ODPi Egeria project.
  */
 
-/*
- * Used for Build scripts/plugins only
-*/
-
-buildscript {
-    repositories {
-
-        maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:3.0.1'
-    }
-    tasks.withType(JavaCompile) {
-        configure(options) {
-            options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked' // examples
-        }
-    }
-}
 
 /*
  * Plugins for this parent module only - so just high level project related
  */
+plugins {
+    id "io.freefair.aggregate-javadoc" version "6.5.1"
+    // Checks for unnecessary dependencies
+    id 'com.autonomousapps.dependency-analysis' version "1.13.1"
+    // helps resolve log implementation clashes
+    id 'dev.jacomet.logging-capabilities' version "0.10.0"
+    // This plugin helps resolve jakarta/javax dev.jacomet.logging-capabilities
+    id 'de.jjohannes.java-ecosystem-capabilities' version "0.6"
+}
 
-/* run './gradlew aggregateJavadocs' at top level to build all docs & output to build/docs/javadoc */
-apply plugin: 'nebula-aggregate-javadocs'
 
 /*
  * Configuration for all projects - INCLUDING this one
@@ -37,43 +24,20 @@ apply plugin: 'nebula-aggregate-javadocs'
 
 allprojects {
 
-    // Published artifact info, equired for maven publishing - this is the version of our artifact
     group = 'org.odpi.egeria'
-    version = '3.11-SNAPSHOT'
+    version = '3.13-SNAPSHOT'
 
-    apply plugin: 'idea'
-
-    // This enforces version checking but is slow to process
-    //apply plugin: 'nebula.lint'
-    //gradleLint {
-    //    rules = ['all-dependency'] // TODO: Change to criticalRules when ready to enforce
-    //
-    //}
-
-}
-
-/*
- * Configuration for sub projects only
- */
-
-subprojects {
-
-    ext {
-        egeriaVersion = '3.11-SNAPSHOT'
-    }
-
-    apply plugin: 'java-library'
+    // Mostly java, so default to this for now
     apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'de.jjohannes.java-ecosystem-capabilities'
+    apply plugin: 'dev.jacomet.logging-capabilities'
+    // As we've migrated from maven - we'll assume all submodules publish directly to maven
     apply plugin: 'maven-publish'
 
-    if (System.getenv("CI")) {
-        apply plugin: 'signing'
-    }
-
+    // Only use maven central
     repositories {
         mavenCentral()
-        maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
-        mavenLocal()
     }
 
     // ensures we pick up the very latest snapshots when built
@@ -82,54 +46,58 @@ subprojects {
         resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 
+    /*
+     * Dependency Management - to fix versions. Pick up maven build settings for now
+     */
+
+    // Assign variables for any constraints
+    ext {
+       // add version variables here
+        egeriaversion='3.12'
+        postgresversion='42.5.0'
+    }
+
     dependencies {
-        constraints
-                {
-                    implementation "org.postgresql:postgresql:42.5.0"
-                    implementation "org.slf4j:slf4j-api:1.7.36"
-                    implementation "org.odpi.egeria:data-manager-client:${egeriaVersion}"
-                    implementation "org.odpi.egeria:data-manager-api:${egeriaVersion}"
-                    implementation "org.odpi.egeria:database-integrator-api:${egeriaVersion}"
-                    implementation "org.odpi.egeria:open-connector-framework:${egeriaVersion}"
-                }
-        test {
-            useJUnitPlatform {
-                includeEngines 'junit-jupiter'
-            }
+        implementation platform("org.odpi.egeria:egeria:${egeriaversion}")
+        constraints {
+            // Only include versions not already defined in egeria - or which need overriding
+            implementation "org.postgresql:postgresql:${postgresversion}"
         }
     }
-    // Maven Central (technically sonatype oss) requires we distribute source and javadoc
+
+    /*
+     * Java related configuration
+     */
     java {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        withJavadocJar()
         withSourcesJar()
+        withJavadocJar()
     }
-    // More Java language settings
     tasks.withType(JavaCompile) {
+        options.release = 11
         options.encoding = 'UTF-8'
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
         options.incremental = true
-        options.fork = true
         options.failOnError = true
-        options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+        options.compilerArgs << "-Xlint:all"
     }
 
-    // For later java versions this is recommended - keep conditional in case we want to build on 8
+    // javadoc
     javadoc {
-        if (JavaVersion.current().isJava9Compatible()) {
-            options.addBooleanOption('html5', true)
-        }
+        options.addBooleanOption('html5', true)
     }
 
-    //need to decide who owns the testing infrastructure
-    //random junit versions picked below.
+    // code coverage
+    jacoco {
+        toolVersion = "0.8.8"
+    }
+
+    // Testing
     test {
-        useJUnitPlatform()
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
+        }
         dependencies {
-            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+            testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+            testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
         }
 
         testLogging {
@@ -139,11 +107,14 @@ subprojects {
         reports {
             html.required = true
         }
-
+    }
+    /*
+     * Publishing of maven artifacts -- and signing (only for CI)
+     */
+    if (System.getenv("CI")) {
+        apply plugin: 'signing'
     }
 
-    // We only have a single artifact for now - this additional metadata is
-    // required for publishing to maven central. Only doing signing in 'CI'
     publishing {
         publications {
             connector(MavenPublication) {
@@ -170,19 +141,18 @@ subprojects {
                         }
                     }
                     scm {
-                        connection = 'scm:git:git://github.com/odpi/egeria-database-connectors.git'
-                        developerConnection = 'scm:git:ssh://github.com/odpi/egeria/egeria-database-connectors.git'
-                        url = 'http://github.com/odpi/egeria-database-connectors/'
+                        connection = 'scm:git:https://github.com/odpi/egeria-database-connectors'
+                        developerConnection = 'scm:git:https://github.com/odpi/egeria-database-connectors'
+                        url = 'https://egithub.com/odpi/egeria-database-connectors'
                     }
                 }
                 // Override the project name & description for the pom based on properties set in the child build.gradle (hard to default & required for maven central)
                 pom.withXml {
-                    asNode().appendNode('name', "${project.ext.name}")
+                    //asNode().appendNode('name', "${project.name}")
                     asNode().appendNode('description', "${project.description}")
                 }
             }
         }
-
         // Release versions get pushed to staging area on maven central, snapshots to snapshot repo
         // Secrets for credentials
         if (System.getenv("CI")) {
@@ -202,20 +172,69 @@ subprojects {
         }
     }
 
-    // To publish to ossrh we need to sign the artifacts - only in CI
-    if (System.getenv("CI")) {
-        signing {
-            // This is the publication to sign
-            sign publishing.publications.connector
-            // gpg --export-secret-keys myemal@gmail.com | base64
-            def signingKey = System.getenv("OSSRH_GPG_PRIVATE_KEY")
-            // Passphrase for key
-            def signingPassword = System.getenv("OSSRH_GPG_PASSPHRASE")
-            // public key id (last 8 characters only) - note keys also need uploading to all the main registries
-            def signingKeyId = System.getenv("OSSRH_GPG_KEYID")
-            // We use these values from secrets rather than gradle.properties
-            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    /*
+     * Additional useful tasks
+     */
+    task printAllDependencies(type: DependencyReportTask) {}
+    task printSubDependencies(type: DependencyReportTask) {}
+    task findDependency(type: DependencyInsightReportTask) {}
+
+} // end of allProjects
+
+
+/*
+ * Configuration for sub projects only
+ */
+subprojects {
+    // All tasks currently will run under allProjects - which includes root.
+}
+
+
+/*
+ * Additional aggregate tasks run only at parent
+ */
+
+// Jacoco reporting -- from gradle docs
+task codeCoverageReport(type: JacocoReport) {
+    // Gather execution data from all subprojects
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    // Add all relevant sourcesets from the subprojects
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    // enable the different report types (html, xml, csv)
+    reports {
+        // xml is usually used to integrate code coverage with
+        // other tools like SonarQube, Coveralls or Codecov
+        xml.required = true
+
+        // HTML reports can be used to see code coverage
+        // without any external tools
+        html.required = true
+        csv.required = true
+    }
+
+}
+// always run the tests before generating the report
+codeCoverageReport.dependsOn {
+    subprojects*.test
+}
+
+// Dependency checking - see https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin
+dependencyAnalysis {
+    issues {
+        all {
+            onAny {
+                severity('fail')
+            }
+            onUnusedDependencies {
+                exclude("junit:junit", "org.junit.jupiter:junit-jupiter-api", "org.junit.jupiter:junit-jupiter-engine", "com.fasterxml.jackson.core:jackson-annotations")
+            }
         }
     }
 }
 
+// Always run dependency check for every regular build
+build.dependsOn("buildHealth")

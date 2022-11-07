@@ -109,7 +109,8 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
      */
     private void setPrimaryKey(List<JdbcPrimaryKey> jdbcPrimaryKeys, JdbcColumn jdbcColumn, String columnGuid){
         Optional<JdbcPrimaryKey> jdbcPrimaryKey = jdbcPrimaryKeys.stream().filter(
-                key -> key.getTableSchem().equals(jdbcColumn.getTableSchem())
+                key -> key.getTableCat() == null ? jdbcColumn.getTableCat() == null : key.getTableCat().equals(jdbcColumn.getTableCat())
+                        && key.getTableSchem() == null ? jdbcColumn.getTableSchem() == null : key.getTableSchem().equals(jdbcColumn.getTableSchem())
                         && key.getTableName().equals(jdbcColumn.getTableName())
                         && key.getColumnName().equals(jdbcColumn.getColumnName())
         ).findFirst();
