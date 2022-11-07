@@ -3,6 +3,10 @@
  * Copyright Contributors to the ODPi Egeria project.
  */
 
+plugins {
+    id "io.freefair.lombok" version "6.5.1"
+}
+
 // Artifact names are taken from the directory by default, set in settings.gradle to override
 // The 'name' for the maven artifact, and description are set here
 ext.name = 'JDBC Database Integration Connector'

@@ -69,8 +69,8 @@ public class SchemaTransfer implements Function<JdbcSchema, DatabaseSchemaElemen
      */
     private DatabaseSchemaProperties buildSchemaProperties(JdbcSchema jdbcSchema) {
         DatabaseSchemaProperties jdbcSchemaProperties = new DatabaseSchemaProperties();
-        jdbcSchemaProperties.setDisplayName(jdbcSchema.getTableSchem());
-        jdbcSchemaProperties.setQualifiedName(databaseQualifiedName + "::" + jdbcSchema.getTableSchem());
+        jdbcSchemaProperties.setDisplayName(jdbcSchema.getTableSchema());
+        jdbcSchemaProperties.setQualifiedName(databaseQualifiedName + "::" + jdbcSchema.getTableSchema());
         return jdbcSchemaProperties;
     }
 

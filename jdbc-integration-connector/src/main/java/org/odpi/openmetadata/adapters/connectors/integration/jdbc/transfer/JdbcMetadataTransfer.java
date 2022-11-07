@@ -2,10 +2,13 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.Constants;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.TransferCustomizations;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcForeignKey;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcPrimaryKey;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests.Jdbc;
@@ -29,13 +32,26 @@ public class JdbcMetadataTransfer {
     private final Jdbc jdbc;
     private final Omas omas;
     private final String connectorTypeQualifiedName;
+    private final List<String> includeSchemaNames;
+    private final List<String> excludeSchemaNames;
+    private final List<String> includeTableNames;
+    private final List<String> excludeTableNames;
+    private final List<String> includeColumnNames;
+    private final List<String> excludeColumnNames;
+
     private final AuditLog auditLog;
 
     public JdbcMetadataTransfer(JdbcMetadata jdbcMetadata, DatabaseIntegratorContext databaseIntegratorContext,
-                                String connectorTypeQualifiedName, AuditLog auditLog) {
+                                String connectorTypeQualifiedName, TransferCustomizations transferCustomizations, AuditLog auditLog) {
         this.jdbc = new Jdbc(jdbcMetadata, auditLog);
         this.omas = new Omas(databaseIntegratorContext, auditLog);
         this.connectorTypeQualifiedName = connectorTypeQualifiedName;
+        this.includeSchemaNames = transferCustomizations.getCustomization(Constants.INCLUDE_SCHEMA_NAMES);
+        this.excludeSchemaNames = transferCustomizations.getCustomization(Constants.EXCLUDE_SCHEMA_NAMES);
+        this.includeTableNames = transferCustomizations.getCustomization(Constants.INCLUDE_TABLE_NAMES);
+        this.excludeTableNames = transferCustomizations.getCustomization(Constants.EXCLUDE_TABLE_NAMES);
+        this.includeColumnNames = transferCustomizations.getCustomization(Constants.INCLUDE_COLUMN_NAMES);
+        this.excludeColumnNames = transferCustomizations.getCustomization(Constants.EXCLUDE_COLUMN_NAMES);
         this.auditLog = auditLog;
     }
 
@@ -79,7 +95,7 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of all available schemas
+     * Triggers the transfer of all available schemas, depending also on inclusions and exclusions
      *
      * @param databaseElement database
      */
@@ -93,7 +109,9 @@ public class JdbcMetadataTransfer {
         List<DatabaseSchemaElement> omasSchemas = omas.getSchemas(databaseGuid);
         // a schema update will always occur as long as the schema is returned by jdbc
         List<DatabaseSchemaElement> omasSchemasUpdated =
-                jdbc.getSchemas().parallelStream().map(new SchemaTransfer(omas, auditLog, omasSchemas, databaseQualifiedName, databaseGuid))
+                jdbc.getSchemas().parallelStream()
+                        .filter(schema -> shouldTransferSchema(schema.getTableSchema()))
+                        .map(new SchemaTransfer(omas, auditLog, omasSchemas, databaseQualifiedName, databaseGuid))
                         .collect(Collectors.toList());
 
         // will remove all updated schemas, and what remains are the ones deleted in jdbc
@@ -114,7 +132,9 @@ public class JdbcMetadataTransfer {
     private void transferTables(List<DatabaseSchemaElement> schemas){
         long start = System.currentTimeMillis();
 
-        schemas.parallelStream().peek( schema -> {
+        schemas.parallelStream()
+                .filter(schema -> shouldTransferSchema(schema.getDatabaseSchemaProperties().getDisplayName()))
+                .peek(schema -> {
             String schemaDisplayName = schema.getDatabaseSchemaProperties().getDisplayName();
             String schemaGuid = schema.getElementHeader().getGUID();
             String schemaQualifiedName = schema.getDatabaseSchemaProperties().getQualifiedName();
@@ -123,6 +143,7 @@ public class JdbcMetadataTransfer {
             List<DatabaseTableElement> omasTables = omas.getTables(schemaGuid);
             // a table update will always occur as long as the table is returned by jdbc
             List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables(schemaDisplayName).parallelStream()
+                    .filter(table -> shouldTransferTable(table.getTableName()))
                     .map(new TableTransfer(omas, auditLog, omasTables, schemaQualifiedName, schemaGuid))
                     .collect(Collectors.toList());
 
@@ -146,7 +167,9 @@ public class JdbcMetadataTransfer {
         long start = System.currentTimeMillis();
 
          schemas.parallelStream()
+                 .filter(schema -> shouldTransferSchema(schema.getDatabaseSchemaProperties().getDisplayName()))
                  .flatMap(s -> omas.getTables(s.getElementHeader().getGUID()).parallelStream())
+                 .filter(table -> shouldTransferTable(table.getDatabaseTableProperties().getDisplayName()))
                  .peek(table -> {
                      String schemaName = table.getDatabaseTableProperties().getQualifiedName().split("::")[1];
                      String tableName = table.getDatabaseTableProperties().getDisplayName();
@@ -157,6 +180,7 @@ public class JdbcMetadataTransfer {
                      List<DatabaseColumnElement> omasColumns = omas.getColumns(tableGuid);
                      // a column update will always occur as long as the column is returned by jdbc
                      List<DatabaseColumnElement> omasUpdatedColumns = jdbc.getColumns(schemaName, tableName).parallelStream()
+                             .filter(column -> shouldTransferColumn(column.getColumnName()))
                              .map(new ColumnTransfer(omas, auditLog, omasColumns, jdbcPrimaryKeys, table)).collect(Collectors.toList());
 
                      // will remove all updated column, and what remains are the ones deleted in jdbc
@@ -181,11 +205,13 @@ public class JdbcMetadataTransfer {
 
         // all foreign keys as returned by calling getExportedKeys and getImportedKeys on jdbc
         Set<JdbcForeignKey> foreignKeys = Stream.concat(
-                jdbc.getSchemas().stream()
-                        .flatMap(s -> jdbc.getTables(s.getTableSchem()).stream())
+                jdbc.getSchemas().stream().filter(schema -> shouldTransferSchema(schema.getTableSchema()))
+                        .flatMap(s -> jdbc.getTables(s.getTableSchema()).stream()
+                                .filter(table -> shouldTransferTable(table.getTableName())))
                         .flatMap(t -> jdbc.getImportedKeys(t.getTableSchem(), t.getTableName()).stream()),
-                jdbc.getSchemas().stream()
-                        .flatMap(s -> jdbc.getTables(s.getTableSchem()).stream())
+                jdbc.getSchemas().stream().filter(schema -> shouldTransferSchema(schema.getTableSchema()))
+                        .flatMap(s -> jdbc.getTables(s.getTableSchema()).stream()
+                                .filter(table -> shouldTransferTable(table.getTableName())))
                         .flatMap(t -> jdbc.getExportedKeys(t.getTableSchem(), t.getTableName()).stream())
         ).collect(Collectors.toSet());
 
@@ -194,6 +220,57 @@ public class JdbcMetadataTransfer {
         long end = System.currentTimeMillis();
         auditLog.logMessage("Foreign key transfer complete",
                 PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("foreign keys", "" + (end - start)/1000));
+    }
+
+
+    /**
+     * Determines if schema should be transferred
+     *
+     * @param schemaName the schema name
+     * @return the boolean
+     */
+    private boolean shouldTransferSchema(String schemaName) {
+        return shouldTransfer(schemaName, includeSchemaNames, excludeSchemaNames);
+    }
+
+    /**
+     * Determines if table should be transferred
+     *
+     * @param tableName the table name
+     * @return the boolean
+     */
+    private boolean shouldTransferTable(String tableName) {
+        return shouldTransfer(tableName, includeTableNames, excludeTableNames);
+    }
+
+    /**
+     * Determines if column should be transferred
+     *
+     * @param columnName the column name
+     * @return the boolean
+     */
+    private boolean shouldTransferColumn(String columnName) {
+        return shouldTransfer(columnName, includeColumnNames, excludeColumnNames);
+    }
+
+    /**
+     * Determines if object should be transferred. If it's present in the inclusions, the exclusions are ignored.
+     *
+     * @param objectName the object to be transferred
+     * @param inclusions the list of objects to be included
+     * @param exclusions the list of objects to be excluded
+     * @return the boolean
+     */
+    private boolean shouldTransfer(String objectName, List<String> inclusions, List<String> exclusions) {
+        if(CollectionUtils.isNotEmpty(inclusions)) {
+            return inclusions.contains(objectName);
+        }
+
+        if(CollectionUtils.isNotEmpty(exclusions)) {
+            return !exclusions.contains(objectName);
+        }
+
+        return true;
     }
 
 }
