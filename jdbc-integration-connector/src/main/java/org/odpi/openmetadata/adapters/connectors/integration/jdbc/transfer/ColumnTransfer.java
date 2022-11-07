@@ -55,13 +55,13 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
             omas.updateColumn(omasColumn.get().getElementHeader().getGUID(), columnProperties);
             auditLog.logMessage("Updated column with qualified name " + columnProperties.getQualifiedName(), null);
 
-            this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID());
+            this.updateOrRemovePrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID(), omasColumn.get().getPrimaryKeyProperties());
             return omasColumn.get();
         }
         Optional<String> columnGuid = omas.createColumn(omasTable.getElementHeader().getGUID(), columnProperties);
         auditLog.logMessage("Created column with qualified name " + columnProperties.getQualifiedName(), null);
 
-        columnGuid.ifPresent(s -> this.setPrimaryKey(jdbcPrimaryKeys, jdbcColumn, s));
+        columnGuid.ifPresent(s -> this.updateOrRemovePrimaryKey(jdbcPrimaryKeys, jdbcColumn, s, null));
 
         return null;
     }
@@ -106,19 +106,25 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
      * @param jdbcPrimaryKeys jdbc primary keys
      * @param jdbcColumn column
      * @param columnGuid guid
+     * @param primaryKeyProperties primary key properties
      */
-    private void setPrimaryKey(List<JdbcPrimaryKey> jdbcPrimaryKeys, JdbcColumn jdbcColumn, String columnGuid){
+    private void updateOrRemovePrimaryKey(List<JdbcPrimaryKey> jdbcPrimaryKeys, JdbcColumn jdbcColumn, String columnGuid,
+                                          DatabasePrimaryKeyProperties primaryKeyProperties){
         Optional<JdbcPrimaryKey> jdbcPrimaryKey = jdbcPrimaryKeys.stream().filter(
-                key -> key.getTableCat() == null ? jdbcColumn.getTableCat() == null : key.getTableCat().equals(jdbcColumn.getTableCat())
-                        && key.getTableSchem() == null ? jdbcColumn.getTableSchem() == null : key.getTableSchem().equals(jdbcColumn.getTableSchem())
+                key -> (key.getTableCat() == null ? jdbcColumn.getTableCat() == null : key.getTableCat().equals(jdbcColumn.getTableCat()))
+                        && (key.getTableSchem() == null ? jdbcColumn.getTableSchem() == null : key.getTableSchem().equals(jdbcColumn.getTableSchem()))
                         && key.getTableName().equals(jdbcColumn.getTableName())
                         && key.getColumnName().equals(jdbcColumn.getColumnName())
         ).findFirst();
         if(jdbcPrimaryKey.isEmpty()){
+            if(primaryKeyProperties != null) {
+                omas.removePrimaryKey(columnGuid);
+                auditLog.logMessage("Primary key removed from column with guid " + columnGuid, null);
+            }
             return;
         }
 
-        DatabasePrimaryKeyProperties primaryKeyProperties = buildPrimaryKeyProperties(jdbcPrimaryKey.get());
+        primaryKeyProperties = buildPrimaryKeyProperties(jdbcPrimaryKey.get());
         omas.setPrimaryKey(columnGuid, primaryKeyProperties);
         auditLog.logMessage("Primary key set on column with guid " + columnGuid, null);
     }
