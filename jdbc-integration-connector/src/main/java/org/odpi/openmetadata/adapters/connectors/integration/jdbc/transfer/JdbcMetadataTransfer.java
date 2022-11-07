@@ -107,6 +107,7 @@ public class JdbcMetadataTransfer {
         // a table update will always occur as long as the table is returned by jdbc
         List<DatabaseTableElement> omasTablesUpdated = jdbc.getTables(catalog,"").parallelStream()
                 .filter(jdbcTable -> jdbcTable.getTableSchem() == null || jdbcTable.getTableSchem().length() < 1 )
+                .filter(table -> shouldTransferTable(table.getTableName()))
                 .map(new TableTransfer(omas, auditLog, omasTables, databaseQualifiedName, databaseGuid))
                 .collect(Collectors.toList());
 
@@ -132,6 +133,7 @@ public class JdbcMetadataTransfer {
         String catalog = databaseElement.getDatabaseProperties().getDisplayName();
 
         omas.getTables(databaseGuid).parallelStream()
+                .filter(table -> shouldTransferTable(table.getDatabaseTableProperties().getDisplayName()))
                 .peek(table -> {
                     String schemaName = "";
                     String tableName = table.getDatabaseTableProperties().getDisplayName();
@@ -142,6 +144,7 @@ public class JdbcMetadataTransfer {
                     List<DatabaseColumnElement> omasColumns = omas.getColumns(tableGuid);
                     // a column update will always occur as long as the column is returned by jdbc
                     List<DatabaseColumnElement> omasUpdatedColumns = jdbc.getColumns(catalog, schemaName, tableName).parallelStream()
+                            .filter(column -> shouldTransferColumn(column.getColumnName()))
                             .map(new ColumnTransfer(omas, auditLog, omasColumns, jdbcPrimaryKeys, table)).collect(Collectors.toList());
 
                     // will remove all updated column, and what remains are the ones deleted in jdbc
