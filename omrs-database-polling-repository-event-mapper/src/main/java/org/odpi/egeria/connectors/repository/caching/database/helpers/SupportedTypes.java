@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.egeria.connectors.databasepollingrepository.helpers;
+package org.odpi.egeria.connectors.repository.caching.database.helpers;
 
 import java.util.Arrays;
 import java.util.List;

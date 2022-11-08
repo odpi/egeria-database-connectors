@@ -7,9 +7,6 @@
 // The 'name' for the maven artifact, and description are set here
 description = 'Abstract database polling event mapper connector'
 ext {
-//    jacksonVersion = '2.13.2'
-//    jupiterVersion = '5.8.2'
-//    springwebVersion = '5.3.19'
     cachingconnectorVersion = '1.0-SNAPSHOT'
 }
 

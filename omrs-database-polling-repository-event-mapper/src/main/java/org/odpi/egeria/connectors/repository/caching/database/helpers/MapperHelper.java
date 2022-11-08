@@ -1,9 +1,8 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.egeria.connectors.databasepollingrepository.helpers;
+package org.odpi.egeria.connectors.repository.caching.database.helpers;
 
-import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOMRSErrorCode;
-import org.odpi.egeria.connectors.databasepollingrepository.helpers.ExceptionHelper;
+import org.odpi.egeria.connectors.repository.caching.database.auditlog.DbPollingOMRSErrorCode;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.*;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.typedefs.TypeDef;

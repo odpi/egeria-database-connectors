@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.egeria.connectors.databasepollingrepository;
+package org.odpi.egeria.connectors.repository.caching.database;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -93,10 +93,11 @@ public class ConnectorTable {
         if (o == null || getClass() != o.getClass()) return false;
         ConnectorTable that = (ConnectorTable) o;
 
-        if (createTime == null && that != null && that.createTime != null) {
-            return false;
-        }
-        if (createTime != null && that != null ) {
+        if (createTime == null) {
+            if (that.createTime != null){
+                return false;
+            }
+        } else {
             if ( that.createTime == null){
                 return false;
             } else if (createTime.getTime() != that.createTime.getTime()) {

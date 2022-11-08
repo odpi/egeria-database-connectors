@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.egeria.connectors.databasepollingrepository.auditlog;
+package org.odpi.egeria.connectors.repository.caching.database.auditlog;
 
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageDefinition;
 import org.odpi.openmetadata.frameworks.auditlog.messagesets.ExceptionMessageSet;

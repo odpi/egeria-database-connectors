@@ -1,15 +1,15 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
-package org.odpi.egeria.connectors.databasepollingrepository.eventmapper;
+package org.odpi.egeria.connectors.repository.caching.database.eventmapper;
 
-import org.odpi.egeria.connectors.databasepollingrepository.ConnectorColumn;
-import org.odpi.egeria.connectors.databasepollingrepository.ConnectorTable;
-import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOMRSAuditCode;
-import org.odpi.egeria.connectors.databasepollingrepository.auditlog.DbPollingOMRSErrorCode;
+import org.odpi.egeria.connectors.repository.caching.database.ConnectorColumn;
+import org.odpi.egeria.connectors.repository.caching.database.ConnectorTable;
+import org.odpi.egeria.connectors.repository.caching.database.auditlog.DbPollingOMRSAuditCode;
+import org.odpi.egeria.connectors.repository.caching.database.auditlog.DbPollingOMRSErrorCode;
 
-import org.odpi.egeria.connectors.databasepollingrepository.helpers.ExceptionHelper;
-import org.odpi.egeria.connectors.databasepollingrepository.helpers.MapperHelper;
-import org.odpi.egeria.connectors.databasepollingrepository.helpers.SupportedTypes;
+import org.odpi.egeria.connectors.repository.caching.database.helpers.ExceptionHelper;
+import org.odpi.egeria.connectors.repository.caching.database.helpers.MapperHelper;
+import org.odpi.egeria.connectors.repository.caching.database.helpers.SupportedTypes;
 import org.odpi.openmetadata.adapters.repositoryservices.caching.repository.CachedRepositoryAccessor;
 import org.odpi.openmetadata.adapters.repositoryservices.caching.repositoryconnector.CachingOMRSRepositoryProxyConnector;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
