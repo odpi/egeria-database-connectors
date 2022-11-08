@@ -14,6 +14,7 @@ ext {
 }
 
 dependencies {
+    implementation 'net.jcip:jcip-annotations:1.0'
     compileOnly "org.odpi.egeria:audit-log-framework"
     compileOnly "com.fasterxml.jackson.core:jackson-databind"
     compileOnly "com.fasterxml.jackson.core:jackson-annotations"
@@ -29,5 +30,6 @@ dependencies {
 
     compileOnly "org.odpi.egeria:admin-services-api"
     compileOnly "org.odpi.egeria:audit-log-framework"
+
     implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorVersion}"
 }

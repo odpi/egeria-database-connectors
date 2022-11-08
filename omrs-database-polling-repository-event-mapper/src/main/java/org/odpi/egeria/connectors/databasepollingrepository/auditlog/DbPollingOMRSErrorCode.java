@@ -156,6 +156,7 @@ public enum DbPollingOMRSErrorCode implements ExceptionMessageSet {
 
     ;
 
+    @SuppressWarnings("ImmutableEnumChecker")
     final private ExceptionMessageDefinition messageDefinition;
 
     /**

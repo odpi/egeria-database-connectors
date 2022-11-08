@@ -101,7 +101,7 @@ public class ConnectorTable {
         if (createTime.getTime() != that.createTime.getTime()) {
             return false;
         }
-        
+
         return Objects.equals(name, that.name) && Objects.equals(qualifiedName, that.qualifiedName) && Objects.equals(type, that.type) && Objects.equals(hmsViewOriginalText, that.hmsViewOriginalText) && Objects.equals(columns, that.columns);
     }
 
