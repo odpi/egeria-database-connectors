@@ -84,7 +84,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
         super();
     }
 
-    public String getUserId() {
+    synchronized public String getUserId() {
         return userId;
     }
 

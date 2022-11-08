@@ -87,6 +87,7 @@ public class ConnectorTable {
     }
 
     @Override
+    @SuppressWarnings("JavaUtilDate")
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -98,6 +99,7 @@ public class ConnectorTable {
         if (createTime != null && that.createTime == null) {
             return false;
         }
+
         if (createTime.getTime() != that.createTime.getTime()) {
             return false;
         }
