@@ -1,0 +1,32 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright Contributors to the ODPi Egeria project.
+ */
+
+// Artifact names are taken from the directory by default, set in settings.gradle to override
+// The 'name' for the maven artifact, and description are set here
+description = 'Abstract database polling event mapper connector'
+ext {
+    cachingconnectorVersion = '1.0-SNAPSHOT'
+}
+
+dependencies {
+    implementation 'net.jcip:jcip-annotations:1.0'
+    compileOnly "org.odpi.egeria:audit-log-framework"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind"
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations"
+    compileOnly "com.fasterxml.jackson.core:jackson-core"
+    compileOnly "org.springframework:spring-core"
+    compileOnly "org.odpi.egeria:open-connector-framework"
+    compileOnly "org.odpi.egeria:repository-services-apis"
+    compileOnly "org.odpi.egeria:open-metadata-types"
+    compileOnly "org.odpi.egeria:audit-log-framework"
+    compileOnly "org.odpi.egeria:repository-services-implementation"
+    compileOnly "org.odpi.egeria:admin-services-api"
+    compileOnly "org.odpi.egeria:connector-configuration-factory"
+
+    compileOnly "org.odpi.egeria:admin-services-api"
+    compileOnly "org.odpi.egeria:audit-log-framework"
+
+    implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorVersion}"
+}

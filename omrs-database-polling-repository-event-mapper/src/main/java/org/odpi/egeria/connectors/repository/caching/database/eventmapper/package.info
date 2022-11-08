@@ -1,0 +1,7 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the ODPi Egeria project. */
+
+/**
+ * Defines and implements the event mapper for a technology independent polling database event mapper.
+ */
+package org.odpi.egeria.connectors.databasepollingrepository.eventmapper;
