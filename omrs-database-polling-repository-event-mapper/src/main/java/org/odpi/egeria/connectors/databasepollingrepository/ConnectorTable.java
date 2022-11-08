@@ -93,16 +93,18 @@ public class ConnectorTable {
         if (o == null || getClass() != o.getClass()) return false;
         ConnectorTable that = (ConnectorTable) o;
 
-        if (createTime == null && that.createTime != null) {
+        if (createTime == null && that != null && that.createTime != null) {
             return false;
         }
-        if (createTime != null && that.createTime == null) {
-            return false;
+        if (createTime != null && that != null ) {
+            if ( that.createTime == null){
+                return false;
+            } else if (createTime.getTime() != that.createTime.getTime()) {
+                return false;
+            }
         }
 
-        if (createTime.getTime() != that.createTime.getTime()) {
-            return false;
-        }
+
 
         return Objects.equals(name, that.name) && Objects.equals(qualifiedName, that.qualifiedName) && Objects.equals(type, that.type) && Objects.equals(hmsViewOriginalText, that.hmsViewOriginalText) && Objects.equals(columns, that.columns);
     }
