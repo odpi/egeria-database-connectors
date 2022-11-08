@@ -494,7 +494,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
          * @return a list of Connector tables
          * @throws ConnectorCheckedException connector checked exception
          */
-        public List<ConnectorTable> getConnectionTablesAndColumnsFrom3rdParty() throws ConnectorCheckedException {
+        synchronized private List<ConnectorTable> getConnectionTablesAndColumnsFrom3rdParty() throws ConnectorCheckedException {
             String methodName = "getConnectionTablesAndColumnsFrom3rdParty";
             List<ConnectorTable> connectorTables = new ArrayList<>();
 
