@@ -515,7 +515,7 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
          * @throws ConnectorCheckedException connector exception
          * @throws TypeErrorException        type exception
          */
-        void convertToConnectorTablesToEntitiesAndRelationships(List<ConnectorTable> connectorTables) throws ConnectorCheckedException, TypeErrorException {
+        private void convertToConnectorTablesToEntitiesAndRelationships(List<ConnectorTable> connectorTables) throws ConnectorCheckedException, TypeErrorException {
             String methodName = "convertToConnectorTablesToEntitiesAndRelationships";
 
             for (ConnectorTable connectorTable : connectorTables) {
