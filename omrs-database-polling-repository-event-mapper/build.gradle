@@ -7,7 +7,7 @@
 // The 'name' for the maven artifact, and description are set here
 description = 'Abstract database polling event mapper connector'
 ext {
-    name = 'egeria.connector.repository.caching.databsse.eventmapper '
+    name = 'egeria.connector.repository.caching.database.eventmapper'
     cachingconnectorVersion = '1.0-SNAPSHOT'
 }
 
