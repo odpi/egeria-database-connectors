@@ -188,18 +188,18 @@ abstract public class OMRSDatabasePollingRepositoryEventMapper extends OMRSRepos
      * Class to poll for Hive Meta store content
      */
     public class PollingThread implements Runnable {
-        Thread worker = null;
-        List<Relationship> aboveTableRelationshipListToStore = new ArrayList<>();
-        List<EntityDetail> aboveTableEntityListToStore = new ArrayList<>();
-        Map<String, List<EntityDetail>> qualifiedTableNameToEntityMap = new HashMap<>();
-        Map<String, List<Relationship>> qualifiedTableNameToRelationshipMap = new HashMap<>();
+        private Thread worker = null;
+        private List<Relationship> aboveTableRelationshipListToStore = new ArrayList<>();
+        private List<EntityDetail> aboveTableEntityListToStore = new ArrayList<>();
+        private Map<String, List<EntityDetail>> qualifiedTableNameToEntityMap = new HashMap<>();
+        private Map<String, List<Relationship>> qualifiedTableNameToRelationshipMap = new HashMap<>();
 
-        CachedRepositoryAccessor cachedRepositoryAccessor = null;
-        String baseCanonicalName = null;
+        private CachedRepositoryAccessor cachedRepositoryAccessor = null;
+        private String baseCanonicalName = null;
 
-        String relationalDBTypeGuid = null;
+        private String relationalDBTypeGuid = null;
 
-        MapperHelper mapperHelper = null;
+        private MapperHelper mapperHelper = null;
 
         /**
          * Start the thread
