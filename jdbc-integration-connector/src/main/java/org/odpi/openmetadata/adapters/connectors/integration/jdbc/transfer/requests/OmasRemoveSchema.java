@@ -13,7 +13,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
 /**
  * Manages the removeDatabaseSchema call to access service
@@ -45,7 +45,7 @@ class OmasRemoveSchema implements Consumer<DatabaseSchemaElement> {
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
             auditLog.logMessage("Removing schema with guid " + schemaGuid
                     + " and qualified name " + schemaQualifiedName,
-                    ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(schemaGuid, schemaQualifiedName));
+                    EXCEPTION_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(schemaGuid, schemaQualifiedName));
         }
     }
 
