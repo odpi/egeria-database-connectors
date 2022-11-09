@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_METADATA_TRANSFER;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_DATABASE_TRANSFER_FAIL;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS;
 
 /**
@@ -42,36 +42,31 @@ public class JdbcMetadataTransfer {
     /**
      * Triggers database, schema, table and column metadata transfer. Will do the best it can to transfer as much of the
      * metadata as possible. If available will also build the asset (database) connection structure
-     *
-     * @return true if successful, false otherwise
      */
-    public boolean execute() {
+    public void execute() {
         String methodName = "JdbcMetadataTransfer.execute";
 
         DatabaseElement database = new DatabaseTransfer(jdbc, omas, auditLog).execute();
         if (database == null) {
             auditLog.logMessage("Verifying database metadata transferred. None found. Stopping transfer",
-                    EXITING_ON_METADATA_TRANSFER.getMessageDefinition(methodName));
-            return false;
+                    EXITING_ON_DATABASE_TRANSFER_FAIL.getMessageDefinition(methodName));
+            return;
         }
 
         createAssetConnection(database);
-        transferTablesWithoutSchema(database);
-        transferColumnsWithoutSchema(database);
-        transferSchemas(database);
 
+        transferTablesWithoutSchema(database);
+        transferColumnsOfTablesWithoutSchema(database);
+        transferForeignKeysIgnoringSchemas(database);
+
+        transferSchemas(database);
         List<DatabaseSchemaElement> schemas = omas.getSchemas(database.getElementHeader().getGUID());
         if(schemas.isEmpty()){
-            auditLog.logMessage("Verifying schema metadata transferred. None found. Stopping transfer",
-                    EXITING_ON_METADATA_TRANSFER.getMessageDefinition(methodName));
-            return true;
+            return;
         }
-
         transferTables(database, schemas);
         transferColumns(database, schemas);
         transferForeignKeys(database);
-        return true;
-
     }
 
     /**
@@ -109,7 +104,7 @@ public class JdbcMetadataTransfer {
      *
      * @param databaseElement database element
      */
-    private void transferColumnsWithoutSchema(DatabaseElement databaseElement){
+    private void transferColumnsOfTablesWithoutSchema(DatabaseElement databaseElement){
         long start = System.currentTimeMillis();
 
         String databaseGuid = databaseElement.getElementHeader().getGUID();
@@ -137,6 +132,31 @@ public class JdbcMetadataTransfer {
         long end = System.currentTimeMillis();
         auditLog.logMessage("Transferring columns of tables without schema",
                 PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("columns of tables with no schema", "" + (end - start)/1000));
+    }
+
+    /**
+     * Triggers the transfer of all foreign keys between columns of tables without schemas
+     *
+     * @param databaseElement database element
+     */
+    private void transferForeignKeysIgnoringSchemas(DatabaseElement databaseElement){
+        long start = System.currentTimeMillis();
+
+        String catalog = databaseElement.getDatabaseProperties().getDisplayName();
+
+        Set<JdbcForeignKey> foreignKeys = Stream.concat(
+                        jdbc.getTables(catalog, "").stream()
+                                .flatMap( t -> jdbc.getImportedKeys(catalog, "", t.getTableName()).stream() ),
+                        jdbc.getTables(catalog, "").stream()
+                                .flatMap( t -> jdbc.getExportedKeys(catalog, "", t.getTableName()).stream() ))
+                .collect(Collectors.toSet());
+
+        foreignKeys.forEach(new ForeignKeyTransfer(omas, auditLog, databaseElement));
+
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("Foreign key transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS
+                        .getMessageDefinition("foreign keys between columns of tables without schemas", "" + (end - start)/1000));
     }
 
     private void createAssetConnection(DatabaseElement databaseElement){
@@ -259,10 +279,10 @@ public class JdbcMetadataTransfer {
         Set<JdbcForeignKey> foreignKeys = Stream.concat(
                 jdbc.getSchemas(catalog).stream()
                         .flatMap(s -> jdbc.getTables(catalog, s.getTableSchem()).stream())
-                        .flatMap(t -> jdbc.getImportedKeys(t.getTableSchem(), t.getTableName()).stream()),
+                        .flatMap(t -> jdbc.getImportedKeys(catalog, t.getTableSchem(), t.getTableName()).stream()),
                 jdbc.getSchemas(catalog).stream()
                         .flatMap(s -> jdbc.getTables(catalog, s.getTableSchem()).stream())
-                        .flatMap(t -> jdbc.getExportedKeys(t.getTableSchem(), t.getTableName()).stream())
+                        .flatMap(t -> jdbc.getExportedKeys(catalog, t.getTableSchem(), t.getTableName()).stream())
         ).collect(Collectors.toSet());
 
         foreignKeys.forEach(new ForeignKeyTransfer(omas, auditLog, databaseElement));

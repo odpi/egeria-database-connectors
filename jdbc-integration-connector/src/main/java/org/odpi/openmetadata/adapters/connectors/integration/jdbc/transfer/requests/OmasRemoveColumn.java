@@ -11,7 +11,7 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 
 import java.util.function.Consumer;
 
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_WHEN_REMOVING_ELEMENT_IN_OMAS;
 
 /**
  * Manages the removeDatabaseColumn call to access service
@@ -41,7 +41,7 @@ class OmasRemoveColumn implements Consumer<DatabaseColumnElement> {
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {
             auditLog.logMessage("Removing column with guid " + columnGuid
                     + " and qualified name " + columnQualifiedName,
-                    ERROR_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(columnGuid, columnQualifiedName));
+                    EXCEPTION_WHEN_REMOVING_ELEMENT_IN_OMAS.getMessageDefinition(columnGuid, columnQualifiedName));
         }
     }
 

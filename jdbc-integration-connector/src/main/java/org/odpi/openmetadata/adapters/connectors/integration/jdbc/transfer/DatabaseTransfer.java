@@ -10,6 +10,9 @@ import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 
 import java.util.List;
 
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.TRANSFER_COMPLETE_FOR_DB_OBJECT;
+
+
 /**
  * Creates the database root of the metadata structure the follows
  */
@@ -48,8 +51,8 @@ public class DatabaseTransfer {
 
         databasesInOmas = omas.getDatabasesByName(databaseProperties.getQualifiedName());
         if(databasesInOmas.size() == 1){
-            auditLog.logMessage("Database transferred with qualified name " + databaseProperties.getQualifiedName(),
-                    null);
+            auditLog.logMessage("Transferred database with qualified name " + databaseProperties.getQualifiedName(),
+                    TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("database " + databaseProperties.getQualifiedName()));
             return databasesInOmas.get(0);
         }
         auditLog.logMessage(multipleDatabasesFoundMessage, null);
@@ -76,11 +79,6 @@ public class DatabaseTransfer {
         databaseProperties.setDatabaseVersion(databaseProductVersion);
         databaseProperties.setDatabaseType(databaseProductName);
         databaseProperties.setDatabaseImportedFrom(url);
-
-//        Map<String, String> origin = new HashMap<>();
-//        Optional<JdbcCatalog> catalog = jdbc.getCatalogs().stream().filter(c -> c.getTableCat().equals(catalogFromUrl)).findFirst();
-//        origin.put("jdbcCatalog", catalog.isPresent() ? catalog.get().getTableCat() : "unavailable");
-//        databaseProperties.setAdditionalProperties(origin);
 
         return databaseProperties;
     }

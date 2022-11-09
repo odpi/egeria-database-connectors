@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.TRANSFER_COMPLETE_FOR_DB_OBJECT;
+
 /**
  * Transfers metadata of a schema
  */
@@ -50,13 +52,13 @@ public class SchemaTransfer implements Function<JdbcSchema, DatabaseSchemaElemen
         if (omasSchema.isPresent()) {
             omas.updateSchema(omasSchema.get().getElementHeader().getGUID(), schemaProperties);
             auditLog.logMessage("Updated schema with qualified name " + schemaProperties.getQualifiedName(),
-                    null);
+                    TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("schema " + schemaProperties.getQualifiedName()));
             return omasSchema.get();
         }
 
         omas.createSchema(databaseGuid, schemaProperties);
         auditLog.logMessage("Created schema with qualified name " + schemaProperties.getQualifiedName(),
-                null);
+                TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("schema " + schemaProperties.getQualifiedName()));
         return null;
     }
 
