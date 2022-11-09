@@ -28,6 +28,4 @@ dependencies {
 
     compileOnly "org.odpi.egeria:admin-services-api"
     compileOnly "org.odpi.egeria:audit-log-framework"
-
-    implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorVersion}"
 }
