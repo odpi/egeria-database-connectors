@@ -85,25 +85,27 @@ public class Jdbc {
     /**
      * Get foreign keys as described by the primary key columns referenced by foreign key columns of target table
      *
+     * @param catalog catalog
      * @param schemaName schema name
      * @param tableName table name
      *
      * @return foreign keys
      */
-    public List<JdbcForeignKey> getImportedKeys(String schemaName, String tableName){
-        return new JdbcGetImportedKeys(jdbcMetadata, auditLog).apply(schemaName, tableName);
+    public List<JdbcForeignKey> getImportedKeys(String catalog, String schemaName, String tableName){
+        return new JdbcGetImportedKeys(jdbcMetadata, auditLog).apply(catalog, schemaName, tableName);
     }
 
     /**
      * Get foreign keys as described by the foreign key columns referenced by primary key columns of target table
      *
+     * @param catalog catalog
      * @param schemaName schema name
      * @param tableName table name
      *
      * @return foreign keys
      */
-    public List<JdbcForeignKey> getExportedKeys(String schemaName, String tableName){
-        return new JdbcGetExportedKeys(jdbcMetadata, auditLog).apply(schemaName, tableName);
+    public List<JdbcForeignKey> getExportedKeys(String catalog, String schemaName, String tableName){
+        return new JdbcGetExportedKeys(jdbcMetadata, auditLog).apply(catalog, schemaName, tableName);
     }
 
     /**

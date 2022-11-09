@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.TRANSFER_COMPLETE_FOR_DB_OBJECT;
+
 /**
  * Transfers metadata of a column
  */
@@ -53,13 +55,15 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
 
         if(omasColumn.isPresent()){
             omas.updateColumn(omasColumn.get().getElementHeader().getGUID(), columnProperties);
-            auditLog.logMessage("Updated column with qualified name " + columnProperties.getQualifiedName(), null);
+            auditLog.logMessage("Updated column with qualified name " + columnProperties.getQualifiedName(),
+                    TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("column " + columnProperties.getQualifiedName()));
 
             this.updateOrRemovePrimaryKey(jdbcPrimaryKeys, jdbcColumn, omasColumn.get().getElementHeader().getGUID(), omasColumn.get().getPrimaryKeyProperties());
             return omasColumn.get();
         }
         Optional<String> columnGuid = omas.createColumn(omasTable.getElementHeader().getGUID(), columnProperties);
-        auditLog.logMessage("Created column with qualified name " + columnProperties.getQualifiedName(), null);
+        auditLog.logMessage("Created column with qualified name " + columnProperties.getQualifiedName(),
+                TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("column " + columnProperties.getQualifiedName()));
 
         columnGuid.ifPresent(s -> this.updateOrRemovePrimaryKey(jdbcPrimaryKeys, jdbcColumn, s, null));
 

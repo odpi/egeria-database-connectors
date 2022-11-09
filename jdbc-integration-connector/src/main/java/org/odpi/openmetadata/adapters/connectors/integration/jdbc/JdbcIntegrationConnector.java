@@ -19,7 +19,6 @@ import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.Jd
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_COMPLETE;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_CONNECTION_FAIL;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_INTEGRATION_CONTEXT_FAIL;
-import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_TRANSFER_FAIL;
 
 public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
 
@@ -33,7 +32,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
 
     @Override
     public void refresh() {
-        String methodName = "refresh";
+        String methodName = "JdbcIntegrationConnector.refresh";
         String exitAction = "Exiting " + methodName;
 
         Connection connection = connect();
@@ -55,13 +54,8 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
             return;
         }
 
-        boolean successfulTransfer = jdbcMetadataTransfer.execute();
-
-        if(successfulTransfer) {
-            auditLog.logMessage(exitAction, EXITING_ON_COMPLETE.getMessageDefinition(methodName));
-        }else{
-            auditLog.logMessage(exitAction, EXITING_ON_TRANSFER_FAIL.getMessageDefinition(methodName));
-        }
+        jdbcMetadataTransfer.execute();
+        auditLog.logMessage(exitAction, EXITING_ON_COMPLETE.getMessageDefinition(methodName));
         close(connection);
     }
 
