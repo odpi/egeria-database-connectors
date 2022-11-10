@@ -153,8 +153,10 @@ public class JdbcMetadataTransfer {
 
         Set<JdbcForeignKey> foreignKeys = Stream.concat(
                         jdbc.getTables(catalog, "").stream()
+                                .filter(table -> transferCustomizations.shouldTransferTable(table.getTableName()))
                                 .flatMap( t -> jdbc.getImportedKeys(catalog, "", t.getTableName()).stream() ),
                         jdbc.getTables(catalog, "").stream()
+                                .filter(table -> transferCustomizations.shouldTransferTable(table.getTableName()))
                                 .flatMap( t -> jdbc.getExportedKeys(catalog, "", t.getTableName()).stream() ))
                 .collect(Collectors.toSet());
 
