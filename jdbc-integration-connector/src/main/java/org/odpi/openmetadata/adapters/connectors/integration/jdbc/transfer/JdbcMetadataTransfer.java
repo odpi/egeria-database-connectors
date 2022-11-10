@@ -2,6 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
@@ -21,12 +22,20 @@ import java.util.stream.Stream;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXITING_ON_DATABASE_TRANSFER_FAIL;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS;
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.TRANSFER_EXCEPTIONS_FOR_DB_OBJECT;
 
 /**
  * Transfers metadata from jdbc in an exploratory way. What can be accessed will be transferred
  */
 public class JdbcMetadataTransfer {
 
+    private static final String TABLES_WITH_NO_SCHEMA = "tables with no schema";
+    public static final String COLUMNS_OF_TABLES_WITH_NO_SCHEMA = "columns of tables with no schema";
+    public static final String SKIPPING = "Skipping ";
+    public static final String TRANSFERRING = "Transferring ";
+    public static final String SCHEMAS = "schemas";
+    public static final String TABLES = "tables";
+    public static final String COLUMNS = "columns";
     private final Jdbc jdbc;
     private final Omas omas;
     private final String connectorTypeQualifiedName;
@@ -100,9 +109,14 @@ public class JdbcMetadataTransfer {
         // remove from omas the tables deleted in jdbc
         omasTables.forEach(omas::removeTable);
 
+        String excludedTables = transferCustomizations.getExcludedTables();
+        if(StringUtils.isNotEmpty(excludedTables)) {
+            auditLog.logMessage(SKIPPING + TABLES_WITH_NO_SCHEMA,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(TABLES_WITH_NO_SCHEMA, excludedTables));
+        }
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Transferring tables without schema",
-                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables with no schema", "" + (end - start)/1000));
+        auditLog.logMessage(TRANSFERRING + TABLES_WITH_NO_SCHEMA,
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(TABLES_WITH_NO_SCHEMA, "" + (end - start)/1000));
     }
 
     /**
@@ -137,9 +151,14 @@ public class JdbcMetadataTransfer {
                     omasColumns.forEach(omas::removeColumn);
                 }).collect(Collectors.toList());
 
+        String excludedColumns = transferCustomizations.getExcludedColumns();
+        if(StringUtils.isNotEmpty(excludedColumns)) {
+            auditLog.logMessage(SKIPPING + COLUMNS_OF_TABLES_WITH_NO_SCHEMA,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(COLUMNS_OF_TABLES_WITH_NO_SCHEMA, excludedColumns));
+        }
         long end = System.currentTimeMillis();
-        auditLog.logMessage("Transferring columns of tables without schema",
-                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("columns of tables with no schema", "" + (end - start)/1000));
+        auditLog.logMessage(TRANSFERRING + COLUMNS_OF_TABLES_WITH_NO_SCHEMA,
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(COLUMNS_OF_TABLES_WITH_NO_SCHEMA, "" + (end - start)/1000));
     }
 
     /**
@@ -202,9 +221,14 @@ public class JdbcMetadataTransfer {
         // remove from omas the schemas deleted in jdbc
         omasSchemas.forEach(omas::removeSchema);
 
+        String excludedSchemas = transferCustomizations.getExcludedSchemas();
+        if(StringUtils.isNotEmpty(excludedSchemas)) {
+            auditLog.logMessage(SKIPPING + SCHEMAS,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(SCHEMAS, excludedSchemas));
+        }
         long end = System.currentTimeMillis();
         auditLog.logMessage("Schema transfer complete",
-                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("schemas", "" + (end - start)/1000));
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(SCHEMAS, "" + (end - start)/1000));
     }
 
     /**
@@ -239,9 +263,14 @@ public class JdbcMetadataTransfer {
             omasTables.forEach(omas::removeTable);
         }).collect(Collectors.toList());
 
+        String excludedTables = transferCustomizations.getExcludedTables();
+        if(StringUtils.isNotEmpty(excludedTables)) {
+            auditLog.logMessage(SKIPPING + TABLES,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(TABLES, excludedTables));
+        }
         long end = System.currentTimeMillis();
         auditLog.logMessage("Table transfer complete",
-                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("tables", "" + (end - start)/1000));
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(TABLES, "" + (end - start)/1000));
     }
 
     /**
@@ -278,9 +307,14 @@ public class JdbcMetadataTransfer {
                      omasColumns.forEach(omas::removeColumn);
                 }).collect(Collectors.toList());
 
+        String excludedColumns = transferCustomizations.getExcludedColumns();
+        if(StringUtils.isNotEmpty(excludedColumns)) {
+            auditLog.logMessage(SKIPPING + COLUMNS,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(COLUMNS, excludedColumns));
+        }
         long end = System.currentTimeMillis();
         auditLog.logMessage("Column transfer complete",
-                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition("columns", "" + (end - start)/1000));
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(COLUMNS, "" + (end - start)/1000));
     }
 
     /**

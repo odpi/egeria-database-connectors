@@ -21,6 +21,7 @@ public class TransferCustomizations {
 
     public static final List<String> INCLUSION_AND_EXCLUSION_NAMES = Arrays.asList(INCLUDE_SCHEMA_NAMES,
             INCLUDE_TABLE_NAMES, INCLUDE_COLUMN_NAMES, EXCLUDE_SCHEMA_NAMES, EXCLUDE_TABLE_NAMES, EXCLUDE_COLUMN_NAMES);
+    private static final String DELIMITER = ", ";
 
     private final Map<String,List<String>> customizations = new HashMap<>();
 
@@ -58,6 +59,42 @@ public class TransferCustomizations {
      */
     public boolean shouldTransferColumn(String columnName) {
         return shouldTransfer(columnName, getCustomization(INCLUDE_COLUMN_NAMES), getCustomization(EXCLUDE_COLUMN_NAMES));
+    }
+
+    /**
+     * Gets excluded schemas, only if took into consideration (inclusion is not present).
+     *
+     * @return the excluded schemas
+     */
+    public String getExcludedSchemas() {
+        if(CollectionUtils.isEmpty(customizations.get(INCLUDE_SCHEMA_NAMES))) {
+            return "";
+        }
+        return String.join(DELIMITER, customizations.get(EXCLUDE_SCHEMA_NAMES));
+    }
+
+    /**
+     * Gets excluded tables, only if took into consideration (inclusion is not present).
+     *
+     * @return the excluded tables
+     */
+    public String getExcludedTables() {
+        if(CollectionUtils.isEmpty(customizations.get(INCLUDE_TABLE_NAMES))) {
+            return "";
+        }
+        return String.join(DELIMITER, customizations.get(EXCLUDE_TABLE_NAMES));
+    }
+
+    /**
+     * Gets excluded columns, only if took into consideration (inclusion is not present).
+     *
+     * @return the excluded columns
+     */
+    public String getExcludedColumns() {
+        if(CollectionUtils.isEmpty(customizations.get(INCLUDE_COLUMN_NAMES))) {
+            return "";
+        }
+        return String.join(DELIMITER, customizations.get(EXCLUDE_COLUMN_NAMES));
     }
 
     /**

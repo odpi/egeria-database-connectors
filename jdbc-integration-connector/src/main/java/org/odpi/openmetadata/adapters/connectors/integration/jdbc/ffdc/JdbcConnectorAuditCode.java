@@ -57,7 +57,7 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             "Consult logs for further details"),
     PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS("JDBC-INTEGRATION-CONNECTOR-0009",
             OMRSAuditLogRecordSeverity.INFO,
-            "Metadata transfer complete for {0} in {1} seconds (could have included inclusions and exclusions if any were mentioned in the connector configuration)",
+            "Metadata transfer complete for {0} in {1} seconds",
             "Transferring metadata information",
             "None"),
     EXCEPTION_WHEN_REMOVING_ELEMENT_IN_OMAS("JDBC-INTEGRATION-CONNECTOR-0010",
@@ -72,7 +72,12 @@ public enum JdbcConnectorAuditCode implements AuditLogMessageSet {
             "Take appropriate action to remedy the issue described in the exception message"),
     TRANSFER_COMPLETE_FOR_DB_OBJECT("JDBC-INTEGRATION-CONNECTOR-0012",
             OMRSAuditLogRecordSeverity.INFO,
-            "Transfer complete for {0} (could have included inclusions and exclusions if any were mentioned in the connector configuration)",
+            "Transfer complete for {0}",
+            "Continue execution",
+            "None"),
+    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT("JDBC-INTEGRATION-CONNECTOR-0013",
+            OMRSAuditLogRecordSeverity.INFO,
+            "Metadata transfer skipped for following {0}: {1}",
             "Continue execution",
             "None");
 
