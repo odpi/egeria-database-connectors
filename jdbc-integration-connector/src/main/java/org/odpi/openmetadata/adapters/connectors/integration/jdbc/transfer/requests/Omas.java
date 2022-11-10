@@ -2,8 +2,21 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
-import org.odpi.openmetadata.accessservices.datamanager.metadataelements.*;
-import org.odpi.openmetadata.accessservices.datamanager.properties.*;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.ConnectionElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.ConnectorTypeElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseColumnElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.EndpointElement;
+import org.odpi.openmetadata.accessservices.datamanager.properties.ConnectionProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseForeignKeyProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabasePrimaryKeyProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.EndpointProperties;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
 
@@ -211,6 +224,15 @@ public class Omas {
      */
     public void setPrimaryKey(String columnGuid, DatabasePrimaryKeyProperties primaryKeyProperties) {
         new OmasSetPrimaryKey(databaseIntegratorContext, auditLog).accept(columnGuid, primaryKeyProperties);
+    }
+
+    /**
+     * Remove primary key
+     *
+     * @param columnGuid guid
+     */
+    public void removePrimaryKey(String columnGuid) {
+        new OmasRemovePrimaryKey(databaseIntegratorContext, auditLog).accept(columnGuid);
     }
 
     /**

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.TRANSFER_COMPLETE_FOR_DB_OBJECT;
+
 /**
  * Transfers metadata of a table
  */
@@ -49,13 +51,13 @@ public class TableTransfer implements Function<JdbcTable, DatabaseTableElement> 
         if(omasTable.isPresent()){
             omas.updateTable(omasTable.get().getElementHeader().getGUID(), tableProperties);
             auditLog.logMessage("Updated table with qualified name " + tableProperties.getQualifiedName(),
-                    null);
+                    TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("table " + tableProperties.getQualifiedName()));
             return omasTable.get();
         }
 
         omas.createTable(schemaGuid, tableProperties);
         auditLog.logMessage("Created table with qualified name " + tableProperties.getQualifiedName(),
-                null);
+                TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("table " + tableProperties.getQualifiedName()));
         return null;
     }
 

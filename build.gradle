@@ -35,9 +35,10 @@ allprojects {
     // As we've migrated from maven - we'll assume all submodules publish directly to maven
     apply plugin: 'maven-publish'
 
-    // Only use maven central
+    // Only use maven central and snapshots
     repositories {
         mavenCentral()
+        maven { url("https://oss.sonatype.org/content/repositories/snapshots") }
     }
 
     // ensures we pick up the very latest snapshots when built
@@ -52,7 +53,7 @@ allprojects {
 
     // Assign variables for any constraints
     ext {
-       // add version variables here
+        // add version variables here
         egeriaversion='3.12'
         postgresversion='42.5.0'
     }
@@ -238,3 +239,4 @@ dependencyAnalysis {
 
 // Always run dependency check for every regular build
 build.dependsOn("buildHealth")
+
