@@ -64,7 +64,7 @@ allprojects {
         constraints {
             // Only include versions not already defined in egeria - or which need overriding
             implementation "org.postgresql:postgresql:${postgresversion}"
-            implementation "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorversion}"
+            compileOnly "org.odpi.egeria:egeria-connector-omrs-caching:${cachingconnectorversion}"
         }
     }
 
