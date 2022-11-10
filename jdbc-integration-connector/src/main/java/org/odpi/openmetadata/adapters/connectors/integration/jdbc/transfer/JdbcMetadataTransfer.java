@@ -30,12 +30,12 @@ import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.Jd
 public class JdbcMetadataTransfer {
 
     private static final String TABLES_WITH_NO_SCHEMA = "tables with no schema";
-    public static final String COLUMNS_OF_TABLES_WITH_NO_SCHEMA = "columns of tables with no schema";
-    public static final String SKIPPING = "Skipping ";
-    public static final String TRANSFERRING = "Transferring ";
-    public static final String SCHEMAS = "schemas";
-    public static final String TABLES = "tables";
-    public static final String COLUMNS = "columns";
+    private static final String COLUMNS_OF_TABLES_WITH_NO_SCHEMA = "columns of tables with no schema";
+    private static final String SKIPPING = "Skipping ";
+    private static final String TRANSFERRING = "Transferring ";
+    private static final String SCHEMAS = "schemas";
+    private static final String TABLES = "tables";
+    private static final String COLUMNS = "columns";
     private final Jdbc jdbc;
     private final Omas omas;
     private final String connectorTypeQualifiedName;
