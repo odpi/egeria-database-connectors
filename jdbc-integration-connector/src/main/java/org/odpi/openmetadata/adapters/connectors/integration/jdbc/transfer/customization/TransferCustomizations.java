@@ -2,23 +2,90 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization;
 
-import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Getter
 public class TransferCustomizations {
-    private Map<String,List<String>> customizations = new HashMap<>();
 
-    public List<String> getCustomization(String key) {
+    public static final String INCLUDE_TABLE_NAMES = "includeTableNames";
+    public static final String INCLUDE_SCHEMA_NAMES = "includeSchemaNames";
+    public static final String EXCLUDE_SCHEMA_NAMES = "excludeSchemaNames";
+    public static final String EXCLUDE_TABLE_NAMES = "excludeTableNames";
+    public static final String INCLUDE_COLUMN_NAMES = "includeColumnNames";
+    public static final String EXCLUDE_COLUMN_NAMES = "excludeColumnNames";
+
+    public static final List<String> INCLUSION_AND_EXCLUSION_NAMES = Arrays.asList(INCLUDE_SCHEMA_NAMES,
+            INCLUDE_TABLE_NAMES, INCLUDE_COLUMN_NAMES, EXCLUDE_SCHEMA_NAMES, EXCLUDE_TABLE_NAMES, EXCLUDE_COLUMN_NAMES);
+
+    private final Map<String,List<String>> customizations = new HashMap<>();
+
+    public TransferCustomizations(Map<String, Object> configurationProperties) {
+        for(String customizationKey : TransferCustomizations.INCLUSION_AND_EXCLUSION_NAMES) {
+            addCustomization(customizationKey, configurationProperties.get(customizationKey));
+        }
+    }
+
+    /**
+     * Determines if schema should be transferred
+     *
+     * @param schemaName the schema name
+     * @return the boolean
+     */
+    public boolean shouldTransferSchema(String schemaName) {
+        return shouldTransfer(schemaName, getCustomization(INCLUDE_SCHEMA_NAMES), getCustomization(EXCLUDE_SCHEMA_NAMES));
+    }
+
+    /**
+     * Determines if table should be transferred
+     *
+     * @param tableName the table name
+     * @return the boolean
+     */
+    public boolean shouldTransferTable(String tableName) {
+        return shouldTransfer(tableName, getCustomization(INCLUDE_TABLE_NAMES), getCustomization(EXCLUDE_TABLE_NAMES));
+    }
+
+    /**
+     * Determines if column should be transferred
+     *
+     * @param columnName the column name
+     * @return the boolean
+     */
+    public boolean shouldTransferColumn(String columnName) {
+        return shouldTransfer(columnName, getCustomization(INCLUDE_COLUMN_NAMES), getCustomization(EXCLUDE_COLUMN_NAMES));
+    }
+
+    /**
+     * Determines if object should be transferred. If it's present in the inclusions, the exclusions are ignored.
+     *
+     * @param objectName the object to be transferred
+     * @param inclusions the list of objects to be included
+     * @param exclusions the list of objects to be excluded
+     * @return the boolean
+     */
+    private boolean shouldTransfer(String objectName, List<String> inclusions, List<String> exclusions) {
+        if(CollectionUtils.isNotEmpty(inclusions)) {
+            return inclusions.contains(objectName);
+        }
+
+        if(CollectionUtils.isNotEmpty(exclusions)) {
+            return !exclusions.contains(objectName);
+        }
+
+        return true;
+    }
+
+    private List<String> getCustomization(String key) {
         return customizations.get(key);
     }
 
-    public void addCustomization(String key, Object customization) {
-        if(Constants.INCLUSION_AND_EXCLUSION_NAMES.contains(key)) {
+    private void addCustomization(String key, Object customization) {
+        if(INCLUSION_AND_EXCLUSION_NAMES.contains(key)) {
             List<String> processedCustomization = processCustomization(customization);
             customizations.put(key, processedCustomization);
         }
@@ -38,4 +105,5 @@ public class TransferCustomizations {
         }
         return processedCustomization;
     }
+
 }

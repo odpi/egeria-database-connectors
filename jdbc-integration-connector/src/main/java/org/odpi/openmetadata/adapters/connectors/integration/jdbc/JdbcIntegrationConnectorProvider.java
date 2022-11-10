@@ -2,7 +2,7 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc;
 
-import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.Constants;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.TransferCustomizations;
 import org.odpi.openmetadata.frameworks.connectors.ConnectorProviderBase;
 import org.odpi.openmetadata.frameworks.connectors.properties.beans.ConnectorType;
 
@@ -31,12 +31,12 @@ public class JdbcIntegrationConnectorProvider extends ConnectorProviderBase {
         connectorType.setConnectorProviderClassName(this.getClass().getName());
 
         List<String> recognizedConfigurationProperties = new ArrayList<>();
-        recognizedConfigurationProperties.add(Constants.INCLUDE_SCHEMA_NAMES);
-        recognizedConfigurationProperties.add(Constants.EXCLUDE_SCHEMA_NAMES);
-        recognizedConfigurationProperties.add(Constants.INCLUDE_TABLE_NAMES);
-        recognizedConfigurationProperties.add(Constants.EXCLUDE_TABLE_NAMES);
-        recognizedConfigurationProperties.add(Constants.INCLUDE_COLUMN_NAMES);
-        recognizedConfigurationProperties.add(Constants.EXCLUDE_COLUMN_NAMES);
+        recognizedConfigurationProperties.add(TransferCustomizations.INCLUDE_SCHEMA_NAMES);
+        recognizedConfigurationProperties.add(TransferCustomizations.EXCLUDE_SCHEMA_NAMES);
+        recognizedConfigurationProperties.add(TransferCustomizations.INCLUDE_TABLE_NAMES);
+        recognizedConfigurationProperties.add(TransferCustomizations.EXCLUDE_TABLE_NAMES);
+        recognizedConfigurationProperties.add(TransferCustomizations.INCLUDE_COLUMN_NAMES);
+        recognizedConfigurationProperties.add(TransferCustomizations.EXCLUDE_COLUMN_NAMES);
         connectorType.setRecognizedConfigurationProperties(recognizedConfigurationProperties);
 
         super.connectorTypeBean = connectorType;

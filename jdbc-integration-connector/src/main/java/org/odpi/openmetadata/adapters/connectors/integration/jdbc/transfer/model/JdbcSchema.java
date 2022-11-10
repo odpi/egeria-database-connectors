@@ -12,16 +12,16 @@ import java.util.Objects;
  */
 public class JdbcSchema {
 
-    private final String tableSchema;
+    private final String tableSchem;
     private final String tableCatalog;
 
-    private JdbcSchema(String tableSchema, String tableCatalog){
-        this.tableSchema = tableSchema;
+    private JdbcSchema(String tableSchem, String tableCatalog){
+        this.tableSchem = tableSchem;
         this.tableCatalog = tableCatalog;
     }
 
-    public String getTableSchema() {
-        return tableSchema;
+    public String getTableSchem() {
+        return tableSchem;
     }
 
     public String getTableCatalog() {
@@ -29,10 +29,10 @@ public class JdbcSchema {
     }
 
     public static JdbcSchema create(ResultSet resultSet) throws SQLException {
-        String tableSchema = resultSet.getString("TABLE_SCHEM");
+        String tableSchem = resultSet.getString("TABLE_SCHEM");
         String tableCat = resultSet.getString("TABLE_CATALOG");
 
-        return new JdbcSchema(tableSchema, tableCat);
+        return new JdbcSchema(tableSchem, tableCat);
     }
 
     @Override
@@ -49,11 +49,11 @@ public class JdbcSchema {
 
         JdbcSchema other_ = (JdbcSchema) other;
         return Objects.equals(getTableCatalog(), other_.getTableCatalog()) &&
-                Objects.equals(getTableSchema(), other_.getTableSchema());
+                Objects.equals(getTableSchem(), other_.getTableSchem());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tableSchema, tableCatalog);
+        return Objects.hash(tableSchem, tableCatalog);
     }
 }

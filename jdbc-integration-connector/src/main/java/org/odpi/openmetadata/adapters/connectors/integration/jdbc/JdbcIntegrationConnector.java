@@ -4,7 +4,6 @@ package org.odpi.openmetadata.adapters.connectors.integration.jdbc;
 
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadata;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadataTransfer;
-import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.Constants;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.TransferCustomizations;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcConnector;
 import org.odpi.openmetadata.frameworks.connectors.Connector;
@@ -106,7 +105,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
         String methodName = "createJdbcMetadataTransfer";
         try{
             Map<String, Object> configurationProperties = this.getConnection().getConfigurationProperties();
-            TransferCustomizations transferCustomizations = getTransferCustomizations(configurationProperties);
+            TransferCustomizations transferCustomizations = new TransferCustomizations(configurationProperties);
             String connectorTypeQualifiedName = jdbcConnector.getConnection().getConnectorType().getConnectorProviderClassName();
             return new JdbcMetadataTransfer(new JdbcMetadata(databaseMetaData), this.getContext(),
                     connectorTypeQualifiedName, transferCustomizations, auditLog);
@@ -117,11 +116,4 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
         return null;
     }
 
-    private TransferCustomizations getTransferCustomizations(Map<String, Object> configurationProperties) {
-        TransferCustomizations transferCustomizations = new TransferCustomizations();
-        for(String customizationKey : Constants.INCLUSION_AND_EXCLUSION_NAMES) {
-            transferCustomizations.addCustomization(customizationKey, configurationProperties.get(customizationKey));
-        }
-        return transferCustomizations;
-    }
 }
