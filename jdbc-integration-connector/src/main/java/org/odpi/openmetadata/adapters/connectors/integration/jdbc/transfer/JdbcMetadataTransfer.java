@@ -74,7 +74,8 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of available tables that are not assigned to any schema
+     * Triggers the transfer of available tables that are not assigned to any schema, depending also on inclusions and
+     * exclusions
      *
      * @param databaseElement database element
      */
@@ -105,7 +106,7 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of columns from tables without schema
+     * Triggers the transfer of columns from tables without schema, depending also on inclusions and exclusions
      *
      * @param databaseElement database element
      */
@@ -142,7 +143,8 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of all foreign keys between columns of tables without schemas
+     * Triggers the transfer of all foreign keys between columns of tables without schemas, depending also on inclusions
+     * and exclusions
      *
      * @param databaseElement database element
      */
@@ -206,7 +208,7 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of all available tables
+     * Triggers the transfer of all available tables, depending also on inclusions and exclusions
      *
      * @param databaseElement database element
      * @param schemas schemas
@@ -243,7 +245,7 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of all available tables
+     * Triggers the transfer of all available columns, depending also on inclusions and exclusions
      *
      * @param databaseElement database element
      * @param schemas schemas
@@ -282,8 +284,8 @@ public class JdbcMetadataTransfer {
     }
 
     /**
-     * Triggers the transfer of all foreign keys. The reason for doing this at database level is that a foreign key relationship
-     * can exist between columns located in tables in different schemas
+     * Triggers the transfer of all foreign keys, depending also on inclusions and exclusions. The reason for doing this
+     * at database level is that a foreign key relationship can exist between columns located in tables in different schemas
      *
      * @param databaseElement database element
      */
