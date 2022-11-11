@@ -49,7 +49,15 @@ Body
                             }
                         }
                     }
-                ]
+                ],
+                "configurationProperties": {
+                    "includeSchemaNames": [],
+                    "excludeSchemaNames": [],
+                    "includeTableNames": [],
+                    "excludeTableNames": [],
+                    "includeColumnNames": [],
+                    "excludeColumnNames": []
+                }
             },  
             "metadataSourceQualifiedName": "Source",
             "refreshTimeInterval": "60", 

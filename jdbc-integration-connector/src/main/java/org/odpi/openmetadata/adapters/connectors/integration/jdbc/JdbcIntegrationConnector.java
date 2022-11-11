@@ -4,6 +4,7 @@ package org.odpi.openmetadata.adapters.connectors.integration.jdbc;
 
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadata;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.JdbcMetadataTransfer;
+import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.TransferCustomizations;
 import org.odpi.openmetadata.adapters.connectors.resource.jdbc.JdbcConnector;
 import org.odpi.openmetadata.frameworks.connectors.Connector;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.ConnectorCheckedException;
@@ -13,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_ON_CONTEXT_RETRIEVAL;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
@@ -96,9 +98,11 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
     private JdbcMetadataTransfer createJdbcMetadataTransfer(DatabaseMetaData databaseMetaData){
         String methodName = "createJdbcMetadataTransfer";
         try{
+            Map<String, Object> configurationProperties = this.getConnection().getConfigurationProperties();
+            TransferCustomizations transferCustomizations = new TransferCustomizations(configurationProperties);
             String connectorTypeQualifiedName = jdbcConnector.getConnection().getConnectorType().getConnectorProviderClassName();
             return new JdbcMetadataTransfer(new JdbcMetadata(databaseMetaData), this.getContext(),
-                    connectorTypeQualifiedName, auditLog);
+                    connectorTypeQualifiedName, transferCustomizations, auditLog);
         }catch (ConnectorCheckedException e) {
             auditLog.logException("Extracting integration context",
                     EXCEPTION_ON_CONTEXT_RETRIEVAL.getMessageDefinition(methodName), e);
