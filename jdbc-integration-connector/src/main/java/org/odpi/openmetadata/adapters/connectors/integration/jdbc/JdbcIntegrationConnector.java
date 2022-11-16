@@ -13,8 +13,10 @@ import org.odpi.openmetadata.integrationservices.database.connector.DatabaseInte
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_ON_CONTEXT_RETRIEVAL;
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_JDBC;
@@ -98,7 +100,7 @@ public class JdbcIntegrationConnector extends DatabaseIntegratorConnector{
     private JdbcMetadataTransfer createJdbcMetadataTransfer(DatabaseMetaData databaseMetaData){
         String methodName = "createJdbcMetadataTransfer";
         try{
-            Map<String, Object> configurationProperties = this.getConnection().getConfigurationProperties();
+            Map<String, Object> configurationProperties = Optional.ofNullable(this.getConnection().getConfigurationProperties()).orElse(new HashMap<>());
             TransferCustomizations transferCustomizations = new TransferCustomizations(configurationProperties);
             String connectorTypeQualifiedName = jdbcConnector.getConnection().getConnectorType().getConnectorProviderClassName();
             return new JdbcMetadataTransfer(new JdbcMetadata(databaseMetaData), this.getContext(),
