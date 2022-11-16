@@ -12,15 +12,18 @@ import java.util.Map;
 
 public class TransferCustomizations {
 
-    public static final String INCLUDE_TABLE_NAMES = "includeTableNames";
     public static final String INCLUDE_SCHEMA_NAMES = "includeSchemaNames";
     public static final String EXCLUDE_SCHEMA_NAMES = "excludeSchemaNames";
+    public static final String INCLUDE_TABLE_NAMES = "includeTableNames";
     public static final String EXCLUDE_TABLE_NAMES = "excludeTableNames";
+    public static final String INCLUDE_VIEW_NAMES = "includeViewNames";
+    public static final String EXCLUDE_VIEW_NAMES = "excludeViewNames";
     public static final String INCLUDE_COLUMN_NAMES = "includeColumnNames";
     public static final String EXCLUDE_COLUMN_NAMES = "excludeColumnNames";
 
     public static final List<String> INCLUSION_AND_EXCLUSION_NAMES = Arrays.asList(INCLUDE_SCHEMA_NAMES,
-            INCLUDE_TABLE_NAMES, INCLUDE_COLUMN_NAMES, EXCLUDE_SCHEMA_NAMES, EXCLUDE_TABLE_NAMES, EXCLUDE_COLUMN_NAMES);
+            INCLUDE_TABLE_NAMES, INCLUDE_VIEW_NAMES, INCLUDE_COLUMN_NAMES, EXCLUDE_SCHEMA_NAMES, EXCLUDE_TABLE_NAMES,
+            EXCLUDE_VIEW_NAMES, EXCLUDE_COLUMN_NAMES);
     private static final String DELIMITER = ", ";
 
     private final Map<String,List<String>> customizations = new HashMap<>();
@@ -52,6 +55,16 @@ public class TransferCustomizations {
     }
 
     /**
+     * Determines if view should be transferred
+     *
+     * @param viewName the view name
+     * @return the boolean
+     */
+    public boolean shouldTransferView(String viewName) {
+        return shouldTransfer(viewName, getCustomization(INCLUDE_VIEW_NAMES), getCustomization(EXCLUDE_VIEW_NAMES));
+    }
+
+    /**
      * Determines if column should be transferred
      *
      * @param columnName the column name
@@ -67,7 +80,7 @@ public class TransferCustomizations {
      * @return the excluded schemas
      */
     public String getExcludedSchemas() {
-        if(CollectionUtils.isEmpty(customizations.get(INCLUDE_SCHEMA_NAMES))) {
+        if(!CollectionUtils.isEmpty(customizations.get(INCLUDE_SCHEMA_NAMES))) {
             return "";
         }
         return String.join(DELIMITER, customizations.get(EXCLUDE_SCHEMA_NAMES));
@@ -79,10 +92,22 @@ public class TransferCustomizations {
      * @return the excluded tables
      */
     public String getExcludedTables() {
-        if(CollectionUtils.isEmpty(customizations.get(INCLUDE_TABLE_NAMES))) {
+        if(!CollectionUtils.isEmpty(customizations.get(INCLUDE_TABLE_NAMES))) {
             return "";
         }
         return String.join(DELIMITER, customizations.get(EXCLUDE_TABLE_NAMES));
+    }
+
+    /**
+     * Gets excluded view, only if took into consideration (inclusion is not present).
+     *
+     * @return the excluded views
+     */
+    public String getExcludedViews() {
+        if(!CollectionUtils.isEmpty(customizations.get(INCLUDE_VIEW_NAMES))) {
+            return "";
+        }
+        return String.join(DELIMITER, customizations.get(EXCLUDE_VIEW_NAMES));
     }
 
     /**
@@ -91,7 +116,7 @@ public class TransferCustomizations {
      * @return the excluded columns
      */
     public String getExcludedColumns() {
-        if(CollectionUtils.isEmpty(customizations.get(INCLUDE_COLUMN_NAMES))) {
+        if(!CollectionUtils.isEmpty(customizations.get(INCLUDE_COLUMN_NAMES))) {
             return "";
         }
         return String.join(DELIMITER, customizations.get(EXCLUDE_COLUMN_NAMES));

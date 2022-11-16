@@ -83,6 +83,17 @@ public class Jdbc {
     }
 
     /**
+     * Get all views of a schema
+     *
+     * @param schemaName schema name
+     *
+     * @return views
+     */
+    public List<JdbcTable> getViews(String catalog, String schemaName){
+        return new JdbcGetViews(jdbcMetadata, auditLog).apply(catalog, schemaName);
+    }
+
+    /**
      * Get foreign keys as described by the primary key columns referenced by foreign key columns of target table
      *
      * @param catalog catalog

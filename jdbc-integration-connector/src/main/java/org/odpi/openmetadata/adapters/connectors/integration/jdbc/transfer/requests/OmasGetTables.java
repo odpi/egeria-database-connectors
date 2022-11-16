@@ -43,7 +43,7 @@ class OmasGetTables implements Function<String, List<DatabaseTableElement>> {
             return Optional.ofNullable(databaseIntegratorContext
                     .getTablesForDatabaseAsset(assetGuid, 0, 0)).orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Reading tables for schemaGuid: " + assetGuid,
+            auditLog.logException("Reading tables for assetGuid: " + assetGuid,
                     EXCEPTION_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
         return new ArrayList<>();

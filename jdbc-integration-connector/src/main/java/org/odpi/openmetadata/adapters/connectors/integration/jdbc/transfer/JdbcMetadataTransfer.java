@@ -7,6 +7,7 @@ import org.odpi.openmetadata.accessservices.datamanager.metadataelements.Databas
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseViewElement;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.customization.TransferCustomizations;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcForeignKey;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcPrimaryKey;
@@ -30,11 +31,13 @@ import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.Jd
 public class JdbcMetadataTransfer {
 
     private static final String TABLES_WITH_NO_SCHEMA = "tables with no schema";
+    private static final String VIEWS_WITH_NO_SCHEMA = "views with no schema";
     private static final String COLUMNS_OF_TABLES_WITH_NO_SCHEMA = "columns of tables with no schema";
     private static final String SKIPPING = "Skipping ";
     private static final String TRANSFERRING = "Transferring ";
     private static final String SCHEMAS = "schemas";
     private static final String TABLES = "tables";
+    private static final String VIEWS = "views";
     private static final String COLUMNS = "columns";
     private final Jdbc jdbc;
     private final Omas omas;
@@ -69,6 +72,7 @@ public class JdbcMetadataTransfer {
         createAssetConnection(database);
 
         transferTablesWithoutSchema(database);
+        transferViewsWithoutSchema(database);
         transferColumnsOfTablesWithoutSchema(database);
         transferForeignKeysIgnoringSchemas(database);
 
@@ -78,6 +82,7 @@ public class JdbcMetadataTransfer {
             return;
         }
         transferTables(database, schemas);
+        transferViews(database, schemas);
         transferColumns(database, schemas);
         transferForeignKeys(database);
     }
@@ -117,6 +122,43 @@ public class JdbcMetadataTransfer {
         long end = System.currentTimeMillis();
         auditLog.logMessage(TRANSFERRING + TABLES_WITH_NO_SCHEMA,
                 PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(TABLES_WITH_NO_SCHEMA, "" + (end - start)/1000));
+    }
+
+    /**
+     * Triggers the transfer of available views that are not assigned to any schema, depending also on inclusions and
+     * exclusions
+     *
+     * @param databaseElement database element
+     */
+    private void transferViewsWithoutSchema(DatabaseElement databaseElement) {
+        long start = System.currentTimeMillis();
+
+        String databaseQualifiedName = databaseElement.getDatabaseProperties().getQualifiedName();
+        String databaseGuid = databaseElement.getElementHeader().getGUID();
+        String catalog = databaseElement.getDatabaseProperties().getDisplayName();
+
+        // already known views by the omas, previously transferred
+        List<DatabaseViewElement> omasViews = omas.getViews(databaseGuid);
+        // a view update will always occur as long as the view is returned by jdbc
+        List<DatabaseViewElement> omasViewsUpdated = jdbc.getViews(catalog,"").parallelStream()
+                .filter(jdbcView -> jdbcView.getTableSchem() == null || jdbcView.getTableSchem().length() < 1 )
+                .filter(view -> transferCustomizations.shouldTransferTable(view.getTableName()))
+                .map(new ViewTransfer(omas, auditLog, omasViews, databaseQualifiedName, databaseGuid))
+                .collect(Collectors.toList());
+
+        // will remove all updated views, and what remains are the ones deleted in jdbc
+        omasViews.removeAll(omasViewsUpdated);
+        // remove from omas the tables deleted in jdbc
+        omasViews.forEach(omas::removeView);
+
+        String excludedViews = transferCustomizations.getExcludedViews();
+        if(StringUtils.isNotEmpty(excludedViews)) {
+            auditLog.logMessage(SKIPPING + VIEWS_WITH_NO_SCHEMA,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(VIEWS_WITH_NO_SCHEMA, excludedViews));
+        }
+        long end = System.currentTimeMillis();
+        auditLog.logMessage(TRANSFERRING + VIEWS_WITH_NO_SCHEMA,
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(VIEWS_WITH_NO_SCHEMA, "" + (end - start)/1000));
     }
 
     /**
@@ -271,6 +313,48 @@ public class JdbcMetadataTransfer {
         long end = System.currentTimeMillis();
         auditLog.logMessage("Table transfer complete",
                 PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(TABLES, "" + (end - start)/1000));
+    }
+
+    /**
+     * Triggers the transfer of all available views, depending also on inclusions and exclusions
+     *
+     * @param databaseElement database element
+     * @param schemas schemas
+     */
+    private void transferViews(DatabaseElement databaseElement, List<DatabaseSchemaElement> schemas){
+        long start = System.currentTimeMillis();
+
+        String catalog = databaseElement.getDatabaseProperties().getDisplayName();
+
+        schemas.parallelStream()
+                .filter(schema -> transferCustomizations.shouldTransferSchema(schema.getDatabaseSchemaProperties().getDisplayName()))
+                .peek(schema -> {
+                    String schemaDisplayName = schema.getDatabaseSchemaProperties().getDisplayName();
+                    String schemaGuid = schema.getElementHeader().getGUID();
+                    String schemaQualifiedName = schema.getDatabaseSchemaProperties().getQualifiedName();
+
+                    // already known views by the omas, previously transferred
+                    List<DatabaseViewElement> omasViews = omas.getViews(schemaGuid);
+                    // a view update will always occur as long as the view is returned by jdbc
+                    List<DatabaseViewElement> omasViewsUpdated = jdbc.getViews(catalog, schemaDisplayName).parallelStream()
+                            .filter(jdbcView -> transferCustomizations.shouldTransferTable(jdbcView.getTableName()))
+                            .map(new ViewTransfer(omas, auditLog, omasViews, schemaQualifiedName, schemaGuid))
+                            .collect(Collectors.toList());
+
+                    // will remove all updated tables, and what remains are the ones deleted in jdbc
+                    omasViews.removeAll(omasViewsUpdated);
+                    // remove from omas the tables deleted in jdbc
+                    omasViews.forEach(omas::removeView);
+                }).collect(Collectors.toList());
+
+        String excludedViews = transferCustomizations.getExcludedViews();
+        if(StringUtils.isNotEmpty(excludedViews)) {
+            auditLog.logMessage(SKIPPING + VIEWS,
+                    TRANSFER_EXCEPTIONS_FOR_DB_OBJECT.getMessageDefinition(TABLES, excludedViews));
+        }
+        long end = System.currentTimeMillis();
+        auditLog.logMessage("View transfer complete",
+                PARTIAL_TRANSFER_COMPLETE_FOR_DB_OBJECTS.getMessageDefinition(VIEWS, "" + (end - start)/1000));
     }
 
     /**
