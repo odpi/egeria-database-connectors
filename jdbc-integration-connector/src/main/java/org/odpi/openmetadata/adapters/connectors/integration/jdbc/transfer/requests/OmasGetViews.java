@@ -2,50 +2,51 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.requests;
 
-import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseViewElement;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.InvalidParameterException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.PropertyServerException;
 import org.odpi.openmetadata.frameworks.connectors.ffdc.UserNotAuthorizedException;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 import static org.odpi.openmetadata.adapters.connectors.integration.jdbc.ffdc.JdbcConnectorAuditCode.EXCEPTION_READING_OMAS;
 
 /**
- * Manages the getDatabaseTableByGUID call to access service
+ * Manages the getViewsForDatabaseAsset call to access service
  */
-class OmasGetTable implements Function<String, Optional<DatabaseTableElement>> {
+class OmasGetViews implements Function<String, List<DatabaseViewElement>> {
 
     private final DatabaseIntegratorContext databaseIntegratorContext;
     private final AuditLog auditLog;
 
-    OmasGetTable(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
+    OmasGetViews(DatabaseIntegratorContext databaseIntegratorContext, AuditLog auditLog){
         this.databaseIntegratorContext = databaseIntegratorContext;
         this.auditLog = auditLog;
     }
 
     /**
-     * Get table
+     * Get views of schema
      *
-     * @param tableGuid table guid
+     * @param assetGuid database or schema guid
      *
-     * @return table
+     * @return tables
      */
     @Override
-    public Optional<DatabaseTableElement> apply(String tableGuid){
-        String methodName = "OmasGetTable";
+    public List<DatabaseViewElement> apply(String assetGuid){
+        String methodName = "OmasGetViews";
         try{
-            return Optional.ofNullable(databaseIntegratorContext.getDatabaseTableByGUID(tableGuid));
+            return Optional.ofNullable(databaseIntegratorContext
+                    .getViewsForDatabaseAsset(assetGuid, 0, 0)).orElseGet(ArrayList::new);
         } catch (UserNotAuthorizedException | InvalidParameterException | PropertyServerException e) {
-            auditLog.logException("Reading table for guid: " + tableGuid,
+            auditLog.logException("Reading views for assetGuid: " + assetGuid,
                     EXCEPTION_READING_OMAS.getMessageDefinition(methodName, e.getMessage()), e);
         }
-        return Optional.empty();
+        return new ArrayList<>();
     }
-
-
 
 }

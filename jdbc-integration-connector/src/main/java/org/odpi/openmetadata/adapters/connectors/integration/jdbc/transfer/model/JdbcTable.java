@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 /**
- * Represents a table as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
+ * Represents a table or a view as returned by the JDBC api. Fields are the ones described in {@link DatabaseMetaData}
  */
 public class JdbcTable {
 

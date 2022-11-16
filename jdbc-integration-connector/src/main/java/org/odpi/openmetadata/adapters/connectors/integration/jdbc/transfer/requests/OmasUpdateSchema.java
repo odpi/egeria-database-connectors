@@ -28,7 +28,7 @@ class OmasUpdateSchema implements BiConsumer<String, DatabaseSchemaProperties> {
 
     @Override
     public void accept(String schemaGuid, DatabaseSchemaProperties schemaProperties){
-        String methodName = "updateDatabaseSchema";
+        String methodName = "OmasUpdateSchema";
         try {
             databaseIntegratorContext.updateDatabaseSchema(schemaGuid, schemaProperties);
         } catch (InvalidParameterException | UserNotAuthorizedException | PropertyServerException e) {

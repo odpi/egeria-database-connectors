@@ -8,6 +8,7 @@ import org.odpi.openmetadata.accessservices.datamanager.metadataelements.Databas
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseSchemaElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
+import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseViewElement;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.EndpointElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.ConnectionProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseColumnProperties;
@@ -16,6 +17,7 @@ import org.odpi.openmetadata.accessservices.datamanager.properties.DatabasePrima
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseSchemaProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
+import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseViewProperties;
 import org.odpi.openmetadata.accessservices.datamanager.properties.EndpointProperties;
 import org.odpi.openmetadata.frameworks.auditlog.AuditLog;
 import org.odpi.openmetadata.integrationservices.database.connector.DatabaseIntegratorContext;
@@ -37,17 +39,6 @@ public class Omas {
     }
 
     /**
-     * Get table
-     *
-     * @param tableGuid table guid
-     *
-     * @return table
-     */
-    public Optional<DatabaseTableElement> getTable(String tableGuid){
-        return new OmasGetTable(databaseIntegratorContext, auditLog).apply(tableGuid);
-    }
-
-    /**
      * Get schemas of database
      *
      * @param databaseGuid database guid
@@ -59,7 +50,7 @@ public class Omas {
     }
 
     /**
-     * Get tables of schema
+     * Get tables
      *
      * @param assetGuid database or schema guid
      *
@@ -67,6 +58,17 @@ public class Omas {
      */
     public List<DatabaseTableElement> getTables(String assetGuid){
         return new OmasGetTables(databaseIntegratorContext, auditLog).apply(assetGuid);
+    }
+
+    /**
+     * Get views
+     *
+     * @param assetGuid database or schema guid
+     *
+     * @return tables
+     */
+    public List<DatabaseViewElement> getViews(String assetGuid){
+        return new OmasGetViews(databaseIntegratorContext, auditLog).apply(assetGuid);
     }
 
     /**
@@ -126,7 +128,7 @@ public class Omas {
     }
 
     /**
-     * Create table in schema
+     * Create table
      *
      * @param schemaGuid schema guid
      * @param newTableProperties properties
@@ -135,6 +137,18 @@ public class Omas {
      */
     public Optional<String> createTable(String schemaGuid, DatabaseTableProperties newTableProperties){
         return new OmasCreateTable(databaseIntegratorContext, auditLog).apply(schemaGuid, newTableProperties);
+    }
+
+    /**
+     * Create view
+     *
+     * @param parentGuid parent guid
+     * @param newViewProperties properties
+     *
+     * @return guid
+     */
+    public Optional<String> createView(String parentGuid, DatabaseViewProperties newViewProperties){
+        return new OmasCreateView(databaseIntegratorContext, auditLog).apply(parentGuid, newViewProperties);
     }
 
     /**
@@ -165,6 +179,15 @@ public class Omas {
      */
     public void removeTable(DatabaseTableElement tableElement) {
         new OmasRemoveTable(databaseIntegratorContext, auditLog).accept(tableElement);
+    }
+
+    /**
+     * Remove view
+     *
+     * @param viewElement view
+     */
+    public void removeView(DatabaseViewElement viewElement) {
+        new OmasRemoveView(databaseIntegratorContext, auditLog).accept(viewElement);
     }
 
     /**
@@ -204,6 +227,16 @@ public class Omas {
      */
     public void updateTable(String tableGuid, DatabaseTableProperties tableProperties){
         new OmasUpdateTable(databaseIntegratorContext, auditLog).accept(tableGuid, tableProperties);
+    }
+
+    /**
+     * Update view
+     *
+     * @param viewGuid guid
+     * @param viewProperties properties
+     */
+    public void updateView(String viewGuid, DatabaseViewProperties viewProperties){
+        new OmasUpdateView(databaseIntegratorContext, auditLog).accept(viewGuid, viewProperties);
     }
 
     /**
