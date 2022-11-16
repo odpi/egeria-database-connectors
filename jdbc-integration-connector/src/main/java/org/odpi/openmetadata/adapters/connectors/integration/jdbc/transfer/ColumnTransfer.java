@@ -54,6 +54,7 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
                 .findFirst();
 
         if(omasColumn.isPresent()){
+            removeForeignKey(omasColumn.get());
             omas.updateColumn(omasColumn.get().getElementHeader().getGUID(), columnProperties);
             auditLog.logMessage("Updated column with qualified name " + columnProperties.getQualifiedName(),
                     TRANSFER_COMPLETE_FOR_DB_OBJECT.getMessageDefinition("column " + columnProperties.getQualifiedName()));
@@ -131,6 +132,20 @@ public class ColumnTransfer implements Function<JdbcColumn, DatabaseColumnElemen
         primaryKeyProperties = buildPrimaryKeyProperties(jdbcPrimaryKey.get());
         omas.setPrimaryKey(columnGuid, primaryKeyProperties);
         auditLog.logMessage("Primary key set on column with guid " + columnGuid, null);
+    }
+
+    /**
+     * Remove foreign key relationship
+     *
+     * @param databaseColumnElement column element
+     */
+    private void removeForeignKey(DatabaseColumnElement databaseColumnElement){
+        String foreignKeyGuid = databaseColumnElement.getReferencedColumnGUID();
+        if(foreignKeyGuid == null){
+            return;
+        }
+        String primaryKeyGuid = databaseColumnElement.getElementHeader().getGUID();
+        omas.removeForeignKey(primaryKeyGuid, foreignKeyGuid);
     }
 
     /**

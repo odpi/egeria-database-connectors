@@ -247,6 +247,16 @@ public class Omas {
     }
 
     /**
+     * Remove foreign key
+     *
+     * @param primaryKeyColumnGuid guid
+     * @param foreignKeyColumnGuid guid
+     */
+    public void removeForeignKey(String primaryKeyColumnGuid, String foreignKeyColumnGuid) {
+        new OmasRemoveForeignKey(databaseIntegratorContext, auditLog).accept(primaryKeyColumnGuid, foreignKeyColumnGuid);
+    }
+
+    /**
      * Get databases
      *
      * @param databaseQualifiedName qualified name
