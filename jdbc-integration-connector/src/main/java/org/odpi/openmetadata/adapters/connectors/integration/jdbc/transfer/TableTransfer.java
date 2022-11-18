@@ -2,7 +2,6 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
-import org.apache.commons.lang3.StringUtils;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseTableElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseTableProperties;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcTable;
@@ -43,9 +42,6 @@ public class TableTransfer implements Function<JdbcTable, DatabaseTableElement> 
      */
     @Override
     public DatabaseTableElement apply(JdbcTable jdbcTable) {
-        if(!StringUtils.equalsIgnoreCase(jdbcTable.getTableType(), "TABLE")){
-            return null;
-        }
         DatabaseTableProperties tableProperties = this.buildTableProperties(jdbcTable);
 
         Optional<DatabaseTableElement> omasTable = omasTables.stream()

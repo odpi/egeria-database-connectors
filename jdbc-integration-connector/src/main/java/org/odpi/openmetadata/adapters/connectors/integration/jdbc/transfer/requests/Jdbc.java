@@ -161,4 +161,12 @@ public class Jdbc {
         return new JdbcGetCatalogs(jdbcMetadata, auditLog).get();
     }
 
+    /**
+     * Get supported table types
+     *
+     * @return table types
+     */
+    public List<String> getTableTypes(){
+        return new JdbcGetTableTypes(jdbcMetadata, auditLog).get();
+    }
 }

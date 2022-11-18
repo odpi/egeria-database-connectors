@@ -2,7 +2,6 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer;
 
-import org.apache.commons.lang3.StringUtils;
 import org.odpi.openmetadata.accessservices.datamanager.metadataelements.DatabaseViewElement;
 import org.odpi.openmetadata.accessservices.datamanager.properties.DatabaseViewProperties;
 import org.odpi.openmetadata.adapters.connectors.integration.jdbc.transfer.model.JdbcTable;
@@ -43,9 +42,6 @@ public class ViewTransfer implements Function<JdbcTable, DatabaseViewElement> {
      */
     @Override
     public DatabaseViewElement apply(JdbcTable jdbcTable) {
-        if(!StringUtils.equalsIgnoreCase(jdbcTable.getTableType(), "VIEW")){
-            return null;
-        }
         DatabaseViewProperties viewProperties = this.buildViewProperties(jdbcTable);
 
         Optional<DatabaseViewElement> omasView = omasViews.stream()
