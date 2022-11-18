@@ -39,7 +39,7 @@ public class JdbcGetViews implements BiFunction<String, String, List<JdbcTable>>
         String methodName = "JdbcGetViews";
         try {
             return Optional.ofNullable(
-                    jdbcMetadata.getTables(catalog, schemaName, null, new String[]{"VIEW"}))
+                    jdbcMetadata.getTables(catalog, schemaName, null, new String[]{"VIEW", "MATERIALIZED VIEW"}))
                     .orElseGet(ArrayList::new);
         } catch (SQLException sqlException) {
             auditLog.logException("Reading views from JDBC for schema: " + schemaName,
