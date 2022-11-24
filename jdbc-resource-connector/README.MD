@@ -8,4 +8,4 @@ Provides a basic implementation of the interface javax.sql.DataSource interface 
 jdbcConnector.asDataSource()
 ```
 
-See JDBC Integration Connector for actual usage example.
+See [JDBC Integration Connector](../jdbc-integration-connector/README.MD) for actual usage example.

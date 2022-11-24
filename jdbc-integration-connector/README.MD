@@ -3,13 +3,15 @@
 
 # JDBC Integration Connector
 
-Catalogs a database via JDBC, extracting as much information as it can, as opposed to the connection structure that will be constructed if all information is available
+Catalogs a database via JDBC, extracting catalogs, schemas and the following table types: "TABLE", "VIEW", "FOREIGN TABLE" and "MATERIALIZED VIEW". 
+It will mark the primary key columns and extract the foreign key relationships.
+
 
 ### Configuration
 
 For more details regarding bellow request, visit [Egeria documentation site](https://egeria-project.org/guides/admin/servers/configuring-an-integration-daemon/#configure-the-integration-services)
 
-In addition, the integration connector uses a VirtualConnection in order to make use of the [JDBC resource connector](../jdbc-resource-connector/README.MD), which keeps the connection details to target database 
+In addition, the integration connector uses an EmbeddedConnection in order to make use of the [JDBC resource connector](../jdbc-resource-connector/README.MD), which keeps the connection details to target database 
 ```
 POST {{baseURL}}/open-metadata/admin-services/users/{{user}}/servers/{{server}}/integration-services/{{integrationServiceURLMarker}}
 ```
@@ -43,9 +45,6 @@ Body
                             "endpoint":{
                                 "class": "Endpoint",
                                 "address" : "<jdbc-format-database-address>"
-                            },
-                            "configurationProperties" :{
-                                "connectorTypeQualifiedName" : "<already-stored-connector-type>"
                             }
                         }
                     }
@@ -55,6 +54,8 @@ Body
                     "excludeSchemaNames": [],
                     "includeTableNames": [],
                     "excludeTableNames": [],
+                    "includeViewNames": [],
+                    "excludeViewNames": [],
                     "includeColumnNames": [],
                     "excludeColumnNames": []
                 }
@@ -74,12 +75,14 @@ Body
 
 **connector-name** - this connectors name
 
-**already-stored-connector-type** - optional, qualified name of an already stored connector type. Necessary to create the connection structure supporting the database asset. Can be created via metadata archives 
-
 **user** - database user
 
 **password** - database password
 
 **jdbc-format-database-address** - database address
 
+**include/exclude** properties - control which schemas, tables, views and columns, respectively, are imported
+if include is set, then the import is restricted to specified entities; 
+if exclude is set, the import will ignore specified entities; 
+if both are set, the import will take into account only the property include;
 
