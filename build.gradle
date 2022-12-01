@@ -55,7 +55,7 @@ allprojects {
     ext {
         // add version variables here
         egeriaversion='3.12'
-        postgresversion='42.5.0'
+        postgresversion='42.5.1'
         cachingconnectorversion = '1.0-SNAPSHOT'
     }
 
