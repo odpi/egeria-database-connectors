@@ -54,7 +54,7 @@ allprojects {
     // Assign variables for any constraints
     ext {
         // add version variables here
-        egeriaversion='3.12'
+        egeriaversion='3.13'
         postgresversion='42.5.0'
         cachingconnectorversion = '1.0-SNAPSHOT'
     }
