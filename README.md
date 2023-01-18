@@ -16,11 +16,10 @@ value from data whilst ensuring it is properly governed.
 
 [Go to the main Egeria site](https://egeria-project.org)
 
-This repository contains three database connectors, visit each of them for specific details: [postgres connector](egeria-connector-postgres/README.md), [jdbc integration connector](jdbc-integration-connector/README.MD), [jdbc resource connector](jdbc-resource-connector/README.MD)
+This repository is now Archived. 
 
-Further information on configuring an integration connector can be found in  [Configuring the Integration Services](https://egeria-project.org/guides/admin/servers/configuring-the-integration-services/) .
+For Postgres and other JDBC connectivity refer to our [JDBC connectors](https://github.com/odpi/egeria-connector-jdbc) repository.
 
-[Egeria's Connector Catalog](https://egeria-project.org/connectors/)
 
 License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
 Copyright Contributors to the ODPi Egeria project.
